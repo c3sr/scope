@@ -8,13 +8,13 @@
 #include <vector>
 
 static void SGEMM(benchmark::State &state) {
-  for (auto _ : state) {
-    const auto M = state.range(0);
-    const auto N = state.range(1);
-    const auto K = state.range(2);
-    const auto alpha = state.range(3);
-    const auto beta = state.range(4);
+  const auto M = state.range(0);
+  const auto N = state.range(1);
+  const auto K = state.range(2);
+  const auto alpha = state.range(3);
+  const auto beta = state.range(4);
 
+  for (auto _ : state) {
     state.PauseTiming();
     auto a = std::vector<float>(M * K);
     auto b = std::vector<float>(K * N);
@@ -27,6 +27,9 @@ static void SGEMM(benchmark::State &state) {
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M, N, K, alpha,
                 a.data(), K, b.data(), N, beta, c.data(), N);
   }
+
+  state.counters.insert(
+      {{"M", M}, {"N", N}, {"K", K}, {"alpha", alpha}, {"beta", beta}});
 }
 
 BENCHMARK(SGEMM) // M, N, K , alpha, beta
