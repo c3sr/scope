@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -17,6 +17,9 @@ HunterGate(
 
 
 project(microbenchmark LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 set(TOP_DIR "${PROJECT_SOURCE_DIR}")
@@ -37,12 +40,6 @@ add_executable(bench
 )
 
 include_directories(bench ${OpenBLAS_INCLUDE_DIR})
-
-# Request that particles be built with -std=c++11
-# As this is a public compile feature anything that links to particles
-# will also build with -std=c++11
-target_compile_features(bench PUBLIC cxx_std_11)
-
 
 target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench nlohmann_json)

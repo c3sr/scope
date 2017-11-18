@@ -47,5 +47,4 @@ BENCHMARK(SGEMM) // M, N, K , alpha, beta
     ->Args({50, 4096, 4096, 1, 0})
     ->Args({50, 4096, 9216, 1, 0})
     ->Args({96, 3025, 1, 1, 1})
-    ->Args({96, 3025, 363, 1, 0})
-    ->Unit(benchmark::kMicrosecond);
+    ->Args({96, 3025, 363, 1, 0});

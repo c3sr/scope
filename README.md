@@ -35,3 +35,9 @@ The above will output
 Output as JSON using
 
     ./bench --benchmark_out_format=json --benchmark_out=test.json
+
+## On Minsky With PowerAI
+
+```
+OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas m -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
+```
