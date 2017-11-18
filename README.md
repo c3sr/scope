@@ -39,5 +39,5 @@ Output as JSON using
 ## On Minsky With PowerAI
 
 ```
-OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas m -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
+cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
 ```
