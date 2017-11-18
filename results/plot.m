@@ -10,21 +10,28 @@ $rawDataFiles = <|
     "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt.json"}],
     "NoSMT8" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_8.json"}],
     "NoSMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_16.json"}]
+  |>,
+  "Whatever" -> <|
+    "SMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "with_smt.json"}],
+    "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "without_smt.json"}]
   |>
 |>;
 
 $rawMinskyDataFiles = $rawDataFiles["Minsky"];
+$rawWhateverDataFiles = $rawDataFiles["Whatever"];
 
+$machine = "Whatever"
+$rawMachineDataFiles = $rawDataFiles[$machine];
 
 data = Table[
-  rawDataFile = $rawMinskyDataFiles[key];
+  rawDataFile = $rawMachineDataFiles[key];
   Module[{info},
     info = Import[rawDataFile, "RAWJSON"];
     info["benchmarks"] = Append[#, "key" -> key]& /@ info["benchmarks"];
     Append[info, "name" -> key]
   ]
   ,
-  {key, Keys[$rawMinskyDataFiles]}
+  {key, Keys[$rawMachineDataFiles]}
 ];
 
 groupedData = GroupBy[
@@ -51,4 +58,4 @@ makeChart[data_] := BarChart[
   ScalingFunctions -> "Log"
 ];
 
-Export["plot.png", makeChart[Take[groupedData, UpTo[10]]], ImageSize->600]
+Export[$machine <> "_plot.png", makeChart[Take[groupedData, UpTo[10]]], ImageSize->600]
