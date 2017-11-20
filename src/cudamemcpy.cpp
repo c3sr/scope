@@ -53,9 +53,11 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
+  if (src) {
+    cudaFree(src);
+  }
   if (dst) {
     cudaFree(dst);
   }
-  delete[] src;
 }
 BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1);
