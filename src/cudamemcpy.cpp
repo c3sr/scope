@@ -1,40 +1,30 @@
-#include <stdio.h>
 #include <assert.h>
-#include <cuda.h>
+#include <benchmark/benchmark.h>
+#include <cuda_runtime.h>
+#include <iostream>
+#include <stdio.h>
 
-// Convenience function for checking CUDA runtime API results
-// can be wrapped around any runtime API call. No-op in release builds.
-inline
-cudaError_t checkCuda(cudaError_t result)
-{
-#if defined(DEBUG) || defined(_DEBUG)
-  if (result != cudaSuccess) {
-    fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
-    assert(result == cudaSuccess);
+static void CUDAMemcpyToGPU(benchmark::State &state) {
+  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  char *src = new char[bytes];
+  char *dst = nullptr;
+  const auto err = cudaMalloc(&dst, bytes);
+  if (err != cudaSuccess) {
+    state.SkipWithError("failed to perform cudaMemcpy");
+    return;
   }
-#endif
-  return result;
+  for (auto _ : state) {
+    const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+      state.SkipWithError("failed to perform cudaMemcpy");
+      break;
+    }
+  }
+  state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
+  state.counters.insert({{"bytes", bytes}});
+  if (dst) {
+    cudaFree(dst);
+  }
+  delete[] src;
 }
-
-static void CUDAMEMCPYTEST() {
-  unsigned int nElements = 4*1024*1024;
-  const unsigned int bytes = nElements * sizeof(float);
-
-  // host arrays
-  float *h_aPageable, *h_bPageable;
-  float *h_a, *h_bPinned;X
-
-  // device array
-  float *d_a;
-
-  // allocate and initialize
-  h_aPageable = (float*)malloc(bytes);                    // host pageable
-  h_bPageable = (float*)malloc(bytes);                    // host pageable
-  checkCuda( cudaMalloc((void**)&h_a, bytes) ); // host pinned
-  checkCuda( cudaMallocHost((void**)&h_bPinned, bytes) ); // host pinned
-  checkCuda( cudaMalloc((void**)&d_a, bytes) );           // device
-
-  checkCuda( cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice) );
-  checkCuda( cudaMemcpy(d_a, h_bPinned, bytes, cudaMemcpyHostToDevice) );
-  checkCuda( cudaMemcpy(d_a, h_a, bytes, cudaMemcpyDeviceToHost) );
-}
+BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);

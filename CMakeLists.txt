@@ -43,7 +43,7 @@ set(CUDA_VERBOSE_BUILD OFF)
 
 add_executable(bench
   src/sgemm.cpp
-  src/cudamalloc.cpp
+  src/cudamemcpy.cpp
   src/main.cpp
 )
 
