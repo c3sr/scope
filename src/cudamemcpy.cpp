@@ -14,16 +14,13 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
     state.SkipWithError("failed to perform cudaMemcpy");
     return;
   }
- //for (auto _ : state) {
- //  const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
- //  if (err != cudaSuccess) {
- //    state.SkipWithError("failed to perform cudaMemcpy");
- //    break;
- //  }
- //}
-  for (auto _ : state) {
-    cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
-  }
+ for (auto _ : state) {
+   const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+   if (err != cudaSuccess) {
+     state.SkipWithError("failed to perform cudaMemcpy");
+     break;
+   }
+ }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
   if (dst) {
@@ -48,24 +45,13 @@ memset(src, 0, bytes);
     state.SkipWithError("failed to perform cudaMalloc");
     return;
   }
-  for (auto _ : state) {
-    cudaEvent_t startEvent, stopEvent;
-    cudaEventCreate(&startEvent);
-    cudaEventCreate(&stopEvent);
-
-    cudaEventRecord(startEvent, 0);
-    const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
-    cudaEventRecord(stopEvent, 0);
-    cudaEventSynchronize(stopEvent);
-    if (err != cudaSuccess) {
-      state.SkipWithError("failed to perform pinned cudaMemcpy");
-      break;
-    }
-    
-    float time = 0;
-    cudaEventElapsedTime(&time, startEvent, stopEvent);
-    state.SetIterationTime(time);
-  }
+ for (auto _ : state) {
+   const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+   if (err != cudaSuccess) {
+     state.SkipWithError("failed to perform cudaMemcpy");
+     break;
+   }
+ }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
   if (src) {
@@ -75,4 +61,4 @@ memset(src, 0, bytes);
     cudaFree(dst);
   }
 }
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1)->UseManualTime();
+BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1);
