@@ -6,10 +6,10 @@ thisDirectory = If[TrueQ[StringQ[$InputFileName] && $InputFileName =!= "" && Fil
 $rawDataFiles = <|
   "Minsky" -> <|
     "SMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "with_smt.json"}],
-    "SMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "with_smt_16.json"}],
-    "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt.json"}],
-    "NoSMT8" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_8.json"}],
-    "NoSMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_16.json"}]
+    (*"SMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "with_smt_16.json"}],*)
+    "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt.json"}]
+    (*"NoSMT8" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_8.json"}],*)
+    (*"NoSMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_16.json"}]*)
   |>,
   "Whatever" -> <|
     "SMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "with_smt.json"}],
@@ -20,7 +20,7 @@ $rawDataFiles = <|
 $rawMinskyDataFiles = $rawDataFiles["Minsky"];
 $rawWhateverDataFiles = $rawDataFiles["Whatever"];
 
-$machine = "Whatever"
+$machine = "Minsky";
 $rawMachineDataFiles = $rawDataFiles[$machine];
 
 data = Table[
