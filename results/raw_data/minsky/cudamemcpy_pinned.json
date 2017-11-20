@@ -1,0 +1,299 @@
+{
+  "context": {
+    "date": "2017-11-20 15:53:50",
+    "num_cpus": 20,
+    "mhz_per_cpu": 4023,
+    "cpu_scaling_enabled": false,
+    "library_build_type": "release"
+  },
+  "benchmarks": [
+    {
+      "name": "CUDAPinnedMemcpyToGPU/1",
+      "iterations": 63518,
+      "real_time": 1.1049179964901454e+04,
+      "cpu_time": 1.1014770395793321e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.8157437042571721e+05,
+      "bytes": 2.0000000000000000e+00
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/2",
+      "iterations": 63583,
+      "real_time": 1.1039244562385475e+04,
+      "cpu_time": 1.1018684742777157e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 3.6301973360495991e+05,
+      "bytes": 4.0000000000000000e+00
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/3",
+      "iterations": 63534,
+      "real_time": 1.1023056079683462e+04,
+      "cpu_time": 1.0989328422576891e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 7.2797897126857156e+05,
+      "bytes": 8.0000000000000000e+00
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/4",
+      "iterations": 63695,
+      "real_time": 1.1022681011527015e+04,
+      "cpu_time": 1.0988066944030144e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.4561250929302771e+06,
+      "bytes": 1.6000000000000000e+01
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/5",
+      "iterations": 63628,
+      "real_time": 1.1030592584754821e+04,
+      "cpu_time": 1.0999910605393850e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 2.9091145508317742e+06,
+      "bytes": 3.2000000000000000e+01
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/6",
+      "iterations": 63684,
+      "real_time": 1.1022775831039044e+04,
+      "cpu_time": 1.0993506846303626e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 5.8216182420006292e+06,
+      "bytes": 6.4000000000000000e+01
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/7",
+      "iterations": 63546,
+      "real_time": 1.1041450634901756e+04,
+      "cpu_time": 1.1010984672520701e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.1624755079301864e+07,
+      "bytes": 1.2800000000000000e+02
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/8",
+      "iterations": 63548,
+      "real_time": 1.1047395511916715e+04,
+      "cpu_time": 1.1012645370428658e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 2.3246004151501648e+07,
+      "bytes": 2.5600000000000000e+02
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/9",
+      "iterations": 63532,
+      "real_time": 1.1058632673426308e+04,
+      "cpu_time": 1.1029628974375117e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 4.6420419144607477e+07,
+      "bytes": 5.1200000000000000e+02
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/10",
+      "iterations": 63110,
+      "real_time": 1.1092763840852622e+04,
+      "cpu_time": 1.1060925019806687e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 9.2578152203937143e+07,
+      "bytes": 1.0240000000000000e+03
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/11",
+      "iterations": 63083,
+      "real_time": 1.1131615173333821e+04,
+      "cpu_time": 1.1098214954900670e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.8453418034543103e+08,
+      "bytes": 2.0480000000000000e+03
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/12",
+      "iterations": 62566,
+      "real_time": 1.1216472221835062e+04,
+      "cpu_time": 1.1182537448454417e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 3.6628538190731698e+08,
+      "bytes": 4.0960000000000000e+03
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/13",
+      "iterations": 58210,
+      "real_time": 1.2061415134612813e+04,
+      "cpu_time": 1.2020894657275407e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 6.8148005897730386e+08,
+      "bytes": 8.1920000000000000e+03
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/14",
+      "iterations": 53000,
+      "real_time": 1.3239832660886195e+04,
+      "cpu_time": 1.3197332943396228e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.2414629584834669e+09,
+      "bytes": 1.6384000000000000e+04
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/15",
+      "iterations": 65747,
+      "real_time": 1.0586459124096627e+04,
+      "cpu_time": 1.0556537149984040e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1040481868668022e+09,
+      "bytes": 3.2768000000000000e+04
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/16",
+      "iterations": 60816,
+      "real_time": 1.1518094366337255e+04,
+      "cpu_time": 1.1484235168376732e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 5.7066055369940100e+09,
+      "bytes": 6.5536000000000000e+04
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/17",
+      "iterations": 51765,
+      "real_time": 1.3502024495188860e+04,
+      "cpu_time": 1.3456744325316346e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 9.7402459934839191e+09,
+      "bytes": 1.3107200000000000e+05
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/18",
+      "iterations": 39655,
+      "real_time": 1.7432999091598416e+04,
+      "cpu_time": 1.7382936325810115e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.5080536169874226e+10,
+      "bytes": 2.6214400000000000e+05
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/19",
+      "iterations": 26812,
+      "real_time": 2.6040793076776830e+04,
+      "cpu_time": 2.5964651648515519e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 2.0192375661237698e+10,
+      "bytes": 5.2428800000000000e+05
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/20",
+      "iterations": 16410,
+      "real_time": 4.2848555335126890e+04,
+      "cpu_time": 4.2719874710542361e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 2.4545390338919548e+10,
+      "bytes": 1.0485760000000000e+06
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/21",
+      "iterations": 9114,
+      "real_time": 7.6082192235104114e+04,
+      "cpu_time": 7.5865478823787518e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 2.7643033860908566e+10,
+      "bytes": 2.0971520000000000e+06
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/22",
+      "iterations": 4967,
+      "real_time": 1.4098764002559028e+05,
+      "cpu_time": 1.4058035957318297e+05,
+      "time_unit": "ns",
+      "bytes_per_second": 2.9835632891638317e+10,
+      "bytes": 4.1943040000000000e+06
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/23",
+      "iterations": 2591,
+      "real_time": 2.7011389385737031e+05,
+      "cpu_time": 2.6930609494403744e+05,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1148971959744083e+10,
+      "bytes": 8.3886080000000000e+06
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/24",
+      "iterations": 1305,
+      "real_time": 5.3914807588789763e+05,
+      "cpu_time": 5.3754081072797091e+05,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1211055356484020e+10,
+      "bytes": 1.6777216000000000e+07
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/25",
+      "iterations": 648,
+      "real_time": 1.0872571667143214e+06,
+      "cpu_time": 1.0841982006172875e+06,
+      "time_unit": "ns",
+      "bytes_per_second": 3.0948614359344822e+10,
+      "bytes": 3.3554432000000000e+07
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/26",
+      "iterations": 329,
+      "real_time": 2.1059328449909831e+06,
+      "cpu_time": 2.1048998844984761e+06,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1882211830701717e+10,
+      "bytes": 6.7108864000000000e+07
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/27",
+      "iterations": 164,
+      "real_time": 4.2579065672570569e+06,
+      "cpu_time": 4.2577774512194982e+06,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1522955236083981e+10,
+      "bytes": 1.3421772800000000e+08
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/28",
+      "iterations": 82,
+      "real_time": 8.5852264878112916e+06,
+      "cpu_time": 8.5849542195121981e+06,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1268129000605511e+10,
+      "bytes": 2.6843545600000000e+08
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/29",
+      "iterations": 41,
+      "real_time": 1.7218571634701930e+07,
+      "cpu_time": 1.7218083414634194e+07,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1180642994428539e+10,
+      "bytes": 5.3687091200000000e+08
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/30",
+      "iterations": 20,
+      "real_time": 3.4489947350812145e+07,
+      "cpu_time": 3.4485415299999997e+07,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1136114054569614e+10,
+      "bytes": 1.0737418240000000e+09
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/31",
+      "iterations": 10,
+      "real_time": 6.9033892301376909e+07,
+      "cpu_time": 6.9031972400000185e+07,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1108536716241852e+10,
+      "bytes": 2.1474836480000000e+09
+    },
+    {
+      "name": "CUDAPinnedMemcpyToGPU/32",
+      "iterations": 5,
+      "real_time": 1.3806908000260592e+08,
+      "cpu_time": 1.3791565160000020e+08,
+      "time_unit": "ns",
+      "bytes_per_second": 3.1141986034020187e+10,
+      "bytes": 4.2949672960000000e+09
+    }
+  ]
+}
