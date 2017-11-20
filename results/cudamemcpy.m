@@ -4,12 +4,11 @@ thisDirectory = If[TrueQ[StringQ[$InputFileName] && $InputFileName =!= "" && Fil
 ];
 
 $rawDataFiles = <|
-  "Minsky" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy.json"}],
-  "Whatever" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy.json"}]
+  "Whatever_pageable" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
+  "Whatever_pinned" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
+  "Minsky_pageable" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy.json"}],
+  "Minsky_pinned" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy_pinned.json"}]
 |>;
-
-$rawMinskyDataFiles = $rawDataFiles["Minsky"];
-$rawWhateverDataFiles = $rawDataFiles["Whatever"];
 
 data = KeyValueMap[
     Function[{key, val},
@@ -27,27 +26,16 @@ groupedData = GroupBy[
   Lookup[{"bytes"}]
 ];
 
-(*
+makeChart[data_] :=
+  BarChart[Association[
+    SortBy[KeyValueMap[
+      Function[{key, val},
+       key -> AssociationThread[
+         Lookup[val, "machine"] ->
+          Lookup[val, "bytes_per_second"]/1024^3]], data], First]],
+   ChartLabels -> {Placed[First /@ Keys[data], Automatic,
+      Rotate[#, 90 Degree] &], None}, ChartLegends -> Automatic,
+   BarSpacing -> {Automatic, 2}, PlotTheme -> "Grid",
+   ScalingFunctions -> "Log", ChartStyle -> "Rainbow"];
 
-
-makeChart[data_] := BarChart[
-  Association[
-    SortBy[
-      KeyValueMap[
-        Function[{key, val},
-          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "cpu_time"] / 10^6]
-        ],
-        data
-      ],
-      Fold[Times, 1, First[#]] &
-    ]
-  ],
-  ChartLabels -> {Placed[Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
-  ChartLegends -> Automatic,
-  BarSpacing -> {Automatic, 1},
-  PlotTheme -> "Grid",
-  ScalingFunctions -> "Log"
-];
-
-Export[$machine <> "_plot.png", makeChart[Take[groupedData, UpTo[10]]], ImageSize->600]
-*)
+Export["cudaMemcpy_plot.png", makeChart[groupedData], ImageSize->1600]
