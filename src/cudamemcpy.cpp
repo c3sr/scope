@@ -3,6 +3,7 @@
 #include <cuda_runtime.h>
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
 
 static void CUDAMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
@@ -13,12 +14,15 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
     state.SkipWithError("failed to perform cudaMemcpy");
     return;
   }
+ //for (auto _ : state) {
+ //  const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+ //  if (err != cudaSuccess) {
+ //    state.SkipWithError("failed to perform cudaMemcpy");
+ //    break;
+ //  }
+ //}
   for (auto _ : state) {
-    const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
-    if (err != cudaSuccess) {
-      state.SkipWithError("failed to perform cudaMemcpy");
-      break;
-    }
+    cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
@@ -31,11 +35,10 @@ BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);
 
 static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  // char *src = new char[bytes];
-  char *src;
-  auto err = cudaMallocHost(&src, bytes);
+  char *src = nullptr;
+  auto err = cudaHostAlloc(&src, bytes, cudaHostAllocWriteCombined);
   if (err != cudaSuccess) {
-    state.SkipWithError("failed to perform cudaMallocHost");
+    state.SkipWithError("failed to perform pinned cudaHostAlloc");
     return;
   }
   char *dst = nullptr;
@@ -47,7 +50,7 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   for (auto _ : state) {
     const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
     if (err != cudaSuccess) {
-      state.SkipWithError("failed to perform cudaMemcpy");
+      state.SkipWithError("failed to perform pinned cudaMemcpy");
       break;
     }
   }
@@ -60,4 +63,4 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     cudaFree(dst);
   }
 }
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1);
+BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(19, 32, 1);
