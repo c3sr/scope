@@ -35,24 +35,36 @@ BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);
 
 static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  char *src = nullptr;
+  float *src = nullptr;
   auto err = cudaHostAlloc(&src, bytes, cudaHostAllocWriteCombined);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform pinned cudaHostAlloc");
     return;
   }
-  char *dst = nullptr;
+memset(src, 0, bytes);
+  float *dst = nullptr;
   err = cudaMalloc(&dst, bytes);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform cudaMalloc");
     return;
   }
   for (auto _ : state) {
+    cudaEvent_t startEvent, stopEvent;
+    cudaEventCreate(&startEvent);
+    cudaEventCreate(&stopEvent);
+
+    cudaEventRecord(startEvent, 0);
     const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+    cudaEventRecord(stopEvent, 0);
+    cudaEventSynchronize(stopEvent);
     if (err != cudaSuccess) {
       state.SkipWithError("failed to perform pinned cudaMemcpy");
       break;
     }
+    
+    float time = 0;
+    cudaEventElapsedTime(&time, startEvent, stopEvent);
+    state.SetIterationTime(time);
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
@@ -63,4 +75,4 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     cudaFree(dst);
   }
 }
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(19, 32, 1);
+BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1)->UseManualTime();
