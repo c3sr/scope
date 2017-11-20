@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <cuda.h>
 
 // Convenience function for checking CUDA runtime API results
 // can be wrapped around any runtime API call. No-op in release builds.
@@ -15,7 +16,7 @@ cudaError_t checkCuda(cudaError_t result)
   return result;
 }
 
-int main() {
+static void CUDAMEMCPYTEST() {
   unsigned int nElements = 4*1024*1024;
   const unsigned int bytes = nElements * sizeof(float);
 

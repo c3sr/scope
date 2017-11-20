@@ -32,18 +32,33 @@ hunter_add_package(nlohmann_json)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 
+find_package(CUDA REQUIRED)
 find_package(OpenBLAS REQUIRED)
+
+
+set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
+set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
+set(CUDA_VERBOSE_BUILD OFF)
+
 
 add_executable(bench
   src/sgemm.cpp
+  src/cudamalloc.cpp
   src/main.cpp
 )
 
-include_directories(bench ${OpenBLAS_INCLUDE_DIR})
+include_directories(bench
+  ${OpenBLAS_INCLUDE_DIR}
+  ${CUDA_INCLUDE_DIRS}
+)
 
 target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench nlohmann_json)
 target_link_libraries(bench ${OpenBLAS_LIB})
+target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
 
 
+
+# Add a special target to clean nvcc generated files.
+CUDA_BUILD_CLEAN_TARGET()
