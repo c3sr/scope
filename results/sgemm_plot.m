@@ -1,61 +1,42 @@
+
 thisDirectory = If[TrueQ[StringQ[$InputFileName] && $InputFileName =!= "" && FileExistsQ[$InputFileName]],
   DirectoryName[$InputFileName],
   Directory[]
 ];
 
 $rawDataFiles = <|
-  "Minsky" -> <|
-    "SMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "with_smt.json"}],
-    (*"SMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "with_smt_16.json"}],*)
-    "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt.json"}]
-    (*"NoSMT8" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_8.json"}],*)
-    (*"NoSMT16" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "without_smt_16.json"}]*)
-  |>,
-  "Whatever" -> <|
-    "SMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "with_smt.json"}],
-    "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "without_smt.json"}]
-  |>
+  "Whatever_pageable" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
+  "Whatever_pinned" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
+  "Minsky_pageable" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy.json"}],
+  "Minsky_pinned" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy_pinned.json"}]
 |>;
 
-$rawMinskyDataFiles = $rawDataFiles["Minsky"];
-$rawWhateverDataFiles = $rawDataFiles["Whatever"];
-
-$machine = "Minsky";
-$rawMachineDataFiles = $rawDataFiles[$machine];
-
-data = Table[
-  rawDataFile = $rawMachineDataFiles[key];
-  Module[{info},
-    info = Import[rawDataFile, "RAWJSON"];
-    info["benchmarks"] = Append[#, "key" -> key]& /@ info["benchmarks"];
-    Append[info, "name" -> key]
-  ]
-  ,
-  {key, Keys[$rawMachineDataFiles]}
+data = KeyValueMap[
+    Function[{key, val},
+      Module[{info = Import[val, "RAWJSON"]},
+        info["benchmarks"] = Append[#, "machine" -> key]& /@ info["benchmarks"];
+        info = Append[info, "machine" -> key];
+        info
+      ]
+    ],
+    $rawDataFiles
 ];
 
 groupedData = GroupBy[
   Flatten[Lookup[data, "benchmarks"]],
-  Lookup[{"K", "M", "N"}]
+  Lookup[{"bytes"}]
 ];
 
-makeChart[data_] := BarChart[
-  Association[
-    SortBy[
-      KeyValueMap[
-        Function[{key, val},
-          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "cpu_time"] / 10^6]
-        ],
-        data
-      ],
-      Fold[Times, 1, First[#]] &
-    ]
-  ],
-  ChartLabels -> {Placed[Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
-  ChartLegends -> Automatic,
-  BarSpacing -> {Automatic, 1},
-  PlotTheme -> "Grid",
-  ScalingFunctions -> "Log"
-];
+makeChart[data_] :=
+  BarChart[Association[
+    SortBy[KeyValueMap[
+      Function[{key, val},
+       key -> AssociationThread[
+         Lookup[val, "machine"] ->
+          Lookup[val, "bytes_per_second"]/1024^3]], data], First]],
+   ChartLabels -> {Placed[First /@ Keys[data], Automatic,
+      Rotate[#, 90 Degree] &], None}, ChartLegends -> Automatic,
+   BarSpacing -> {Automatic, 2}, PlotTheme -> "Grid",
+   ScalingFunctions -> "Log", ChartStyle -> "Rainbow"];
 
-Export[$machine <> "_plot.png", makeChart[Take[groupedData, UpTo[10]]], ImageSize->600]
+Export["cudaMemcpy_plot.png", makeChart[groupedData], ImageSize->1600]
