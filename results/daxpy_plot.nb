@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     93483,       2201]
-NotebookOptionsPosition[     92948,       2183]
-NotebookOutlinePosition[     93305,       2199]
-CellTagsIndexPosition[     93262,       2196]
+NotebookDataLength[     93520,       2201]
+NotebookOptionsPosition[     92985,       2183]
+NotebookOutlinePosition[     93342,       2199]
+CellTagsIndexPosition[     93299,       2196]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2164,21 +2164,21 @@ Cell[BoxData[
   3.721058674805304*^9, {3.7210587451882057`*^9, 3.7210587789226723`*^9}, 
    3.721058872367215*^9, {3.721058968634925*^9, 3.721059020804036*^9}, {
    3.7210590745343523`*^9, 3.721059133272407*^9}, {3.721059639211087*^9, 
-   3.72105965316226*^9}, {3.721059784111855*^9, 
-   3.721059881327474*^9}},ExpressionUUID->"c13ee62f-15be-4edd-9879-\
-61362960ed54"],
+   3.72105965316226*^9}, {3.721059784111855*^9, 3.721059881327474*^9}, 
+   3.721059963257793*^9},ExpressionUUID->"d4a15e17-05b8-49d9-8a8d-\
+85d732eb7bb0"],
 
 Cell[BoxData["\<\"/Users/abduld/.gvm/pkgsets/go1.8.1/global/src/github.com/\
-rai-project/microbench/results/Minsky_daxpy_plot.png\"\>"], "Output",
+rai-project/microbench/results/daxpy_plot.png\"\>"], "Output",
  CellChangeTimes->{
   3.719987735251966*^9, 3.719987941921001*^9, {3.721058508286768*^9, 
    3.7210585801805487`*^9}, {3.72105861518471*^9, 3.721058675324065*^9}, {
    3.7210587456815166`*^9, 3.721058779712811*^9}, 3.721058872916357*^9, {
    3.72105896949821*^9, 3.721059021541585*^9}, {3.7210590747385483`*^9, 
    3.721059134345798*^9}, {3.7210596406380587`*^9, 3.721059654245881*^9}, {
-   3.721059785040186*^9, 
-   3.7210598825156097`*^9}},ExpressionUUID->"748e5026-09f7-4a7d-8ae6-\
-71c3ffe69943"]
+   3.721059785040186*^9, 3.7210598825156097`*^9}, 
+   3.721059964360896*^9},ExpressionUUID->"505103f4-b46e-4455-9d5d-\
+5396bc819501"]
 }, Open  ]]
 },
 WindowSize->{1436, 850},
@@ -2200,8 +2200,8 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 379, 10, 30, "Input",ExpressionUUID->"94d7ef61-ed5e-4f24-93ef-69a2637efdbb"],
-Cell[962, 34, 91321, 2134, 699, "Print",ExpressionUUID->"c13ee62f-15be-4edd-9879-61362960ed54"],
-Cell[92286, 2170, 646, 10, 34, "Output",ExpressionUUID->"748e5026-09f7-4a7d-8ae6-71c3ffe69943"]
+Cell[962, 34, 91343, 2134, 276, "Print",ExpressionUUID->"d4a15e17-05b8-49d9-8a8d-85d732eb7bb0"],
+Cell[92308, 2170, 661, 10, 34, "Output",ExpressionUUID->"505103f4-b46e-4455-9d5d-5396bc819501"]
 }, Open  ]]
 }
 ]

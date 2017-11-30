@@ -65,4 +65,4 @@ makeChart[data_] := BarChart[
 chart = makeChart[groupedData];
 Print[chart];
 
-Export[FileNameJoin[{thisDirectory, $machine <> "_daxpy_plot.png"}], chart, ImageSize->2400]
+Export[FileNameJoin[{thisDirectory, "daxpy_plot.png"}], chart, ImageSize->2400]
