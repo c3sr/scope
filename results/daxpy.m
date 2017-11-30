@@ -54,7 +54,7 @@ makeChart[data_] := BarChart[
       First[#]&
     ]
   ],
-  AxesLabel -> {"N", "GFlops"},
+  AxesLabel -> {"N", "GigaBytes/Sec"},
   ChartLabels -> {Placed[Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
   ChartLegends -> Automatic,
   BarSpacing -> {Automatic, 1},
