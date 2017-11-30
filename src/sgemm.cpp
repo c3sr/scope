@@ -14,14 +14,12 @@ static void SGEMM(benchmark::State &state) {
   const auto alpha = 1.0f;
   const auto beta = 0.0f;
 
-  state.PauseTiming();
   auto a = std::vector<float>(M * K);
   auto b = std::vector<float>(K * N);
   auto c = std::vector<float>(M * N);
   std::iota(a.begin(), a.end(), 1);
   std::iota(b.begin(), b.end(), 1);
   std::fill(c.begin(), c.end(), 0);
-  state.ResumeTiming();
 
   for (auto _ : state) {
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M, N, K, alpha,
