@@ -10,18 +10,21 @@ $rawDataFiles = <|
     "Minsky/SMT4" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "daxpy_smt_4.json"}],
     "Minsky/SMT8" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "daxpy_smt_8.json"}]
   |>
-  (* ,
-  "Whatever" -> <|
-    "SMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "with_smt.json"}],
-    "NoSMTAll" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "without_smt.json"}]
-  |> *)
+  ,
+  "Crux" -> <|
+    "Crux/SM0" -> FileNameJoin[{thisDirectory, "raw_data", "crux", "daxpy_smt_0.json"}],
+    "Crux/SM2" -> FileNameJoin[{thisDirectory, "raw_data", "crux", "daxpy_smt_2.json"}]
+  |>
 |>;
 
 $rawMinskyDataFiles = $rawDataFiles["Minsky"];
-$rawWhateverDataFiles = $rawDataFiles["Whatever"];
+$rawWhateverDataFiles = $rawDataFiles["Crux"];
 
 $machine = "Minsky";
-$rawMachineDataFiles = $rawDataFiles[$machine];
+$rawMachineDataFiles = Join[
+  $rawWhateverDataFiles,
+  $rawMinskyDataFiles
+];
 
 data = Table[
   rawDataFile = $rawMachineDataFiles[key];
@@ -44,7 +47,7 @@ makeChart[data_] := BarChart[
     SortBy[
       KeyValueMap[
         Function[{key, val},
-          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "cpu_time"] / 10^6]
+          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "bytes_per_second"] / 10^6]
         ],
         data
       ],
