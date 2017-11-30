@@ -42,6 +42,7 @@ set(CUDA_VERBOSE_BUILD OFF)
 
 
 add_executable(bench
+  src/daxpy.cpp
   src/sgemm.cpp
   src/cudamemcpy.cpp
   src/main.cpp
