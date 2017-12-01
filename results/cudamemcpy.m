@@ -4,10 +4,12 @@ thisDirectory = If[TrueQ[StringQ[$InputFileName] && $InputFileName =!= "" && Fil
 ];
 
 $rawDataFiles = <|
-  "Whatever_pageable" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
+  "Whatever_pageable" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy.json"}],
   "Whatever_pinned" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
   "Minsky_pageable" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy.json"}],
-  "Minsky_pinned" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy_pinned.json"}]
+  "Minsky_pinned" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy_pinned.json"}],
+  "Minsky_pageable_TEST" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "test.smt0.cudamem.json"}],
+  "Minsky_pinned_TEST" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "test.smt0.cudapinned.json"}]
 |>;
 
 data = KeyValueMap[
@@ -38,4 +40,4 @@ makeChart[data_] :=
    BarSpacing -> {Automatic, 2}, PlotTheme -> "Grid",
    ScalingFunctions -> "Log", ChartStyle -> "Rainbow"];
 
-Export["cudaMemcpy_plot.png", makeChart[groupedData], ImageSize->1600]
+Export[FileNameJoin[{thisDirectory, "cudaMemcpy_plot.png"}], makeChart[groupedData], ImageSize->2400]

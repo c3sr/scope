@@ -6,6 +6,10 @@ thisDirectory = If[TrueQ[StringQ[$InputFileName] && $InputFileName =!= "" && Fil
 
 $rawDataFiles = <|
   "Minsky" -> <|
+      "Minsky/SMT0_TEST" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "test.smt0.sgemm.json"}],
+       "Minsky/SMT2_TEST" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "test.smt2.sgemm.json"}],
+      "Minsky/SMT4_TEST" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "test.smt4.sgemm.json"}],
+      "Minsky/SMT8_TEST" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "test.smt8.sgemm.json"}],
     "Minsky/SMT0" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_0.json"}],
     "Minsky/SMT2" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_2.json"}],
     "Minsky/SMT4" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_4.json"}],

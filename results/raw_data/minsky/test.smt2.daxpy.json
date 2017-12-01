@@ -1,0 +1,99 @@
+{
+  "context": {
+    "date": "2017-12-01 15:39:56",
+    "num_cpus": 2,
+    "mhz_per_cpu": 4023,
+    "cpu_scaling_enabled": true,
+    "library_build_type": "release"
+  },
+  "benchmarks": [
+    {
+      "name": "DAXPY/10/1/1",
+      "iterations": 27388780,
+      "real_time": 2.5906416054680474e+01,
+      "cpu_time": 2.5764938270342824e+01,
+      "time_unit": "ns",
+      "bytes_per_second": 1.1643730594352722e+09,
+      "N": 1.0000000000000000e+01,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/100/1/1",
+      "iterations": 12584278,
+      "real_time": 5.5794687161858924e+01,
+      "cpu_time": 5.5789430748430711e+01,
+      "time_unit": "ns",
+      "bytes_per_second": 5.3773626290036783e+09,
+      "N": 1.0000000000000000e+02,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/1000/1/1",
+      "iterations": 2737992,
+      "real_time": 2.6054604071968930e+02,
+      "cpu_time": 2.6053742085440729e+02,
+      "time_unit": "ns",
+      "bytes_per_second": 1.1514660696961649e+10,
+      "N": 1.0000000000000000e+03,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/10000/1/1",
+      "iterations": 286614,
+      "real_time": 2.3853496647857814e+03,
+      "cpu_time": 2.3852685353820816e+03,
+      "time_unit": "ns",
+      "bytes_per_second": 1.2577200241814486e+10,
+      "N": 1.0000000000000000e+04,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/100000/1/1",
+      "iterations": 28330,
+      "real_time": 2.4791245923719136e+04,
+      "cpu_time": 2.4726846452523834e+04,
+      "time_unit": "ns",
+      "bytes_per_second": 1.2132562095049505e+10,
+      "N": 1.0000000000000000e+05,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/10000000/1/1",
+      "iterations": 110,
+      "real_time": 6.1846938259391626e+06,
+      "cpu_time": 6.0165641636363585e+06,
+      "time_unit": "ns",
+      "bytes_per_second": 4.9862345325456095e+09,
+      "N": 1.0000000000000000e+07,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/100000000/1/1",
+      "iterations": 11,
+      "real_time": 6.6165043549104169e+07,
+      "cpu_time": 6.2728369818181783e+07,
+      "time_unit": "ns",
+      "bytes_per_second": 4.7825250499821711e+09,
+      "N": 1.0000000000000000e+08,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    },
+    {
+      "name": "DAXPY/1000000000/1/1",
+      "iterations": 1,
+      "real_time": 6.2613716395571828e+08,
+      "cpu_time": 5.5603206600000024e+08,
+      "time_unit": "ns",
+      "bytes_per_second": 5.3953722877557907e+09,
+      "N": 1.0000000000000000e+09,
+      "x_increment": 1.0000000000000000e+00,
+      "y_increment": 1.0000000000000000e+00
+    }
+  ]
+}
