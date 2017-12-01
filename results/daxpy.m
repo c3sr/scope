@@ -20,7 +20,6 @@ $rawDataFiles = <|
 $rawMinskyDataFiles = $rawDataFiles["Minsky"];
 $rawWhateverDataFiles = $rawDataFiles["Crux"];
 
-$machine = "Minsky";
 $rawMachineDataFiles = Join[
   $rawWhateverDataFiles,
   $rawMinskyDataFiles

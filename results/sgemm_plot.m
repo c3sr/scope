@@ -5,38 +5,66 @@ thisDirectory = If[TrueQ[StringQ[$InputFileName] && $InputFileName =!= "" && Fil
 ];
 
 $rawDataFiles = <|
-  "Whatever_pageable" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
-  "Whatever_pinned" ->FileNameJoin[{thisDirectory, "raw_data", "whatever", "cudamemcpy_pinned.json"}],
-  "Minsky_pageable" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy.json"}],
-  "Minsky_pinned" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "cudamemcpy_pinned.json"}]
+  "Minsky" -> <|
+    "Minsky/SMT0" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_0.json"}],
+    "Minsky/SMT2" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_2.json"}],
+    "Minsky/SMT4" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_4.json"}],
+    "Minsky/SMT8" -> FileNameJoin[{thisDirectory, "raw_data", "minsky", "sgemm_smt_8.json"}]
+  |>
+  ,
+  "Whatever" -> <|
+    "Whatever/SM0" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "sgemm_smt_0.json"}],
+    "Whatever/SM2" -> FileNameJoin[{thisDirectory, "raw_data", "whatever", "sgemm_smt_2.json"}]
+  |>
 |>;
 
-data = KeyValueMap[
-    Function[{key, val},
-      Module[{info = Import[val, "RAWJSON"]},
-        info["benchmarks"] = Append[#, "machine" -> key]& /@ info["benchmarks"];
-        info = Append[info, "machine" -> key];
-        info
-      ]
-    ],
-    $rawDataFiles
+
+$rawMinskyDataFiles = $rawDataFiles["Minsky"];
+$rawWhateverDataFiles = $rawDataFiles["Whatever"];
+
+$rawMachineDataFiles = Join[
+  $rawWhateverDataFiles,
+  $rawMinskyDataFiles
 ];
+
+
+
+data = Table[
+  rawDataFile = $rawMachineDataFiles[key];
+  Module[{info},
+    info = Import[rawDataFile, "RAWJSON"];
+    info["benchmarks"] = Append[#, "key" -> key]& /@ info["benchmarks"];
+    Append[info, "name" -> key]
+  ]
+  ,
+  {key, Keys[$rawMachineDataFiles]}
+];
+
 
 groupedData = GroupBy[
   Flatten[Lookup[data, "benchmarks"]],
-  Lookup[{"bytes"}]
+  Lookup[{"K", "M", "N"}]
 ];
 
-makeChart[data_] :=
-  BarChart[Association[
-    SortBy[KeyValueMap[
-      Function[{key, val},
-       key -> AssociationThread[
-         Lookup[val, "machine"] ->
-          Lookup[val, "bytes_per_second"]/1024^3]], data], First]],
-   ChartLabels -> {Placed[First /@ Keys[data], Automatic,
-      Rotate[#, 90 Degree] &], None}, ChartLegends -> Automatic,
-   BarSpacing -> {Automatic, 2}, PlotTheme -> "Grid",
-   ScalingFunctions -> "Log", ChartStyle -> "Rainbow"];
+makeChart[data_] := BarChart[
+  Association[
+    SortBy[
+      KeyValueMap[
+        Function[{key, val},
+          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "cpu_time"] / 10^6]
+        ],
+        data
+      ],
+      Fold[Times, 1, First[#]] &
+    ]
+  ],
+  AxesLabel -> {"Matrix Dimensions", "CPU Time(s)"},
+  ChartLabels -> {Placed[StringRiffle[Floor[#], "\[Times]"]& /@ Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
+  ChartLegends -> Automatic,
+  BarSpacing -> {Automatic, 1},
+  PlotTheme -> "Grid",
+  ScalingFunctions -> "Log"
+];
 
-Export["cudaMemcpy_plot.png", makeChart[groupedData], ImageSize->1600]
+
+Export[FileNameJoin[{thisDirectory, "sgemm_plot.png"}], makeChart[Take[groupedData, UpTo[10]]], ImageSize->2400];
