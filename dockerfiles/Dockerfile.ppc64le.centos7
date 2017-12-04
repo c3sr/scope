@@ -1,7 +1,0 @@
-From nvidia/cuda:8.0-devel-centos7
-
-RUN yum install -y \
-  git \
-  openblas-devel \
-  cmake && \
-  rm -rf /var/cache/yum/*

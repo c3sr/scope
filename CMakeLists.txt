@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -8,11 +8,18 @@ set(VERBOSE_BUILD ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
+set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger package manager")
+
+
+
+
+if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
 HunterGate(
   URL "https://github.com/ruslo/hunter/archive/v0.19.161.tar.gz"
   SHA1 "9af482b6a54875bbbb221274f7290324dff29919"
 )
+endif (CONFIG_USE_HUNTER)
 
 
 
@@ -25,11 +32,13 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 set(TOP_DIR "${PROJECT_SOURCE_DIR}")
 set(SRC_DIR "${TOP_DIR}/src")
 
+if (CONFIG_USE_HUNTER)
 hunter_add_package(benchmark)
 find_package(benchmark CONFIG REQUIRED)
 
 hunter_add_package(nlohmann_json)
 find_package(nlohmann_json CONFIG REQUIRED)
+endif (CONFIG_USE_HUNTER)
 
 
 find_package(CUDA REQUIRED)
