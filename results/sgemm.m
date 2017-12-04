@@ -71,4 +71,5 @@ makeChart[data_] := BarChart[
 ];
 
 
+Print[makeChart[Take[groupedData, UpTo[10]]]];
 Export[FileNameJoin[{thisDirectory, "sgemm_plot.png"}], makeChart[Take[groupedData, UpTo[10]]], ImageSize->2400];
