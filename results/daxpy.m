@@ -58,7 +58,7 @@ makeChart[data_] := BarChart[
     ]
   ],
   Frame -> True,
-  FrameLabel -> {Row[{Spacer[600], "N"}], "GigaBytes/Sec"},
+  FrameLabel -> {Row[{Spacer[600], "N"}], "GigaBytes/Sec (Log scale)"},
   RotateLabel -> True,
   ChartLabels -> {Placed[Keys[data], Below, Rotate[#, 90 Degree] &], None},
   ImageSize -> 640,

@@ -35,9 +35,19 @@ makeChart[data_] :=
        key -> AssociationThread[
          Lookup[val, "machine"] ->
           Lookup[val, "bytes_per_second"]/1024^3]], data], First]],
-   ChartLabels -> {Placed[First /@ Keys[data], Automatic,
-      Rotate[#, 90 Degree] &], None}, ChartLegends -> Automatic,
-   BarSpacing -> {Automatic, 2}, PlotTheme -> "Grid",
-   ScalingFunctions -> "Log", ChartStyle -> "Rainbow"];
+  BarSpacing -> {Automatic, 2},
+  Frame -> True,
+  FrameLabel -> {Row[{Spacer[600], "Bytes"}], "GigaBytes/Sec (Log scale)"},
+  ChartLabels -> {Placed[First /@ Keys[data], Below, Rotate[#, 90 Degree] &], None}, ChartLegends -> Automatic,
+  RotateLabel -> True,
+  ImageSize -> 640,
+  LegendAppearance -> "Column",
+  ChartLegends -> Placed[Automatic, Right],
+  BarSpacing -> {Automatic, 1},
+  PlotTheme -> "FullAxesGrid",
+  ScalingFunctions -> "Log",
+  GridLines -> {None, Automatic},
+  ChartStyle -> "Rainbow"
+];
 
-Export[FileNameJoin[{thisDirectory, "cudaMemcpy_plot.png"}], makeChart[groupedData], ImageSize->2400]
+Export[FileNameJoin[{thisDirectory, "cudaMemcpy_plot.png"}], makeChart[groupedData], ImageSize->2400, ImageSize->2400, ImageResolution->400, RasterSize -> 400]

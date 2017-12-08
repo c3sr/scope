@@ -62,14 +62,19 @@ makeChart[data_] := BarChart[
       Fold[Times, 1, First[#]] &
     ]
   ],
-  AxesLabel -> {"Matrix Dimensions", "CPU Time(s)"},
-  ChartLabels -> {Placed[StringRiffle[Floor[#], "\[Times]"]& /@ Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
-  ChartLegends -> Automatic,
+  Frame -> True,
+  FrameLabel -> {Row[{Spacer[560], "Matrix Dimensions"}], "CPU Time(s)  (Log scale)"},
+  RotateLabel -> True,
+  ChartLabels -> {Placed[StringRiffle[Floor[#], "\[Times]"]& /@ Keys[data], Below, Rotate[#, 90 Degree] &], None},
+  ImageSize -> 640,
+  LegendAppearance -> "Column",
+  ChartLegends -> Placed[Automatic, Right],
   BarSpacing -> {Automatic, 1},
-  PlotTheme -> "Grid",
+  PlotTheme -> "FullAxesGrid",
+  GridLines -> {None, Automatic},
   ScalingFunctions -> "Log"
 ];
 
 
 Print[makeChart[Take[groupedData, UpTo[10]]]];
-Export[FileNameJoin[{thisDirectory, "sgemm_plot.png"}], makeChart[Take[groupedData, UpTo[10]]], ImageSize->2400];
+Export[FileNameJoin[{thisDirectory, "sgemm_plot.png"}], makeChart[Take[groupedData, UpTo[10]]], ImageSize->2400, ImageResolution->400, RasterSize -> 400];

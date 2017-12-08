@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    146617,       3425]
-NotebookOptionsPosition[    146079,       3407]
-NotebookOutlinePosition[    146436,       3423]
-CellTagsIndexPosition[    146393,       3420]
+NotebookDataLength[    146727,       3426]
+NotebookOptionsPosition[    146189,       3408]
+NotebookOutlinePosition[    146546,       3424]
+CellTagsIndexPosition[    146503,       3421]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2057,7 +2057,7 @@ Cell[BoxData[
           Part[#, 1]], 
          Exp[
           Part[#, 2]]}& )}, Frame -> True, FrameLabel -> {{
-        FormBox["\"GigaBytes/Sec\"", TraditionalForm], None}, {
+        FormBox["\"GigaBytes/Sec (Log scale)\"", TraditionalForm], None}, {
         FormBox[
          TemplateBox[{
            TemplateBox[{600}, "Spacer1"], "\"N\""}, "RowDefault"], 
@@ -3383,9 +3383,9 @@ Cell[BoxData[
    3.7217327660463457`*^9}, 3.721732800149703*^9, 3.721732841333857*^9, 
    3.721732887887059*^9, {3.721732993121237*^9, 3.72173301726624*^9}, {
    3.721733245735214*^9, 3.721733284201435*^9}, {3.7217333271196833`*^9, 
-   3.7217333540747137`*^9}, 
-   3.721734189733088*^9},ExpressionUUID->"a375791d-ec3a-42af-979d-\
-200e2338f8d6"],
+   3.7217333540747137`*^9}, {3.721734189733088*^9, 3.721734196760722*^9}, 
+   3.721734593330823*^9},ExpressionUUID->"d753466a-7784-4b9f-bede-\
+5a4f9fce4713"],
 
 Cell[BoxData["\<\"/Users/abduld/.gvm/pkgsets/go1.8.1/global/src/github.com/\
 rai-project/microbench/results/daxpy_plot.png\"\>"], "Output",
@@ -3400,9 +3400,10 @@ rai-project/microbench/results/daxpy_plot.png\"\>"], "Output",
    3.7217326937318373`*^9}, {3.72173275507338*^9, 3.7217327677503366`*^9}, 
    3.7217328012601957`*^9, 3.7217328429461937`*^9, 3.721732889045987*^9, {
    3.721732994259738*^9, 3.721733018661265*^9}, {3.721733247125587*^9, 
-   3.721733285656046*^9}, {3.721733328490203*^9, 3.7217333559558477`*^9}, 
-   3.721734192919428*^9},ExpressionUUID->"49f805f5-e51d-4fbc-8249-\
-4e1decc63233"]
+   3.721733285656046*^9}, {3.721733328490203*^9, 3.7217333559558477`*^9}, {
+   3.721734192919428*^9, 3.7217342001414967`*^9}, 
+   3.721734596574844*^9},ExpressionUUID->"01fa56b2-e900-4f22-b835-\
+fc6b0690c384"]
 }, Open  ]]
 },
 WindowSize->{1489, 1129},
@@ -3424,8 +3425,8 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 379, 10, 30, "Input",ExpressionUUID->"94d7ef61-ed5e-4f24-93ef-69a2637efdbb"],
-Cell[962, 34, 144044, 3353, 426, "Print",ExpressionUUID->"a375791d-ec3a-42af-979d-200e2338f8d6"],
-Cell[145009, 3389, 1054, 15, 34, "Output",ExpressionUUID->"49f805f5-e51d-4fbc-8249-4e1decc63233"]
+Cell[962, 34, 144102, 3353, 426, "Print",ExpressionUUID->"d753466a-7784-4b9f-bede-5a4f9fce4713"],
+Cell[145067, 3389, 1106, 16, 34, "Output",ExpressionUUID->"01fa56b2-e900-4f22-b835-fc6b0690c384"]
 }, Open  ]]
 }
 ]
