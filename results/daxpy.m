@@ -50,7 +50,7 @@ makeChart[data_] := BarChart[
     SortBy[
       KeyValueMap[
         Function[{key, val},
-          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "bytes_per_second"] / 10^6]
+          key -> AssociationThread[Lookup[val, "key"] -> Lookup[val, "bytes_per_second"] / 10^9]
         ],
         data
       ],
@@ -61,11 +61,12 @@ makeChart[data_] := BarChart[
   ChartLabels -> {Placed[Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
   ChartLegends -> Automatic,
   BarSpacing -> {Automatic, 1},
-  PlotTheme -> "Grid",
+  PlotTheme -> "FullAxesGrid",
+  GridLines -> {None, Automatic},
   ScalingFunctions -> "Log"
 ];
 
 chart = makeChart[groupedData];
 Print[chart];
 
-Export[FileNameJoin[{thisDirectory, "daxpy_plot.png"}], chart, ImageSize->2400]
+Export[FileNameJoin[{thisDirectory, "daxpy_plot.png"}], chart, ImageSize->2400, ImageResolution->400, RasterSize -> 400]
