@@ -57,14 +57,19 @@ makeChart[data_] := BarChart[
       First[#]&
     ]
   ],
-  AxesLabel -> {"N", "GigaBytes/Sec"},
-  ChartLabels -> {Placed[Keys[data], Automatic, Rotate[#, 90 Degree] &], None},
-  ChartLegends -> Automatic,
+  Frame -> True,
+  FrameLabel -> {Row[{Spacer[600], "N"}], "GigaBytes/Sec"},
+  RotateLabel -> True,
+  ChartLabels -> {Placed[Keys[data], Below, Rotate[#, 90 Degree] &], None},
+  ImageSize -> 640,
+  LegendAppearance -> "Column",
+  ChartLegends -> Placed[Automatic, Right],
   BarSpacing -> {Automatic, 1},
   PlotTheme -> "FullAxesGrid",
   GridLines -> {None, Automatic},
   ScalingFunctions -> "Log"
 ];
+
 
 chart = makeChart[groupedData];
 Print[chart];
