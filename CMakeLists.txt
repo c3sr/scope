@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -23,7 +23,7 @@ endif (CONFIG_USE_HUNTER)
 
 
 
-project(microbenchmark LANGUAGES CXX)
+project(microbenchmark LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -68,7 +68,19 @@ target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
 
+# Request that particles be built with -std=c++11
+# As this is a public compile feature anything that links to 
+# particles will also build with -std=c++11
+target_compile_features(bench PUBLIC cxx_std_11)
 
+ 
+if(APPLE)
+  # We need to add the path to the driver (libcuda.dylib) as an rpath, 
+  # so that the static cuda runtime can find it at runtime.
+  set_property(TARGET bench 
+               PROPERTY
+               BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+endif()
 
 # Add a special target to clean nvcc generated files.
 CUDA_BUILD_CLEAN_TARGET()
