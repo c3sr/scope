@@ -145,4 +145,4 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
   state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
-BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS();
+BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS()->UseManualTime();
