@@ -14,8 +14,7 @@ static void init_flags(int argc, char **argv) {
     options.positional_help("[optional args]").show_positional_help();
     options.add_options()("d,debug", "Enable debugging")(
         "cuda_device", "CUDA device to use",
-        cxxopts::value<int>()->default_value("0"))(
-        "f,file", "File name", cxxopts::value<std::string>());
+        cxxopts::value<int>()->default_value("0"));
 
     auto result = options.parse(argc, argv);
 

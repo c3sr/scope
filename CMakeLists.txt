@@ -48,6 +48,10 @@ else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
 endif()
 
+if (APPLE)
+  set(CMKAE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
+endif(APPLE)
+
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
@@ -127,6 +131,7 @@ add_executable(bench
   ${SRC_DIR}/cuda_launch.cu
   ${SRC_DIR}/cuda_stream.cu
   ${SRC_DIR}/cublas_sgemm.cpp
+  ${SRC_DIR}/cuda_sgemm_basic.cu
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
 )
