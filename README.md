@@ -65,6 +65,20 @@ Output as JSON using
 cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
 ```
 
+
+## Disable CPU frequency scaling
+If you see this error:
+```
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+```
+you might want to disable the CPU frequency scaling while running the benchmark:
+```bash
+sudo cpupower frequency-set --governor performance
+./mybench
+sudo cpupower frequency-set --governor powersave
+```
+
+
 ## Resources
 
 * https://github.com/google/benchmark
