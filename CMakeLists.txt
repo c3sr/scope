@@ -20,8 +20,8 @@ set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger pack
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
 HunterGate(
-  URL "https://github.com/ruslo/hunter/archive/v0.19.161.tar.gz"
-  SHA1 "9af482b6a54875bbbb221274f7290324dff29919"
+    URL "https://github.com/ruslo/hunter/archive/v0.19.214.tar.gz"
+    SHA1 "8e82b91de713ac393e22d898d421668403172f90"
 )
 endif (CONFIG_USE_HUNTER)
 
@@ -35,10 +35,16 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
-	add_definitions(-DCONSTEXPR=const -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS)
+  # /wd4005  macro-redefinition
+  # /wd4068  unknown pragma
+  # /wd4244  conversion from 'type1' to 'type2'
+  # /wd4267  conversion from 'size_t' to 'type2'
+  # /wd4800  force value to bool 'true' or 'false' (performance warning)
+  add_compile_options(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
+  add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
-	set(CXX_WARNINGS "-Wall -Wextra -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
+	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
 endif()
 
@@ -71,6 +77,18 @@ find_package(fmt CONFIG REQUIRED)
 hunter_add_package(spdlog)
 find_package(spdlog CONFIG REQUIRED)
 
+# hunter_add_package(cxxopts)
+# find_package(cxxopts CONFIG REQUIRED)
+
+hunter_add_package(cub)
+find_package(cub CONFIG REQUIRED)
+
+hunter_add_package(debug_assert)
+find_package(debug_assert CONFIG REQUIRED)
+
+# hunter_add_package(range-v3)
+# find_package(range-v3 CONFIG REQUIRED)
+
 # hunter_add_package(type_safe)
 # find_package(type_safe CONFIG REQUIRED)
 
@@ -91,8 +109,16 @@ set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
+
+
 set(TOP_DIR "${PROJECT_SOURCE_DIR}")
+set(THIRDPARTY_DIR "${TOP_DIR}/third_party")
 set(SRC_DIR "${TOP_DIR}/src")
+
+add_subdirectory(${THIRDPARTY_DIR}/googletest)
+add_subdirectory(${THIRDPARTY_DIR}/cctz)
+add_subdirectory(${THIRDPARTY_DIR}/abseil-cpp)
+add_subdirectory(${THIRDPARTY_DIR}/cxxopts)
 
 add_executable(bench
   ${SRC_DIR}/cblas_daxpy.cpp
@@ -100,11 +126,13 @@ add_executable(bench
   ${SRC_DIR}/cuda_memcpy.cpp
   ${SRC_DIR}/cuda_launch.cu
   ${SRC_DIR}/cuda_stream.cu
+  ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
 )
 
 include_directories(bench
   ${SRC_DIR}
+  ${THIRDPARTY_DIR}
   ${TOP_DIR}/include
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
@@ -117,11 +145,16 @@ set_target_properties(bench PROPERTIES
 
 target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench nlohmann_json)
-target_link_libraries(bench fmt)
+target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
+target_link_libraries(bench cub::cub)
+# target_link_libraries(bench rangev3)
 # target_link_libraries(bench type_safe)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
 # target_link_libraries(bench protobuf::libprotobuf)
+target_link_libraries(bench cxxopts)
+target_link_libraries(bench debug_assert)
+# target_link_libraries(bench absl::base absl::synchronization absl::strings)
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
