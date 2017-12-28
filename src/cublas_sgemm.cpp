@@ -78,9 +78,10 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   }
 
   for (auto _ : state) {
+    // Use the fact that C^T = (B^T . A^T)^T for optimization
     const auto cublas_err =
-        cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, M, N, K, &alpha,
-                    d_a, M, d_b, K, &beta, d_c, N);
+        cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha,
+                    d_b, M, d_a, K, &beta, d_c, N);
     state.PauseTiming();
     if (cublas_err != CUBLAS_STATUS_SUCCESS) {
       LOG(critical, "CUBLAS/SGEMM operation failed");
