@@ -2,11 +2,11 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 if (APPLE)
-  set(CMAKE_C_COMPILER clang-3.7)
-  set(CMAKE_CXX_COMPILER clang++-3.7)
+  set(CMAKE_C_COMPILER clang-5.0)
+  set(CMAKE_CXX_COMPILER clang++-5.0)
   set(CUDACXX /usr/local/cuda/bin/nvcc)
   set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
-  set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER})
+  set(CMAKE_CUDA_HOST_COMPILER clang-3.7)
 endif(APPLE)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -29,6 +29,7 @@ endif (CONFIG_USE_HUNTER)
 
 project(microbenchmark LANGUAGES CXX CUDA)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -70,14 +71,14 @@ find_package(fmt CONFIG REQUIRED)
 hunter_add_package(spdlog)
 find_package(spdlog CONFIG REQUIRED)
 
-hunter_add_package(type_safe)
-find_package(type_safe CONFIG REQUIRED)
+# hunter_add_package(type_safe)
+# find_package(type_safe CONFIG REQUIRED)
 
-hunter_add_package(yaml-cpp)
-find_package(yaml-cpp CONFIG REQUIRED)
+# hunter_add_package(yaml-cpp)
+# find_package(yaml-cpp CONFIG REQUIRED)
 
-hunter_add_package(Protobuf)
-find_package(Protobuf CONFIG REQUIRED)
+# hunter_add_package(Protobuf)
+# find_package(Protobuf CONFIG REQUIRED)
 
 endif (CONFIG_USE_HUNTER)
 
@@ -90,13 +91,12 @@ set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 set(TOP_DIR "${PROJECT_SOURCE_DIR}")
 set(SRC_DIR "${TOP_DIR}/src")
 
 add_executable(bench
-  ${SRC_DIR}/clbas_daxpy.cpp
-  ${SRC_DIR}/clbas_sgemm.cpp
+  ${SRC_DIR}/cblas_daxpy.cpp
+  ${SRC_DIR}/cblas_sgemm.cpp
   ${SRC_DIR}/cuda_memcpy.cpp
   ${SRC_DIR}/cuda_launch.cu
   ${SRC_DIR}/cuda_stream.cu
@@ -119,9 +119,9 @@ target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench nlohmann_json)
 target_link_libraries(bench fmt)
 target_link_libraries(bench spdlog::spdlog)
-target_link_libraries(bench type_safe)
-target_link_libraries(bench yaml-cpp::yaml-cpp)
-target_link_libraries(bench protobuf::libprotobuf)
+# target_link_libraries(bench type_safe)
+# target_link_libraries(bench yaml-cpp::yaml-cpp)
+# target_link_libraries(bench protobuf::libprotobuf)
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
