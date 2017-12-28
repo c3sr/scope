@@ -60,8 +60,8 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
   auto b = std::vector<float>(K * N);
   auto c = std::vector<float>(M * N);
 
-  std::fill(a.begin(), a.end(), 1);
-  std::fill(b.begin(), b.end(), 1);
+  std::iota(a.begin(), a.end(), 1);
+  std::iota(b.begin(), b.end(), 1);
   std::fill(c.begin(), c.end(), 0);
 
   float *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
