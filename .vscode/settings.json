@@ -1,11 +1,12 @@
 {
-    "files.associations": {
-        "*.cu": "c",
-        "locale": "cpp",
-        "string": "cpp",
-        "memory": "cpp",
-        "vector": "cpp",
-        "map": "cpp",
-        "set": "cpp"
-    }
+  "files.associations": {
+    "*.cu": "cpp",
+    "*.cuh": "cpp",
+    "locale": "cpp",
+    "string": "cpp",
+    "memory": "cpp",
+    "vector": "cpp",
+    "map": "cpp",
+    "set": "cpp"
+  }
 }

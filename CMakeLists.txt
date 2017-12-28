@@ -38,6 +38,22 @@ find_package(benchmark CONFIG REQUIRED)
 
 hunter_add_package(nlohmann_json)
 find_package(nlohmann_json CONFIG REQUIRED)
+
+hunter_add_package(fmt)
+find_package(fmt CONFIG REQUIRED)
+
+hunter_add_package(spdlog)
+find_package(spdlog CONFIG REQUIRED)
+
+hunter_add_package(type_safe)
+find_package(type_safe CONFIG REQUIRED)
+
+hunter_add_package(yaml-cpp)
+find_package(yaml-cpp CONFIG REQUIRED)
+
+hunter_add_package(Protobuf)
+find_package(Protobuf CONFIG REQUIRED)
+
 endif (CONFIG_USE_HUNTER)
 
 
@@ -53,7 +69,9 @@ set(CUDA_VERBOSE_BUILD OFF)
 add_executable(bench
   src/daxpy.cpp
   src/sgemm.cpp
-  src/cudamemcpy.cpp
+  src/cuda_memcpy.cpp
+  src/cuda_launch.cu
+  src/cuda_stream.cu
   src/main.cpp
 )
 
@@ -64,6 +82,11 @@ include_directories(bench
 
 target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench nlohmann_json)
+target_link_libraries(bench fmt)
+target_link_libraries(bench spdlog::spdlog)
+target_link_libraries(bench type_safe)
+target_link_libraries(bench yaml-cpp::yaml-cpp)
+target_link_libraries(bench protobuf::libprotobuf)
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 

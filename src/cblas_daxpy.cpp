@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 
-static void DAXPY(benchmark::State &state) {
+static void CBLAS_DAXPY(benchmark::State &state) {
   const auto N = state.range(0);
   const auto x_incr = state.range(1);
   const auto y_incr = state.range(2);
@@ -18,7 +18,8 @@ static void DAXPY(benchmark::State &state) {
   std::iota(x.begin(), x.end(), 1);
   std::iota(y.begin(), y.end(), 1);
   for (auto _ : state) {
-    cblas_daxpy(N, alpha, x.data(), x_incr, y.data(), y_incr);
+    benchmark::DoNotOptimize(
+        cblas_daxpy(N, alpha, x.data(), x_incr, y.data(), y_incr));
   }
 
   state.counters.insert(
@@ -26,7 +27,7 @@ static void DAXPY(benchmark::State &state) {
   state.SetBytesProcessed(int64_t(state.iterations()) * 3 * N);
 }
 
-BENCHMARK(DAXPY) // N, DA, INCX, INCY
+BENCHMARK(CBLAS_DAXPY) // N, DA, INCX, INCY
     ->Args({10, 1, 1})
     ->Args({100, 1, 1})
     ->Args({1000, 1, 1})

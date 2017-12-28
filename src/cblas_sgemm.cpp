@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 
-static void SGEMM(benchmark::State &state) {
+static void CBLAS_SGEMM(benchmark::State &state) {
   const auto M = state.range(0);
   const auto N = state.range(1);
   const auto K = state.range(2);
@@ -24,14 +24,15 @@ static void SGEMM(benchmark::State &state) {
     std::fill(c.begin(), c.end(), 0);
     state.ResumeTiming();
 
-    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M, N, K, alpha,
-                a.data(), K, b.data(), N, beta, c.data(), N);
+    benchmark::DoNotOptimize(cblas_sgemm(CblasRowMajor, CblasNoTrans,
+                                         CblasNoTrans, M, N, K, alpha, a.data(),
+                                         K, b.data(), N, beta, c.data(), N));
   }
 
   state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
 }
 
-BENCHMARK(SGEMM) // M, N, K
+BENCHMARK(CBLAS_SGEMM) // M, N, K
     ->Args({1000, 1, 1})
     ->Args({128, 169, 1728})
     ->Args({128, 729, 1200})
@@ -121,5 +122,4 @@ BENCHMARK(SGEMM) // M, N, K
     ->Args({1024, 6000, 2560})
     ->Args({1024, 6000, 1536})
     ->Args({512, 4, 512})
-    ->Args({1024, 4, 512})
-    ->Unit(benchmark::kNanosecond);
+    ->Args({1024, 4, 512});
