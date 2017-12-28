@@ -132,6 +132,7 @@ add_executable(bench
   ${SRC_DIR}/cuda_stream.cu
   ${SRC_DIR}/cublas_sgemm.cpp
   ${SRC_DIR}/cuda_sgemm_basic.cu
+  ${SRC_DIR}/cuda_sgemm_tiled.cu
   ${SRC_DIR}/logger.cpp
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
