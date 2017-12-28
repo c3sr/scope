@@ -45,7 +45,7 @@ if(MSVC)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
 	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wno-unused-command-line-argument -Wfatal-errors ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
 endif()
 
 if (APPLE)
@@ -133,6 +133,7 @@ add_executable(bench
   ${SRC_DIR}/cublas_sgemm.cpp
   ${SRC_DIR}/cuda_sgemm_basic.cu
   ${SRC_DIR}/cuda_sgemm_tiled.cu
+  ${SRC_DIR}/cuda_vectoradd.cu
   ${SRC_DIR}/logger.cpp
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
