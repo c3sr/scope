@@ -1,9 +1,18 @@
-// System includes
-#include <assert.h>
-#include <stdio.h>
 
-// CUDA runtime
+#include <benchmark/benchmark.h>
+
+#include <iostream>
+#include <numeric>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
 #include <cuda_runtime.h>
+
+#include "init.hpp"
+#include "utils.hpp"
+#include "utils_cuda.hpp"
+#include "utils_sgemm.hpp"
 
 template <int TILE_WIDTH>
 __global__ void tiled_matrix_multiply(float *A, float *B, float *C,
@@ -55,8 +64,6 @@ __global__ void tiled_matrix_multiply(float *A, float *B, float *C,
 
 template <int TILE_WIDTH>
 static void CUDA_SGEMM_TILED(benchmark::State &state) {
-
-  static constexpr int TILE_WIDTH = 16;
 
   const auto M = state.range(0);
   const auto N = state.range(1);
@@ -145,7 +152,7 @@ static void CUDA_SGEMM_TILED(benchmark::State &state) {
     cudaEventRecord(start, NULL);
 
     tiled_matrix_multiply<TILE_WIDTH><<<gridDim, blockDim>>>(
-        d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns);
+        d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
 
     cuda_err = cudaDeviceSynchronize();
 

@@ -17,7 +17,8 @@
 template <int TILE_WIDTH>
 __global__ void basic_matrix_multiply(float *A, float *B, float *C,
                                       int numARows, int numAColumns,
-                                      int numBRows, int numBColumns) {
+                                      int numBRows, int numBColumns,
+                                      int numCRows, int numCColumns) {
   //@@ Insert code to implement matrix multiplication here
   int row = blockIdx.y * blockDim.y + threadIdx.y;
   int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -120,7 +121,7 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
     cudaEventRecord(start, NULL);
 
     basic_matrix_multiply<TILE_WIDTH><<<gridDim, blockDim>>>(
-        d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns);
+        d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
 
     cuda_err = cudaDeviceSynchronize();
 
