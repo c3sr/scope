@@ -92,6 +92,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   }
 
   state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
+  state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
 BENCHMARK(CUBLAS_SGEMM)->SGEMM_ARGS();

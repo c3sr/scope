@@ -68,21 +68,24 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
 
   auto cuda_err = cudaMalloc((void **)&d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix A");
+    LOG(critical,
+        "CUDA/SGEMM/BASIC device memory allocation failed for matrix A");
     return;
   }
   make_defer([&]() { cudaFree(d_a); });
 
   cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix B");
+    LOG(critical,
+        "CUDA/SGEMM/BASIC device memory allocation failed for matrix B");
     return;
   }
   make_defer([&]() { cudaFree(d_b); });
 
   cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix C");
+    LOG(critical,
+        "CUDA/SGEMM/BASIC device memory allocation failed for matrix C");
     return;
   }
   make_defer([&]() { cudaFree(d_c); });
@@ -109,19 +112,36 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
   dim3 gridDim(ceil(((float)numBColumns) / blockDim.x),
                ceil(((float)numARows) / blockDim.y));
 
+  cudaEvent_t start, stop;
+  CUDA_PERROR(cudaEventCreate(&start));
+  CUDA_PERROR(cudaEventCreate(&stop));
+
   for (auto _ : state) {
+    cudaEventRecord(start, NULL);
+
     basic_matrix_multiply<TILE_WIDTH><<<gridDim, blockDim>>>(
         d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns);
+
     cuda_err = cudaDeviceSynchronize();
+
+    cudaEventRecord(stop, NULL);
+    cudaEventSynchronize(stop);
 
     state.PauseTiming();
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
       break;
     }
+
+    float msecTotal = 0.0f;
+    if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
+      state.SkipWithError("CUDA/SGEMM/BASIC failed to get ellapsed time");
+    }
+    state.SetIterationTime(msecTotal * 1000);
     state.ResumeTiming();
   }
 
   state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
+  state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
 BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS();
