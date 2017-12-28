@@ -1,0 +1,110 @@
+#include <benchmark/benchmark.h>
+
+#include <iostream>
+#include <numeric>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
+#include <cublas_v2.h>
+#include <cuda_runtime.h>
+
+#include "init.hpp"
+#include "utils.hpp"
+
+static void CUBLAS_SGEMM(benchmark::State &state) {
+  const auto M = state.range(0);
+  const auto N = state.range(1);
+  const auto K = state.range(2);
+  const auto alpha = 1.0f;
+  const auto beta = 0.0f;
+
+  auto a = std::vector<float>(M * K);
+  auto b = std::vector<float>(K * N);
+  auto c = std::vector<float>(M * N);
+
+  std::iota(a.begin(), a.end(), 1);
+  std::iota(b.begin(), b.end(), 1);
+  std::fill(c.begin(), c.end(), 0);
+
+  cublasHandle_t cublas_handle;
+
+  auto cublas_err = cublasCreate(&cublas_handle);
+  if (cublas_err != CUBLAS_STATUS_SUCCESS) {
+    LOG(critical, "CUBLAS/SGEMM initialization failed");
+    return;
+  }
+  make_defer([&]() { cublasDestroy(cublas_handle); });
+
+  float *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
+
+  auto cuda_err = cudaMalloc((void **)&d_a, a.size() * sizeof(*a.data()));
+  if (cuda_err != cudaSuccess) {
+    LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix A");
+    return;
+  }
+  make_defer([&]() { cudaFree(d_a); });
+
+  cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
+  if (cuda_err != cudaSuccess) {
+    LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix B");
+    return;
+  }
+  make_defer([&]() { cudaFree(d_b); });
+
+  cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
+  if (cuda_err != cudaSuccess) {
+    LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix C");
+    return;
+  }
+  make_defer([&]() { cudaFree(d_c); });
+
+  cublas_err = cublasSetMatrix(M, N, sizeof(*a.data()), a.data(), M, d_a, M);
+  if (cublas_err != CUBLAS_STATUS_SUCCESS) {
+    LOG(critical, "CUBLAS/SGEMM setting of A matrix failed");
+    return;
+  }
+
+  cublas_err = cublasSetMatrix(K, N, sizeof(*b.data()), b.data(), K, d_b, K);
+  if (cublas_err != CUBLAS_STATUS_SUCCESS) {
+    LOG(critical, "CUBLAS/SGEMM setting of B matrix failed");
+    return;
+  }
+
+  cublas_err = cublasSetMatrix(M, K, sizeof(*c.data()), c.data(), M, d_c, M);
+  if (cublas_err != CUBLAS_STATUS_SUCCESS) {
+    LOG(critical, "CUBLAS/SGEMM setting of C matrix failed");
+    return;
+  }
+
+  for (auto _ : state) {
+    const auto cublas_err =
+        cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, M, N, K, &alpha,
+                    d_a, M, d_b, K, &beta, d_c, N);
+    state.PauseTiming();
+    if (cublas_err != CUBLAS_STATUS_SUCCESS) {
+      LOG(critical, "CUBLAS/SGEMM operation failed");
+      break;
+    }
+    state.ResumeTiming();
+  }
+
+  state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
+}
+
+BENCHMARK(CUBLAS_SGEMM) // M, N, K
+    ->Args({1000, 1, 1})
+    ->Args({128, 169, 1728})
+    ->Args({128, 729, 1200})
+    ->Args({192, 169, 1728})
+    ->Args({256, 169, 1})
+    ->Args({256, 729, 1})
+    ->Args({384, 169, 1})
+    ->Args({384, 169, 2304})
+    ->Args({50, 1000, 1})
+    ->Args({50, 1000, 4096})
+    ->Args({50, 4096, 1})
+    ->Args({50, 4096, 4096})
+    ->Args({50, 4096, 9216})
+    ->Args({96, 3025, 1})
+    ->Args({96, 3025, 363});

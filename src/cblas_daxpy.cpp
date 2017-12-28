@@ -17,12 +17,14 @@ static void CBLAS_DAXPY(benchmark::State &state) {
   auto y = std::vector<double>(N);
   std::iota(x.begin(), x.end(), 1);
   std::iota(y.begin(), y.end(), 1);
+
   for (auto _ : state) {
     cblas_daxpy(N, alpha, x.data(), x_incr, y.data(), y_incr);
   }
 
   state.counters.insert(
       {{"N", N}, {"x_increment", x_incr}, {"y_increment", y_incr}});
+
   state.SetBytesProcessed(int64_t(state.iterations()) * 3 * N);
 }
 

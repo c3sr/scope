@@ -126,6 +126,7 @@ add_executable(bench
   ${SRC_DIR}/cuda_memcpy.cpp
   ${SRC_DIR}/cuda_launch.cu
   ${SRC_DIR}/cuda_stream.cu
+  ${SRC_DIR}/cublas_sgemm.cpp
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
 )

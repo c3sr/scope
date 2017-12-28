@@ -1,9 +1,10 @@
 #include <assert.h>
-#include <benchmark/benchmark.h>
-#include <cuda_runtime.h>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+
+#include <benchmark/benchmark.h>
+#include <cuda_runtime.h>
 
 static void CUDAMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
