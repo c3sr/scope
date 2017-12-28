@@ -1,16 +1,20 @@
 
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
+if (APPLE)
+  set(CMAKE_C_COMPILER clang-3.7)
+  set(CMAKE_CXX_COMPILER clang++-3.7)
+  set(CUDACXX /usr/local/cuda/bin/nvcc)
+  set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+  set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER})
+endif(APPLE)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(VERBOSE_BUILD ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
 set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger package manager")
-
-
 
 
 if (CONFIG_USE_HUNTER)
@@ -25,12 +29,33 @@ endif (CONFIG_USE_HUNTER)
 
 project(microbenchmark LANGUAGES CXX CUDA)
 
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
-set(TOP_DIR "${PROJECT_SOURCE_DIR}")
-set(SRC_DIR "${TOP_DIR}/src")
+if(MSVC)
+	add_definitions(-DCONSTEXPR=const -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS)
+else()
+	add_definitions(-DCONSTEXPR=constexpr)
+	set(CXX_WARNINGS "-Wall -Wextra -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
+endif()
+
+
+# CUDA flags
+set(CMAKE_CUDA_STANDARD 11)
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=compute_30 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=sm_30 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_32,code=sm_32 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_53,code=sm_53 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60 ")
+string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_62,code=sm_62 ")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=sm_70 ")
+
 
 if (CONFIG_USE_HUNTER)
 hunter_add_package(benchmark)
@@ -65,19 +90,29 @@ set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
+set(TOP_DIR "${PROJECT_SOURCE_DIR}")
+set(SRC_DIR "${TOP_DIR}/src")
 
 add_executable(bench
-  src/daxpy.cpp
-  src/sgemm.cpp
-  src/cuda_memcpy.cpp
-  src/cuda_launch.cu
-  src/cuda_stream.cu
-  src/main.cpp
+  ${SRC_DIR}/clbas_daxpy.cpp
+  ${SRC_DIR}/clbas_sgemm.cpp
+  ${SRC_DIR}/cuda_memcpy.cpp
+  ${SRC_DIR}/cuda_launch.cu
+  ${SRC_DIR}/cuda_stream.cu
+  ${SRC_DIR}/main.cpp
 )
 
 include_directories(bench
+  ${SRC_DIR}
+  ${TOP_DIR}/include
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
+)
+
+set_target_properties(bench PROPERTIES
+	# CUDA_SEPARABLE_COMPILATION ON
+	CUDA_RESOLVE_DEVICE_SYMBOLS ON
 )
 
 target_link_libraries(bench benchmark::benchmark)
