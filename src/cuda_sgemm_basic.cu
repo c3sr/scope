@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <vector>
 
-#include <cublas_v2.h>
 #include <cuda_runtime.h>
 
 #include "init.hpp"
