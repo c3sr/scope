@@ -137,7 +137,7 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/SGEMM/BASIC failed to get elapsed time");
     }
-    state.SetIterationTime(msecTotal * 1000);
+    state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
   }
 
@@ -146,3 +146,4 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
 }
 
 BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS()->UseManualTime();
+BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS();

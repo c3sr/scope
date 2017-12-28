@@ -168,7 +168,7 @@ static void CUDA_SGEMM_TILED(benchmark::State &state) {
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/SGEMM/TILED failed to get elapsed time");
     }
-    state.SetIterationTime(msecTotal * 1000);
+    state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
   }
 
@@ -180,3 +180,7 @@ static void CUDA_SGEMM_TILED(benchmark::State &state) {
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 16)->SGEMM_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 32)->SGEMM_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 64)->SGEMM_ARGS()->UseManualTime();
+
+BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 16)->SGEMM_ARGS();
+BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 32)->SGEMM_ARGS();
+BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 64)->SGEMM_ARGS();
