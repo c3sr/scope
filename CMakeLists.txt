@@ -45,7 +45,7 @@ if(MSVC)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
 	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
 endif()
 
 if (APPLE)
@@ -132,6 +132,7 @@ add_executable(bench
   ${SRC_DIR}/cuda_stream.cu
   ${SRC_DIR}/cublas_sgemm.cpp
   ${SRC_DIR}/cuda_sgemm_basic.cu
+  ${SRC_DIR}/logger.cpp
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
 )
@@ -166,15 +167,15 @@ target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
 
 # Request that particles be built with -std=c++11
-# As this is a public compile feature anything that links to 
+# As this is a public compile feature anything that links to
 # particles will also build with -std=c++11
 target_compile_features(bench PUBLIC cxx_std_11)
 
- 
+
 if(APPLE)
-  # We need to add the path to the driver (libcuda.dylib) as an rpath, 
+  # We need to add the path to the driver (libcuda.dylib) as an rpath,
   # so that the static cuda runtime can find it at runtime.
-  set_property(TARGET bench 
+  set_property(TARGET bench
                PROPERTY
                BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 endif()

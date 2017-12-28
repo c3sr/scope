@@ -72,7 +72,7 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
         "CUDA/SGEMM/BASIC device memory allocation failed for matrix A");
     return;
   }
-  make_defer([&]() { cudaFree(d_a); });
+  defer(cudaFree(d_a));
 
   cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
@@ -80,7 +80,7 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
         "CUDA/SGEMM/BASIC device memory allocation failed for matrix B");
     return;
   }
-  make_defer([&]() { cudaFree(d_b); });
+  defer(cudaFree(d_b));
 
   cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
@@ -88,7 +88,7 @@ static void CUDA_SGEMM_BASIC(benchmark::State &state) {
         "CUDA/SGEMM/BASIC device memory allocation failed for matrix C");
     return;
   }
-  make_defer([&]() { cudaFree(d_c); });
+  defer(cudaFree(d_c));
 
   cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()),
                                     cudaMemcpyHostToDevice));

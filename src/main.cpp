@@ -3,7 +3,6 @@
 #include <benchmark/benchmark.h>
 
 #include "config.hpp"
-#include "cuda_info.hpp"
 #include "flags.hpp"
 #include "init.hpp"
 #include "utils.hpp"

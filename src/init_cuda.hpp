@@ -7,10 +7,8 @@
 
 #include "flags.hpp"
 #include "init.hpp"
+#include "logger.hpp"
 #include "utils_cuda.hpp"
-
-namespace utils {
-namespace cuda {
 
 // using optional = std::experimental::optional;
 // using nullopt = std::experimental::nullopt;
@@ -20,7 +18,7 @@ static float device_giga_bandwidth{0};
 static size_t device_free_physmem{0};
 static size_t device_total_physmem{0};
 
-static cudaError_t device_init() {
+static cudaError_t init_cuda() {
   cudaError_t error = cudaSuccess;
   do {
     int deviceCount;
@@ -81,5 +79,3 @@ static std::experimental::optional<std::tuple<size_t, size_t>> mem_info() {
   return std::make_tuple(device_free_physmem, device_total_physmem);
 }
 
-} // namespace cuda
-} // namespace utils

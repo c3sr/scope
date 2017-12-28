@@ -3,7 +3,7 @@
 
 #include <cuda_runtime.h>
 
-#include "init.hpp"
+#include "logger.hpp"
 
 /**
  * \brief The corresponding error message is printed to \p stderr (or \p stdout

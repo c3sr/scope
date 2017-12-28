@@ -35,7 +35,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     LOG(critical, "CUBLAS/SGEMM initialization failed");
     return;
   }
-  make_defer([&]() { cublasDestroy(cublas_handle); });
+  defer(cublasDestroy(cublas_handle));
 
   float *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
 
@@ -44,21 +44,21 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix A");
     return;
   }
-  make_defer([&]() { cudaFree(d_a); });
+  defer(cudaFree(d_a));
 
   cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix B");
     return;
   }
-  make_defer([&]() { cudaFree(d_b); });
+  defer(cudaFree(d_b));
 
   cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix C");
     return;
   }
-  make_defer([&]() { cudaFree(d_c); });
+  defer(cudaFree(d_c));
 
   cublas_err = cublasSetMatrix(M, N, sizeof(*a.data()), a.data(), M, d_a, M);
   if (cublas_err != CUBLAS_STATUS_SUCCESS) {
