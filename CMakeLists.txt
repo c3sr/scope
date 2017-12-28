@@ -115,9 +115,9 @@ set(TOP_DIR "${PROJECT_SOURCE_DIR}")
 set(THIRDPARTY_DIR "${TOP_DIR}/third_party")
 set(SRC_DIR "${TOP_DIR}/src")
 
-add_subdirectory(${THIRDPARTY_DIR}/googletest)
-add_subdirectory(${THIRDPARTY_DIR}/cctz)
-add_subdirectory(${THIRDPARTY_DIR}/abseil-cpp)
+# add_subdirectory(${THIRDPARTY_DIR}/googletest)
+# add_subdirectory(${THIRDPARTY_DIR}/cctz)
+# add_subdirectory(${THIRDPARTY_DIR}/abseil-cpp)
 add_subdirectory(${THIRDPARTY_DIR}/cxxopts)
 
 add_executable(bench
