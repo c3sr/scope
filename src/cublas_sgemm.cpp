@@ -11,6 +11,7 @@
 
 #include "init.hpp"
 #include "utils.hpp"
+#include "utils_sgemm.hpp"
 
 static void CUBLAS_SGEMM(benchmark::State &state) {
   const auto M = state.range(0);
@@ -93,19 +94,4 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
 }
 
-BENCHMARK(CUBLAS_SGEMM) // M, N, K
-    ->Args({1000, 1, 1})
-    ->Args({128, 169, 1728})
-    ->Args({128, 729, 1200})
-    ->Args({192, 169, 1728})
-    ->Args({256, 169, 1})
-    ->Args({256, 729, 1})
-    ->Args({384, 169, 1})
-    ->Args({384, 169, 2304})
-    ->Args({50, 1000, 1})
-    ->Args({50, 1000, 4096})
-    ->Args({50, 4096, 1})
-    ->Args({50, 4096, 4096})
-    ->Args({50, 4096, 9216})
-    ->Args({96, 3025, 1})
-    ->Args({96, 3025, 363});
+BENCHMARK(CUBLAS_SGEMM)->SGEMM_ARGS();
