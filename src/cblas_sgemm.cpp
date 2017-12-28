@@ -25,7 +25,7 @@ static void CBLAS_SGEMM(benchmark::State &state) {
     state.ResumeTiming();
 
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, M, N, K, alpha,
-                a.data(), M, b.data(), K, beta, c.data(), N);
+                a.data(), K, b.data(), N, beta, c.data(), N);
   }
 
   state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
