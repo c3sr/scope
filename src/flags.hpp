@@ -7,7 +7,7 @@
 static int cuda_device_id = 0;
 
 static void init_flags(int argc, char **argv) {
-  cxxopts::Options options(PROJECT_NAME, "microbenchmark suite");
+  cxxopts::Options options(argv[0], "microbenchmark suite");
 
   options.add_options()("d,debug", "Enable debugging")(
       "cuda_device", "CUDA device to use",
