@@ -31,6 +31,7 @@ static void CBLAS_SGEMM(benchmark::State &state) {
 
   state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
   state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
+  state.SetItemsProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
 BENCHMARK(CBLAS_SGEMM)->SGEMM_ARGS();

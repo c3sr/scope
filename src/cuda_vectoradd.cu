@@ -106,6 +106,7 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
   state.counters.insert({{"N", N}, {"BLOCK_SIZE", BLOCK_SIZE}, {"COARSINING_FACTOR", COARSINING_FACTOR}});
   state.SetBytesProcessed(int64_t(state.iterations()) * N);
+  state.SetItemsProcessed(int64_t(state.iterations()) * N);
 }
 
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 32)->VECTORADD_ARGS()->UseManualTime();

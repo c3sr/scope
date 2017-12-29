@@ -25,6 +25,7 @@ static void CBLAS_DAXPY(benchmark::State &state) {
   state.counters.insert({{"N", N}, {"x_increment", x_incr}, {"y_increment", y_incr}});
 
   state.SetBytesProcessed(int64_t(state.iterations()) * 3 * N);
+  state.SetItemsProcessed(int64_t(state.iterations()) * 3 * N);
 }
 
 BENCHMARK(CBLAS_DAXPY) // N, DA, INCX, INCY
