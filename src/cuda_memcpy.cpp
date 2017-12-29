@@ -6,15 +6,21 @@
 #include <benchmark/benchmark.h>
 #include <cuda_runtime.h>
 
+#include "utils.hpp"
+#include "utils_cuda.hpp"
+
 static void CUDAMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   char *src        = new char[bytes];
   char *dst        = nullptr;
+
+  defer(delete[] src);
   const auto err   = cudaMalloc(&dst, bytes);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform cudaMemcpy");
     return;
   }
+  defer(cudaFree(dst));
   for (auto _ : state) {
     const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
     if (err != cudaSuccess) {
@@ -24,10 +30,6 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
-  if (dst) {
-    cudaFree(dst);
-  }
-  delete[] src;
 }
 BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);
 
@@ -39,6 +41,7 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     state.SkipWithError("failed to perform pinned cudaHostAlloc");
     return;
   }
+  defer(cudaFree(src));
   memset(src, 0, bytes);
   float *dst = nullptr;
   err        = cudaMalloc(&dst, bytes);
@@ -46,6 +49,7 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     state.SkipWithError("failed to perform cudaMalloc");
     return;
   }
+  defer(cudaFree(dst));
   for (auto _ : state) {
     const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
     if (err != cudaSuccess) {
@@ -55,11 +59,5 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
-  if (src) {
-    cudaFree(src);
-  }
-  if (dst) {
-    cudaFree(dst);
-  }
 }
 BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1);
