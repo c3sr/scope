@@ -93,7 +93,7 @@ __global__ void cuda_tiled_matrix_multiply(float *A, float *B, float *C, int num
 template <CUDA_BLAS_IMPLEMENTATION IMPLEMENTATION, int TILE_WIDTH>
 static void CUDA_SGEMM(benchmark::State &state) {
 
-  const std::string IMPLEMNTATION_NAME = CUDA_BLAS_IMPLEMENTATION_STRING(IMPLEMENTATION);
+  const std::string IMPLEMENTATION_NAME = CUDA_BLAS_IMPLEMENTATION_STRING(IMPLEMENTATION);
 
   const auto M     = state.range(0);
   const auto N     = state.range(1);
@@ -130,21 +130,21 @@ static void CUDA_SGEMM(benchmark::State &state) {
 
   auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix A", IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix A", IMPLEMENTATION_NAME);
     return;
   }
   defer(cudaFree(d_a));
 
   cuda_err = cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix B", IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix B", IMPLEMENTATION_NAME);
     return;
   }
   defer(cudaFree(d_b));
 
   cuda_err = cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix C", IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix C", IMPLEMENTATION_NAME);
     return;
   }
   defer(cudaFree(d_c));
@@ -197,27 +197,27 @@ static void CUDA_SGEMM(benchmark::State &state) {
 
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
-      state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to get elapsed time", IMPLEMNTATION_NAME).c_str());
+      state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"M", M}, {"N", N}, {"K", K}});
-  if (IMPLEMENTATION != CUDA_BLAS_IMPLEMENTATION::BASIC) {
-    state.counters.insert({{"TILE_WIDTH", TILE_WIDTH}});
-  }
-  state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
+  state.counters.insert({{"M", M}, {"N", N}, {"K", K}, {"IMPLEMENTATION_TYPE", (int)IMPLEMENTATION}});
+    if (IMPLEMENTATION != CUDA_BLAS_IMPLEMENTATION::BASIC) {
+      state.counters.insert({{"TILE_WIDTH", TILE_WIDTH}});
+    }
+    state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
 static void CUDA_SGEMM_BASIC(benchmark::State &state) {
-  constexpr auto TILE_WIDTH = 16; // this is not used
-  CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::BASIC, TILE_WIDTH>(state);
+    constexpr auto TILE_WIDTH = 16; // this is not used
+    CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::BASIC, TILE_WIDTH>(state);
 }
 
 template <int TILE_WIDTH>
 static void CUDA_SGEMM_TILED(benchmark::State &state) {
-  CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::TILED, TILE_WIDTH>(state);
+    CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::TILED, TILE_WIDTH>(state);
 }
 
 BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS()->UseManualTime();

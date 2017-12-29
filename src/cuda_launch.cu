@@ -62,7 +62,7 @@ template <CUDA_LAUNCH_IMPLEMENTATION IMPLEMENTATION, typename T, int LAUNCH_COUN
           int BLOCK_SIZE = 128>
 static void CUDA_LAUNCH(benchmark::State &state) {
 
-  const std::string IMPLEMNTATION_NAME = CUDA_LAUNCH_IMPLEMENTATION_STRING(IMPLEMENTATION);
+  const std::string IMPLEMENTATION_NAME = CUDA_LAUNCH_IMPLEMENTATION_STRING(IMPLEMENTATION);
 
   const size_t N = state.range(0);
 
@@ -74,7 +74,7 @@ static void CUDA_LAUNCH(benchmark::State &state) {
 
   auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/LAUNCH/{} device memory allocation failed for vector A", IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/LAUNCH/{} device memory allocation failed for vector A", IMPLEMENTATION_NAME);
     return;
   }
   defer(cudaFree(d_a));
@@ -121,14 +121,17 @@ static void CUDA_LAUNCH(benchmark::State &state) {
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
 
-      state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to get elapsed time", IMPLEMNTATION_NAME).c_str());
+      state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
   }
 
-  state.counters.insert(
-      {{"N", N}, {"BLOCK_SIZE", BLOCK_SIZE}, {"ITERATION_COUNT", ITERATION_COUNT}, {"LAUNCH_COUNT", LAUNCH_COUNT}});
+  state.counters.insert({{"N", N},
+                         {"BLOCK_SIZE", BLOCK_SIZE},
+                         {"IMPLEMENTATION_TYPE", (int) IMPLEMENTATION},
+                         {"ITERATION_COUNT", ITERATION_COUNT},
+                         {"LAUNCH_COUNT", LAUNCH_COUNT}});
   state.SetBytesProcessed(int64_t(state.iterations()) * N);
 }
 
