@@ -151,13 +151,13 @@ static void CUDA_LAUNCH_RELU(benchmark::State &state) {
 }
 
 #define BENCHMARK_CUDA_LAUNCH0(B, ...)                                                                                 \
-  BENCHMARK_TEMPLATE(B, char, __VA_ARGS__);                                                                            \
-  BENCHMARK_TEMPLATE(B, int, __VA_ARGS__);                                                                             \
-  BENCHMARK_TEMPLATE(B, float, __VA_ARGS__);                                                                           \
-  BENCHMARK_TEMPLATE(B, double, __VA_ARGS__)
-#define BENCHMARK_CUDA_LAUNCH(...)                                                                                     \
-  BENCHMARK_CUDA_LAUNCH0(__VA_ARGS__)->VECTORADD_ARGS()->UseManualTime();                                              \
-  BENCHMARK_CUDA_LAUNCH0(__VA_ARGS__)->VECTORADD_ARGS()
+  BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()->UseManualTime();                                               \
+  BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()
+#define BENCHMARK_CUDA_LAUNCH(B, ...)                                                                                  \
+  BENCHMARK_CUDA_LAUNCH0(B, char, __VA_ARGS__);                                                                        \
+  BENCHMARK_CUDA_LAUNCH0(B, int, __VA_ARGS__);                                                                         \
+  BENCHMARK_CUDA_LAUNCH0(B, float, __VA_ARGS__);                                                                       \
+  BENCHMARK_CUDA_LAUNCH0(B, double, __VA_ARGS__)
 
 #define BENCHMARK_CUDA_LAUNCH_EMPTY(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_EMPTY, __VA_ARGS__)
 #define BENCHMARK_CUDA_LAUNCH_ADDTWO(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_ADDTWO, __VA_ARGS__)
