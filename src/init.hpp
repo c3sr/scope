@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "flags.hpp"
 #include "init_cuda.hpp"
 #include "logger.hpp"

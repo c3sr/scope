@@ -12,12 +12,16 @@
 #define UNUSED
 #endif // __GNUC__
 
-template <class Function> class defer_func {
+template <class Function>
+class defer_func {
 public:
   template <class F>
-  explicit defer_func(F &&f) noexcept : defer_function_(std::forward<F>(f)) {}
+  explicit defer_func(F &&f) noexcept : defer_function_(std::forward<F>(f)) {
+  }
 
-  ~defer_func() { defer_function_(); }
+  ~defer_func() {
+    defer_function_();
+  }
 
 private:
   Function defer_function_;
@@ -25,8 +29,7 @@ private:
 
 template <class F>
 defer_func<typename std::decay<F>::type> make_defer(F &&defer_function) {
-  return defer_func<typename std::decay<F>::type>(
-      std::forward<F>(defer_function));
+  return defer_func<typename std::decay<F>::type>(std::forward<F>(defer_function));
 }
 
 #define DEFER_1(x, y) x##y

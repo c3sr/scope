@@ -45,13 +45,11 @@ static cudaError_t init_cuda() {
       break;
     }
 
-    if (CUDA_PERROR(error = cudaMemGetInfo(&device_free_physmem,
-                                           &device_total_physmem))) {
+    if (CUDA_PERROR(error = cudaMemGetInfo(&device_free_physmem, &device_total_physmem))) {
       break;
     }
 
-    if (CUDA_PERROR(
-            error = cudaGetDeviceProperties(&device_prop, cuda_device_id))) {
+    if (CUDA_PERROR(error = cudaGetDeviceProperties(&device_prop, cuda_device_id))) {
       break;
     }
 
@@ -60,8 +58,7 @@ static cudaError_t init_cuda() {
       exit(1);
     }
 
-    device_giga_bandwidth = float(device_prop.memoryBusWidth) *
-                            device_prop.memoryClockRate * 2 / 8 / 1000 / 1000;
+    device_giga_bandwidth = float(device_prop.memoryBusWidth) * device_prop.memoryClockRate * 2 / 8 / 1000 / 1000;
   } while (0);
   return error;
 }
@@ -70,12 +67,10 @@ static std::experimental::optional<std::tuple<size_t, size_t>> mem_info() {
   cudaError_t error = cudaSuccess;
   size_t device_free_physmem, device_total_physmem;
 
-  CUDA_PERROR(error =
-                  cudaMemGetInfo(&device_free_physmem, &device_total_physmem));
+  CUDA_PERROR(error = cudaMemGetInfo(&device_free_physmem, &device_total_physmem));
 
   if (error) {
     return std::experimental::nullopt;
   }
   return std::make_tuple(device_free_physmem, device_total_physmem);
 }
-

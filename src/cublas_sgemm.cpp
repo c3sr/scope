@@ -14,11 +14,11 @@
 #include "utils_sgemm.hpp"
 
 static void CUBLAS_SGEMM(benchmark::State &state) {
-  const auto M = state.range(0);
-  const auto N = state.range(1);
-  const auto K = state.range(2);
+  const auto M     = state.range(0);
+  const auto N     = state.range(1);
+  const auto K     = state.range(2);
   const auto alpha = 1.0f;
-  const auto beta = 0.0f;
+  const auto beta  = 0.0f;
 
   auto a = std::vector<float>(M * K);
   auto b = std::vector<float>(K * N);
@@ -39,21 +39,21 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
 
   float *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
 
-  auto cuda_err = cudaMalloc((void **)&d_a, a.size() * sizeof(*a.data()));
+  auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix A");
     return;
   }
   defer(cudaFree(d_a));
 
-  cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
+  cuda_err = cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix B");
     return;
   }
   defer(cudaFree(d_b));
 
-  cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
+  cuda_err = cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUBLAS/SGEMM device memory allocation failed for matrix C");
     return;
@@ -81,8 +81,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   for (auto _ : state) {
     // Use the fact that C^T = (B^T . A^T)^T for optimization
     const auto cublas_err =
-        cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha,
-                    d_b, M, d_a, K, &beta, d_c, N);
+        cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, d_b, M, d_a, K, &beta, d_c, N);
     state.PauseTiming();
     if (cublas_err != CUBLAS_STATUS_SUCCESS) {
       LOG(critical, "CUBLAS/SGEMM operation failed");

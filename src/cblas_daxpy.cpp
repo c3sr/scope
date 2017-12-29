@@ -8,10 +8,10 @@
 #include <vector>
 
 static void CBLAS_DAXPY(benchmark::State &state) {
-  const auto N = state.range(0);
+  const auto N      = state.range(0);
   const auto x_incr = state.range(1);
   const auto y_incr = state.range(2);
-  const auto alpha = 0.5;
+  const auto alpha  = 0.5;
 
   auto x = std::vector<double>(N);
   auto y = std::vector<double>(N);
@@ -22,8 +22,7 @@ static void CBLAS_DAXPY(benchmark::State &state) {
     cblas_daxpy(N, alpha, x.data(), x_incr, y.data(), y_incr);
   }
 
-  state.counters.insert(
-      {{"N", N}, {"x_increment", x_incr}, {"y_increment", y_incr}});
+  state.counters.insert({{"N", N}, {"x_increment", x_incr}, {"y_increment", y_incr}});
 
   state.SetBytesProcessed(int64_t(state.iterations()) * 3 * N);
 }

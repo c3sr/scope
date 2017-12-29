@@ -18,23 +18,20 @@
 
 enum class CUDA_BLAS_IMPLEMENTATION : int { BASIC = 1, TILED = 2 };
 
-static std::string
-CUDA_BLAS_IMPLEMENTATION_STRING(const CUDA_BLAS_IMPLEMENTATION impl) {
+static std::string CUDA_BLAS_IMPLEMENTATION_STRING(const CUDA_BLAS_IMPLEMENTATION impl) {
   switch (impl) {
-  case CUDA_BLAS_IMPLEMENTATION::BASIC:
-    return "BASIC";
-  case CUDA_BLAS_IMPLEMENTATION::TILED:
-    return "TILED";
-  default:
-    return "UNDEFINED";
+    case CUDA_BLAS_IMPLEMENTATION::BASIC:
+      return "BASIC";
+    case CUDA_BLAS_IMPLEMENTATION::TILED:
+      return "TILED";
+    default:
+      return "UNDEFINED";
   }
 }
 
 template <int TILE_WIDTH>
-__global__ void cuda_basic_matrix_multiply(float *A, float *B, float *C,
-                                           int numARows, int numAColumns,
-                                           int numBRows, int numBColumns,
-                                           int numCRows, int numCColumns) {
+__global__ void cuda_basic_matrix_multiply(float *A, float *B, float *C, int numARows, int numAColumns, int numBRows,
+                                           int numBColumns, int numCRows, int numCColumns) {
   //@@ Insert code to implement matrix multiplication here
   int row = blockIdx.y * blockDim.y + threadIdx.y;
   int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -48,14 +45,12 @@ __global__ void cuda_basic_matrix_multiply(float *A, float *B, float *C,
 }
 
 template <int TILE_WIDTH>
-__global__ void cuda_tiled_matrix_multiply(float *A, float *B, float *C,
-                                           int numARows, int numAColumns,
-                                           int numBRows, int numBColumns,
-                                           int numCRows, int numCColumns) {
+__global__ void cuda_tiled_matrix_multiply(float *A, float *B, float *C, int numARows, int numAColumns, int numBRows,
+                                           int numBColumns, int numCRows, int numCColumns) {
   __shared__ float ds_M[TILE_WIDTH][TILE_WIDTH];
   __shared__ float ds_N[TILE_WIDTH][TILE_WIDTH];
-  int bx = blockIdx.x, by = blockIdx.y, tx = threadIdx.x, ty = threadIdx.y,
-      Row = by * TILE_WIDTH + ty, Col = bx * TILE_WIDTH + tx;
+  int bx = blockIdx.x, by = blockIdx.y, tx = threadIdx.x, ty = threadIdx.y, Row = by * TILE_WIDTH + ty,
+      Col      = bx * TILE_WIDTH + tx;
   float Pvalue = 0;
 
   for (int m = 0; m < (numAColumns - 1) / TILE_WIDTH + 1; ++m) {
@@ -98,31 +93,30 @@ __global__ void cuda_tiled_matrix_multiply(float *A, float *B, float *C,
 template <CUDA_BLAS_IMPLEMENTATION IMPLEMENTATION, int TILE_WIDTH>
 static void CUDA_SGEMM(benchmark::State &state) {
 
-  const std::string IMPLEMNTATION_NAME =
-      CUDA_BLAS_IMPLEMENTATION_STRING(IMPLEMENTATION);
+  const std::string IMPLEMNTATION_NAME = CUDA_BLAS_IMPLEMENTATION_STRING(IMPLEMENTATION);
 
-  const auto M = state.range(0);
-  const auto N = state.range(1);
-  const auto K = state.range(2);
+  const auto M     = state.range(0);
+  const auto N     = state.range(1);
+  const auto K     = state.range(2);
   const auto alpha = 1.0f;
-  const auto beta = 0.0f;
+  const auto beta  = 0.0f;
 
-  (void)alpha;
-  (void)beta;
+  (void) alpha;
+  (void) beta;
 
-  const auto numARows = M;
+  const auto numARows    = M;
   const auto numAColumns = K;
-  const auto numBRows = K;
+  const auto numBRows    = K;
   const auto numBColumns = N;
-  const auto numCRows = M;
+  const auto numCRows    = M;
   const auto numCColumns = N;
 
-  (void)numARows;
-  (void)numAColumns;
-  (void)numBRows;
-  (void)numBColumns;
-  (void)numCRows;
-  (void)numCColumns;
+  (void) numARows;
+  (void) numAColumns;
+  (void) numBRows;
+  (void) numBColumns;
+  (void) numCRows;
+  (void) numCColumns;
 
   auto a = std::vector<float>(M * K);
   auto b = std::vector<float>(K * N);
@@ -134,51 +128,44 @@ static void CUDA_SGEMM(benchmark::State &state) {
 
   float *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
 
-  auto cuda_err = cudaMalloc((void **)&d_a, a.size() * sizeof(*a.data()));
+  auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix A",
-        IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix A", IMPLEMNTATION_NAME);
     return;
   }
   defer(cudaFree(d_a));
 
-  cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
+  cuda_err = cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix B",
-        IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix B", IMPLEMNTATION_NAME);
     return;
   }
   defer(cudaFree(d_b));
 
-  cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
+  cuda_err = cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix C",
-        IMPLEMNTATION_NAME);
+    LOG(critical, "CUDA/SGEMM/{} device memory allocation failed for matrix C", IMPLEMNTATION_NAME);
     return;
   }
   defer(cudaFree(d_c));
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()),
-                                    cudaMemcpyHostToDevice));
+  cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
     return;
   }
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()),
-                                    cudaMemcpyHostToDevice));
+  cuda_err = CUDA_PERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
     return;
   }
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()),
-                                    cudaMemcpyHostToDevice));
+  cuda_err = CUDA_PERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
     return;
   }
 
   dim3 blockDim(TILE_WIDTH, TILE_WIDTH, 1);
-  dim3 gridDim(ceil(((float)numBColumns) / blockDim.x),
-               ceil(((float)numARows) / blockDim.y));
+  dim3 gridDim(ceil(((float) numBColumns) / blockDim.x), ceil(((float) numARows) / blockDim.y));
 
   cudaEvent_t start, stop;
   CUDA_PERROR(cudaEventCreate(&start));
@@ -188,16 +175,14 @@ static void CUDA_SGEMM(benchmark::State &state) {
     cudaEventRecord(start, NULL);
 
     switch (IMPLEMENTATION) {
-    case CUDA_BLAS_IMPLEMENTATION::BASIC:
-      cuda_basic_matrix_multiply<TILE_WIDTH>
-          <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns,
-                                  numBRows, numBColumns, numCRows, numCColumns);
-                                  break ;
-    case CUDA_BLAS_IMPLEMENTATION::TILED:
-      cuda_tiled_matrix_multiply<TILE_WIDTH>
-          <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns,
-                                  numBRows, numBColumns, numCRows, numCColumns);
-                                  break ;
+      case CUDA_BLAS_IMPLEMENTATION::BASIC:
+        cuda_basic_matrix_multiply<TILE_WIDTH>
+            <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
+        break;
+      case CUDA_BLAS_IMPLEMENTATION::TILED:
+        cuda_tiled_matrix_multiply<TILE_WIDTH>
+            <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
+        break;
     }
 
     cuda_err = cudaDeviceSynchronize();
@@ -212,10 +197,7 @@ static void CUDA_SGEMM(benchmark::State &state) {
 
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
-      state.SkipWithError(
-          fmt::format("CUDA/SGEMM/{} failed to get elapsed time",
-                      IMPLEMNTATION_NAME)
-              .c_str());
+      state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to get elapsed time", IMPLEMNTATION_NAME).c_str());
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();

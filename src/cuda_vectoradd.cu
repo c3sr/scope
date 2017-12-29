@@ -38,50 +38,44 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
   T *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
 
-  auto cuda_err = cudaMalloc((void **)&d_a, a.size() * sizeof(*a.data()));
+  auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical,
-        "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector A");
+    LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector A");
     return;
   }
   defer(cudaFree(d_a));
 
-  cuda_err = cudaMalloc((void **)&d_b, b.size() * sizeof(*b.data()));
+  cuda_err = cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical,
-        "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector B");
+    LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector B");
     return;
   }
   defer(cudaFree(d_b));
 
-  cuda_err = cudaMalloc((void **)&d_c, c.size() * sizeof(*c.data()));
+  cuda_err = cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
-    LOG(critical,
-        "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector C");
+    LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector C");
     return;
   }
   defer(cudaFree(d_c));
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()),
-                                    cudaMemcpyHostToDevice));
+  cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
     return;
   }
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()),
-                                    cudaMemcpyHostToDevice));
+  cuda_err = CUDA_PERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
     return;
   }
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()),
-                                    cudaMemcpyHostToDevice));
+  cuda_err = CUDA_PERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
     return;
   }
 
   dim3 blockDim(BLOCK_SIZE);
-  dim3 gridDim(ceil(((float)N) / blockDim.x));
+  dim3 gridDim(ceil(((float) N) / blockDim.x));
 
   cudaEvent_t start, stop;
   CUDA_PERROR(cudaEventCreate(&start));
@@ -90,8 +84,7 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    cuda_vector_add<T, COARSINING_FACTOR, BLOCK_SIZE>
-        <<<gridDim, blockDim>>>(d_a, d_b, d_c, N);
+    cuda_vector_add<T, COARSINING_FACTOR, BLOCK_SIZE><<<gridDim, blockDim>>>(d_a, d_b, d_c, N);
 
     cuda_err = cudaDeviceSynchronize();
 
@@ -111,50 +104,24 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"N", N},
-                         {"BLOCK_SIZE", BLOCK_SIZE},
-                         {"COARSINING_FACTOR", COARSINING_FACTOR}});
+  state.counters.insert({{"N", N}, {"BLOCK_SIZE", BLOCK_SIZE}, {"COARSINING_FACTOR", COARSINING_FACTOR}});
   state.SetBytesProcessed(int64_t(state.iterations()) * N);
 }
 
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 32)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 32)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 32)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 32)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 32)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 32)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 32)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 32)->VECTORADD_ARGS()->UseManualTime();
 
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 64)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 64)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 64)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 64)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 64)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 64)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 64)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 64)->VECTORADD_ARGS()->UseManualTime();
 
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 128)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 128)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 128)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 128)
-    ->VECTORADD_ARGS()
-    ->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 128)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 128)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 128)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 128)->VECTORADD_ARGS()->UseManualTime();
 
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 32)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 32)->VECTORADD_ARGS();

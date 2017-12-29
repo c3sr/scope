@@ -8,9 +8,9 @@
 
 static void CUDAMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  char *src = new char[bytes];
-  char *dst = nullptr;
-  const auto err = cudaMalloc(&dst, bytes);
+  char *src        = new char[bytes];
+  char *dst        = nullptr;
+  const auto err   = cudaMalloc(&dst, bytes);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform cudaMemcpy");
     return;
@@ -33,15 +33,15 @@ BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);
 
 static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  float *src = nullptr;
-  auto err = cudaHostAlloc(&src, bytes, cudaHostAllocWriteCombined);
+  float *src       = nullptr;
+  auto err         = cudaHostAlloc(&src, bytes, cudaHostAllocWriteCombined);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform pinned cudaHostAlloc");
     return;
   }
   memset(src, 0, bytes);
   float *dst = nullptr;
-  err = cudaMalloc(&dst, bytes);
+  err        = cudaMalloc(&dst, bytes);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform cudaMalloc");
     return;
