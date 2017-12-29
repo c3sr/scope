@@ -15,23 +15,41 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
   char *dst        = nullptr;
 
   defer(delete[] src);
-  const auto err   = cudaMalloc(&dst, bytes);
+  const auto err = cudaMalloc(&dst, bytes);
   if (err != cudaSuccess) {
     state.SkipWithError("failed to perform cudaMemcpy");
     return;
   }
   defer(cudaFree(dst));
+
+  cudaEvent_t start, stop;
+  CUDA_PERROR(cudaEventCreate(&start));
+  CUDA_PERROR(cudaEventCreate(&stop));
+
   for (auto _ : state) {
-    const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
-    if (err != cudaSuccess) {
-      state.SkipWithError("failed to perform cudaMemcpy");
+    cudaEventRecord(start, NULL);
+    auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+
+    cudaEventRecord(stop, NULL);
+    cudaEventSynchronize(stop);
+
+    state.PauseTiming();
+
+    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
       break;
     }
+    float msecTotal = 0.0f;
+    if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
+      state.SkipWithError("CUDA/MEMCPY/TOGPU failed to get elapsed time");
+    }
+    state.SetIterationTime(msecTotal / 1000);
+    state.ResumeTiming();
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 }
 BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);
+BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1)->UseManualTime();
 
 static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
@@ -50,14 +68,34 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     return;
   }
   defer(cudaFree(dst));
+
+  cudaEvent_t start, stop;
+  CUDA_PERROR(cudaEventCreate(&start));
+  CUDA_PERROR(cudaEventCreate(&stop));
+
   for (auto _ : state) {
-    const auto err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
-    if (err != cudaSuccess) {
-      state.SkipWithError("failed to perform cudaMemcpy");
+    cudaEventRecord(start, NULL);
+
+    auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+
+    cudaEventRecord(stop, NULL);
+    cudaEventSynchronize(stop);
+
+    state.PauseTiming();
+
+    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
       break;
     }
+    float msecTotal = 0.0f;
+    if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
+      state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU failed to get elapsed time");
+    }
+    state.SetIterationTime(msecTotal / 1000);
+    state.ResumeTiming();
   }
+
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 }
 BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1);
+BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1)->UseManualTime();
