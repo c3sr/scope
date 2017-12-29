@@ -11,6 +11,7 @@
 #include "init.hpp"
 #include "utils.hpp"
 #include "utils_cuda.hpp"
+#include "utils_vectoradd.hpp"
 
 enum class CUDA_LAUNCH_IMPLEMENTATION : int { EMPTY = 1, ADDTWO, RELU };
 
@@ -48,10 +49,11 @@ __global__ void cuda_add_two_kernel(T *vec, size_t len) {
 template <typename T, int ITERATION_COUNT, int BLOCK_SIZE>
 __global__ void cuda_relu_kernel(T *vec, size_t len) {
   int index = threadIdx.x + blockIdx.x * BLOCK_SIZE;
+  const T zero{0};
   if (index < len) {
 #pragma unroll
     for (int ii = 0; ii < ITERATION_COUNT; ii++) {
-      vec[index] = std::max(vec[index], 0);
+      vec[index] = vec[index] > zero ? vec[index] : zero;
     }
   }
 }
@@ -92,7 +94,7 @@ static void CUDA_LAUNCH(benchmark::State &state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    for (const int ii = 0; ii < LAUNCH_COUNT; ii++) {
+    for (int ii = 0; ii < LAUNCH_COUNT; ii++) {
       switch (IMPLEMENTATION) {
         case CUDA_LAUNCH_IMPLEMENTATION::EMPTY:
           cuda_empty_kernel<T, ITERATION_COUNT, BLOCK_SIZE><<<gridDim, blockDim>>>(d_a, N);
@@ -129,3 +131,55 @@ static void CUDA_LAUNCH(benchmark::State &state) {
       {{"N", N}, {"BLOCK_SIZE", BLOCK_SIZE}, {"ITERATION_COUNT", ITERATION_COUNT}, {"LAUNCH_COUNT", LAUNCH_COUNT}});
   state.SetBytesProcessed(int64_t(state.iterations()) * N);
 }
+
+template <typename T, int LAUNCH_COUNT, int ITERATION_COUNT, int BLOCK_SIZE>
+static void CUDA_LAUNCH_EMPTY(benchmark::State &state) {
+  return CUDA_LAUNCH<CUDA_LAUNCH_IMPLEMENTATION::EMPTY, T, LAUNCH_COUNT, ITERATION_COUNT, BLOCK_SIZE>(state);
+}
+
+template <typename T, int LAUNCH_COUNT, int ITERATION_COUNT, int BLOCK_SIZE>
+static void CUDA_LAUNCH_ADDTWO(benchmark::State &state) {
+  return CUDA_LAUNCH<CUDA_LAUNCH_IMPLEMENTATION::ADDTWO, T, LAUNCH_COUNT, ITERATION_COUNT, BLOCK_SIZE>(state);
+}
+
+template <typename T, int LAUNCH_COUNT, int ITERATION_COUNT, int BLOCK_SIZE>
+static void CUDA_LAUNCH_RELU(benchmark::State &state) {
+  return CUDA_LAUNCH<CUDA_LAUNCH_IMPLEMENTATION::RELU, T, LAUNCH_COUNT, ITERATION_COUNT, BLOCK_SIZE>(state);
+}
+
+#define BENCHMARK_CUDA_LAUNCH0(B, ...)                                                                                 \
+  BENCHMARK_TEMPLATE(B, char, __VA_ARGS__);                                                                            \
+  BENCHMARK_TEMPLATE(B, int, __VA_ARGS__);                                                                             \
+  BENCHMARK_TEMPLATE(B, float, __VA_ARGS__);                                                                           \
+  BENCHMARK_TEMPLATE(B, double, __VA_ARGS__)
+#define BENCHMARK_CUDA_LAUNCH(...)                                                                                     \
+  BENCHMARK_CUDA_LAUNCH0(__VA_ARGS__)->VECTORADD_ARGS()->UseManualTime();                                              \
+  BENCHMARK_CUDA_LAUNCH0(__VA_ARGS__)->VECTORADD_ARGS()
+
+#define BENCHMARK_CUDA_LAUNCH_EMPTY(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_EMPTY, __VA_ARGS__)->VECTORADD_ARGS()
+#define BENCHMARK_CUDA_LAUNCH_ADDTWO(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_ADDTWO, __VA_ARGS__)->VECTORADD_ARGS()
+#define BENCHMARK_CUDA_LAUNCH_RELU(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_RELU, __VA_ARGS__)->VECTORADD_ARGS()
+
+BENCHMARK_CUDA_LAUNCH_EMPTY(1, 1, 128);
+BENCHMARK_CUDA_LAUNCH_EMPTY(4, 1, 128);
+BENCHMARK_CUDA_LAUNCH_EMPTY(16, 1, 128);
+BENCHMARK_CUDA_LAUNCH_EMPTY(32, 1, 128);
+BENCHMARK_CUDA_LAUNCH_EMPTY(64, 1, 128);
+BENCHMARK_CUDA_LAUNCH_EMPTY(128, 1, 128);
+BENCHMARK_CUDA_LAUNCH_EMPTY(256, 1, 128);
+
+BENCHMARK_CUDA_LAUNCH_ADDTWO(1, 1, 128);
+BENCHMARK_CUDA_LAUNCH_ADDTWO(4, 1, 128);
+BENCHMARK_CUDA_LAUNCH_ADDTWO(16, 1, 128);
+BENCHMARK_CUDA_LAUNCH_ADDTWO(32, 1, 128);
+BENCHMARK_CUDA_LAUNCH_ADDTWO(64, 1, 128);
+BENCHMARK_CUDA_LAUNCH_ADDTWO(128, 1, 128);
+BENCHMARK_CUDA_LAUNCH_ADDTWO(256, 1, 128);
+
+BENCHMARK_CUDA_LAUNCH_RELU(1, 1, 128);
+BENCHMARK_CUDA_LAUNCH_RELU(4, 1, 128);
+BENCHMARK_CUDA_LAUNCH_RELU(16, 1, 128);
+BENCHMARK_CUDA_LAUNCH_RELU(32, 1, 128);
+BENCHMARK_CUDA_LAUNCH_RELU(64, 1, 128);
+BENCHMARK_CUDA_LAUNCH_RELU(128, 1, 128);
+BENCHMARK_CUDA_LAUNCH_RELU(256, 1, 128);
