@@ -1,6 +1,11 @@
 #pragma once
 
+
+#include <leathers/push>
+#include <leathers/all>
 #include <cxxopts.hpp>
+#include <leathers/pop>
+
 #include <iostream>
 
 #include "config.hpp"
@@ -29,3 +34,4 @@ static void init_flags(int argc, char **argv) {
 
   return;
 }
+

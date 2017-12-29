@@ -72,6 +72,10 @@ list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61 ")
 
 
 if (CONFIG_USE_HUNTER)
+
+hunter_add_package(Sugar)
+include(${SUGAR_ROOT}/cmake/Sugar)
+
 hunter_add_package(benchmark)
 find_package(benchmark CONFIG REQUIRED)
 
@@ -147,6 +151,7 @@ add_executable(bench
 include_directories(bench
   ${SRC_DIR}
   ${THIRDPARTY_DIR}
+  ${THIRDPARTY_DIR}/leathers/Source
   ${TOP_DIR}/include
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
