@@ -34,3 +34,17 @@ __device__ void sleep(clock_value_t sleep_cycles) {
     cycles_elapsed = clock64() - start;
   } while (cycles_elapsed < sleep_cycles);
 }
+
+static int64_t get_cycles(float seconds) {
+  // Get device frequency in KHz
+  int64_t Hz;
+  cudaDeviceProp prop;
+  cudaGetDeviceProperties(&prop, 0);
+  Hz = int64_t(prop.clockRate) * 1000;
+
+  // Calculate number of cycles to wait
+  int64_t num_cycles;
+  num_cycles = (int64_t)(seconds * Hz);
+
+  return num_cycles;
+}
