@@ -89,6 +89,7 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     float msecTotal = 0.0f;
     if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
       state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU failed to get elapsed time");
+      break;
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
