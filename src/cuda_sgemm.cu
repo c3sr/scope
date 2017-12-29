@@ -9,7 +9,6 @@
 
 #include <cuda_runtime.h>
 
-#include "enum/enum.h"
 #include "fmt/format.h"
 
 #include "init.hpp"
@@ -18,6 +17,18 @@
 #include "utils_sgemm.hpp"
 
 enum class CUDA_BLAS_IMPLEMENTATION : int { BASIC = 1, TILED = 2 };
+
+static std::string
+CUDA_BLAS_IMPLEMENTATION_STRING(const CUDA_BLAS_IMPLEMENTATION impl) {
+  switch (impl) {
+  case CUDA_BLAS_IMPLEMENTATION::BASIC:
+    return "BASIC";
+  case CUDA_BLAS_IMPLEMENTATION::TILED:
+    return "TILED";
+  default:
+    return "UNDEFINED";
+  }
+}
 
 template <int TILE_WIDTH>
 __global__ void cuda_basic_matrix_multiply(float *A, float *B, float *C,
@@ -87,18 +98,8 @@ __global__ void cuda_tiled_matrix_multiply(float *A, float *B, float *C,
 template <CUDA_BLAS_IMPLEMENTATION IMPLEMENTATION, int TILE_WIDTH>
 static void CUDA_SGEMM(benchmark::State &state) {
 
-  std::string IMPLEMNTATION_NAME{""};
-  switch (IMPLEMENTATION) {
-  case CUDA_BLAS_IMPLEMENTATION::BASIC:
-    IMPLEMNTATION_NAME = "BASIC";
-    break;
-  case CUDA_BLAS_IMPLEMENTATION::TILED:
-    IMPLEMNTATION_NAME = "TILED";
-    break;
-  default:
-    IMPLEMNTATION_NAME = "UNKNOWN";
-    break;
-  }
+  const std::string IMPLEMNTATION_NAME =
+      CUDA_BLAS_IMPLEMENTATION_STRING(IMPLEMENTATION);
 
   const auto M = state.range(0);
   const auto N = state.range(1);
@@ -191,10 +192,12 @@ static void CUDA_SGEMM(benchmark::State &state) {
       cuda_basic_matrix_multiply<TILE_WIDTH>
           <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns,
                                   numBRows, numBColumns, numCRows, numCColumns);
+                                  break ;
     case CUDA_BLAS_IMPLEMENTATION::TILED:
       cuda_tiled_matrix_multiply<TILE_WIDTH>
           <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns,
                                   numBRows, numBColumns, numCRows, numCColumns);
+                                  break ;
     }
 
     cuda_err = cudaDeviceSynchronize();
