@@ -89,7 +89,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     const auto cublas_err =
         cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, d_b, M, d_a, K, &beta, d_c, N);
 
-    const cuda_err = cudaDeviceSynchronize();
+    auto cuda_err = cudaDeviceSynchronize();
 
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
@@ -103,7 +103,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     }
 
     float msecTotal = 0.0f;
-    if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
+    if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
       state.SkipWithError("CUBLAS/SGEMM failed to get elapsed time");
     }
     state.SetIterationTime(msecTotal / 1000);

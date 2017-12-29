@@ -48,8 +48,8 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 }
-BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1);
-BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 32, 1)->UseManualTime();
+BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 31, 1);
+BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 31, 1)->UseManualTime();
 
 static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
@@ -97,5 +97,5 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 }
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1);
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 32, 1)->UseManualTime();
+BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 31, 1);
+BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 31, 1)->UseManualTime();
