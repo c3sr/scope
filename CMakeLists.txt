@@ -133,6 +133,7 @@ add_executable(bench
   ${SRC_DIR}/cblas_sgemm.cpp
   ${SRC_DIR}/cuda_memcpy.cpp
   ${SRC_DIR}/cuda_launch.cu
+  ${SRC_DIR}/cuda_reduce.cu
   ${SRC_DIR}/cuda_stream.cu
   ${SRC_DIR}/cublas_sgemm.cpp
   ${SRC_DIR}/cuda_sgemm.cu

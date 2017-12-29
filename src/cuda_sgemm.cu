@@ -203,21 +203,21 @@ static void CUDA_SGEMM(benchmark::State &state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"M", M}, {"N", N}, {"K", K}, {"IMPLEMENTATION_TYPE", (int)IMPLEMENTATION}});
-    if (IMPLEMENTATION != CUDA_BLAS_IMPLEMENTATION::BASIC) {
-      state.counters.insert({{"TILE_WIDTH", TILE_WIDTH}});
-    }
-    state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
+  state.counters.insert({{"M", M}, {"N", N}, {"K", K}, {"IMPLEMENTATION_TYPE", (int) IMPLEMENTATION}});
+  if (IMPLEMENTATION != CUDA_BLAS_IMPLEMENTATION::BASIC) {
+    state.counters.insert({{"TILE_WIDTH", TILE_WIDTH}});
+  }
+  state.SetBytesProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
 static void CUDA_SGEMM_BASIC(benchmark::State &state) {
-    constexpr auto TILE_WIDTH = 16; // this is not used
-    CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::BASIC, TILE_WIDTH>(state);
+  constexpr auto TILE_WIDTH = 16; // this is not used
+  CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::BASIC, TILE_WIDTH>(state);
 }
 
 template <int TILE_WIDTH>
 static void CUDA_SGEMM_TILED(benchmark::State &state) {
-    CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::TILED, TILE_WIDTH>(state);
+  CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::TILED, TILE_WIDTH>(state);
 }
 
 BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS()->UseManualTime();
