@@ -31,7 +31,9 @@ project(microbenchmark LANGUAGES CXX CUDA)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
-set(CMAKE_CXX_STANDARD 11)
+include(cotire)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
@@ -45,27 +47,28 @@ if(MSVC)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
 	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wno-unused-command-line-argument -Wfatal-errors ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
+  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wno-unused-command-line-argument -Wfatal-errors ${CXX_WARNINGS} -fvisibility-inlines-hidden -O3")
 endif()
 
 if (APPLE)
-  set(CMKAE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
+  list(APPEND CMKAE_CXX_FLAGS "-fvisibility-inlines-hidden")
 endif(APPLE)
 
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=compute_30 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=sm_30 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_32,code=sm_32 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_53,code=sm_53 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60 ")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_62,code=sm_62 ")
-# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=sm_70 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=compute_30 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=sm_30 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_32,code=sm_32 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_53,code=sm_53 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_62,code=sm_62 ")
+# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=sm_70 ")
+# list(APPEND CMAKE_CUDA_FLAGS " --expt-extended-lambda ")
 
 
 if (CONFIG_USE_HUNTER)
@@ -107,6 +110,7 @@ endif (CONFIG_USE_HUNTER)
 
 find_package(CUDA REQUIRED)
 find_package(OpenBLAS REQUIRED)
+find_package(Protobuf REQUIRED)
 
 
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
@@ -131,9 +135,9 @@ add_executable(bench
   ${SRC_DIR}/cuda_launch.cu
   ${SRC_DIR}/cuda_stream.cu
   ${SRC_DIR}/cublas_sgemm.cpp
-  ${SRC_DIR}/cuda_sgemm_basic.cu
-  ${SRC_DIR}/cuda_sgemm_tiled.cu
+  ${SRC_DIR}/cuda_sgemm.cu
   ${SRC_DIR}/cuda_vectoradd.cu
+  ${SRC_DIR}/caffe_reader.cpp
   ${SRC_DIR}/logger.cpp
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
@@ -161,6 +165,7 @@ target_link_libraries(bench cub::cub)
 # target_link_libraries(bench type_safe)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
 # target_link_libraries(bench protobuf::libprotobuf)
+target_link_libraries(bench ${PROTOBUF_LIBRARY} )
 target_link_libraries(bench cxxopts)
 target_link_libraries(bench debug_assert)
 # target_link_libraries(bench absl::base absl::synchronization absl::strings)
@@ -173,6 +178,8 @@ target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 # particles will also build with -std=c++11
 target_compile_features(bench PUBLIC cxx_std_11)
 
+
+cotire(bench)
 
 if(APPLE)
   # We need to add the path to the driver (libcuda.dylib) as an rpath,
