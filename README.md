@@ -69,6 +69,18 @@ Output as JSON using
 cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
 ```
 
+## Installing latest cmake
+
+
+```
+cd /tmp
+wget https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.sh
+sudo sh cmake-3.10.1-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
+```
+
+you may also want to remove the default installation `sudo apt-get remove cmake`
+
+
 ## Disable CPU frequency scaling
 
 If you see this error:
