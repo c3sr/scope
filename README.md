@@ -80,6 +80,18 @@ sudo sh cmake-3.10.1-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
 
 you may also want to remove the default installation `sudo apt-get remove cmake`
 
+## Checkout all submodules
+
+```
+git submodule update --init --recursive
+```
+
+or to update
+
+```
+git submodule update --recursive --remote
+```
+
 
 ## Disable CPU frequency scaling
 
