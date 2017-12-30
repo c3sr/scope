@@ -62,6 +62,11 @@ The above will output
 Output as JSON using
 
     ./bench --benchmark_out_format=json --benchmark_out=test.json
+    
+or preferably 
+
+
+    ./bench --benchmark_out_format=json --benchmark_out=`hostname`.json
 
 ## On Minsky With PowerAI
 
