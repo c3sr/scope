@@ -93,12 +93,14 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
     state.PauseTiming();
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+      state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to launch kernel");
       break;
     }
 
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to get elapsed time");
+      break ;
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();

@@ -36,6 +36,7 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
     state.PauseTiming();
 
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+      state.SkipWithError("CUDA/MEMCPY/TOGPU failed to perform memcpy");
       break;
     }
     float msecTotal = 0.0f;
@@ -84,6 +85,7 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     state.PauseTiming();
 
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+      state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU failed to perform memcpy");
       break;
     }
     float msecTotal = 0.0f;

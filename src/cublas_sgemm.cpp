@@ -97,9 +97,11 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     state.PauseTiming();
     if (cublas_err != CUBLAS_STATUS_SUCCESS) {
       state.SkipWithError("CUBLAS/SGEMM failed to launch kernel");
+      break ;
     }
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError("CUBLAS/SGEMM failed to synchronize kernel");
+      break ;
     }
 
     float msecTotal = 0.0f;

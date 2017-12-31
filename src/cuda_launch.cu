@@ -115,13 +115,14 @@ static void CUDA_LAUNCH(benchmark::State &state) {
 
     state.PauseTiming();
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+      state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to synchronize", IMPLEMENTATION_NAME).c_str());
       break;
     }
 
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
-
       state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
+      break;
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
