@@ -41,6 +41,7 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
   auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector A");
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector A");
     return;
   }
   defer(cudaFree(d_a));
@@ -48,6 +49,7 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
   cuda_err = cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector B");
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector B");
     return;
   }
   defer(cudaFree(d_b));
@@ -55,22 +57,26 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
   cuda_err = cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data()));
   if (cuda_err != cudaSuccess) {
     LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector C");
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector C");
     return;
   }
   defer(cudaFree(d_c));
 
   cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector A");
     return;
   }
 
   cuda_err = CUDA_PERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector B");
     return;
   }
 
   cuda_err = CUDA_PERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()), cudaMemcpyHostToDevice));
   if (cuda_err != cudaSuccess) {
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector C");
     return;
   }
 
@@ -100,7 +106,7 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to get elapsed time");
-      break ;
+      break;
     }
     state.SetIterationTime(msecTotal / 1000);
     state.ResumeTiming();
