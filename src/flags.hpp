@@ -1,7 +1,13 @@
 #pragma once
 
-
+#if 1
 #include <cxxopts.hpp>
+#else
+#include <cxxopts.hpp>
+#include <leathers/all>
+#include <leathers/pop>
+#include <leathers/push>
+#endif
 
 #include <iostream>
 
@@ -31,4 +37,3 @@ static void init_flags(int argc, char **argv) {
 
   return;
 }
-
