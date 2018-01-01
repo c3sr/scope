@@ -10,6 +10,12 @@
 #include "utils_cuda.hpp"
 
 static void CUDAMemcpyToGPU(benchmark::State &state) {
+
+  if (!has_cuda) {
+    state.SkipWithError("CUDA/MEMCPY/TOGPU no CUDA device found");
+    return;
+  }
+
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   char *src        = new char[bytes];
   char *dst        = nullptr;
@@ -53,6 +59,12 @@ BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 31, 1);
 BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 31, 1)->UseManualTime();
 
 static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
+
+  if (!has_cuda) {
+    state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU no CUDA device found");
+    return;
+  }
+
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   float *src       = nullptr;
   auto err         = cudaHostAlloc(&src, bytes, cudaHostAllocWriteCombined);

@@ -18,6 +18,8 @@ static float device_giga_bandwidth{0};
 static size_t device_free_physmem{0};
 static size_t device_total_physmem{0};
 
+extern bool has_cuda;
+
 static cudaError_t init_cuda() {
   cudaError_t error = cudaSuccess;
   do {
@@ -31,6 +33,7 @@ static cudaError_t init_cuda() {
       exit(1);
     }
 
+    has_cuda       = true;
     cuda_device_id = 0;
 
     if (cuda_device_id < 0) {

@@ -14,6 +14,12 @@
 #include "utils_sgemm.hpp"
 
 static void CUBLAS_SGEMM(benchmark::State &state) {
+
+  if (!has_cuda) {
+    state.SkipWithError("CUDA/SGEMM no CUDA device found");
+    return;
+  }
+
   const auto M     = state.range(0);
   const auto N     = state.range(1);
   const auto K     = state.range(2);
@@ -97,11 +103,11 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     state.PauseTiming();
     if (cublas_err != CUBLAS_STATUS_SUCCESS) {
       state.SkipWithError("CUBLAS/SGEMM failed to launch kernel");
-      break ;
+      break;
     }
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError("CUBLAS/SGEMM failed to synchronize kernel");
-      break ;
+      break;
     }
 
     float msecTotal = 0.0f;

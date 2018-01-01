@@ -64,6 +64,11 @@ static void CUDA_LAUNCH(benchmark::State &state) {
 
   const std::string IMPLEMENTATION_NAME = CUDA_LAUNCH_IMPLEMENTATION_STRING(IMPLEMENTATION);
 
+  if (!has_cuda) {
+    state.SkipWithError(fmt::format("CUDA/LAUNCH/{} no CUDA device found", IMPLEMENTATION_NAME).c_str());
+    return;
+  }
+
   const size_t N = state.range(0);
 
   auto a = std::vector<T>(N);

@@ -95,6 +95,11 @@ static void CUDA_SGEMM(benchmark::State &state) {
 
   const std::string IMPLEMENTATION_NAME = CUDA_BLAS_IMPLEMENTATION_STRING(IMPLEMENTATION);
 
+  if (!has_cuda) {
+    state.SkipWithError(fmt::format("CUDA/SGEMM/{} no CUDA device found", IMPLEMENTATION_NAME).c_str());
+    return;
+  }
+
   const auto M     = state.range(0);
   const auto N     = state.range(1);
   const auto K     = state.range(2);

@@ -25,6 +25,10 @@ __global__ void cuda_vector_add(T *in1, T *in2, T *out, size_t len) {
 
 template <typename T, int COARSINING_FACTOR = 1, int BLOCK_SIZE = 128>
 static void CUDA_VECTOR_ADD(benchmark::State &state) {
+  if (!has_cuda) {
+    state.SkipWithError("CUDA/VECTOR_ADD/BASIC no CUDA device found");
+    return;
+  }
 
   const size_t N = state.range(0);
 
