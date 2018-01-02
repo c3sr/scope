@@ -16,7 +16,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger package manager")
 set(USE_CUDA_EVENTS "ON" CACHE BOOL "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize")
-set(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
+set(CUDA_MULTI_ARCH "OFF" CACHE BOOL "Whether to generate CUDA code for multiple architectures")
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
