@@ -32,6 +32,16 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
   const size_t N = state.range(0);
 
+  const dim3 blockDim(BLOCK_SIZE);
+  const dim3 gridDim(ceil(((float) N) / blockDim.x));
+
+  if (gridDim.x >= cuda_device_prop.maxGridSize[0]) {
+    const auto str = fmt::format("CUDA/VECTOR_ADD/BASIC the grid dimension {} exceeds the max grid dimensions {}",
+                                 gridDim.x, cuda_device_prop.maxGridSize[0]);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
   auto a = std::vector<T>(N);
   auto b = std::vector<T>(N);
   auto c = std::vector<T>(N);
@@ -83,9 +93,6 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector C");
     return;
   }
-
-  dim3 blockDim(BLOCK_SIZE);
-  dim3 gridDim(ceil(((float) N) / blockDim.x));
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
@@ -139,12 +146,22 @@ BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 64)->VECTORADD_ARGS()->UseManualTim
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 64)->VECTORADD_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 64)->VECTORADD_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 64)->VECTORADD_ARGS()->UseManualTime();
-#endif // FAST_MODE
 
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 128)->VECTORADD_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 128)->VECTORADD_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 128)->VECTORADD_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 128)->VECTORADD_ARGS()->UseManualTime();
+
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 256)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 256)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 256)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 256)->VECTORADD_ARGS()->UseManualTime();
+#endif // FAST_MODE
+
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 512)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 512)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 512)->VECTORADD_ARGS()->UseManualTime();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 512)->VECTORADD_ARGS()->UseManualTime();
 
 #else // USE_CUDA_EVENTS
 #ifndef FAST_MODE
@@ -157,10 +174,22 @@ BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 64)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 64)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 64)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 64)->VECTORADD_ARGS();
-#endif // FAST_MODE
 
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 128)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 128)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 128)->VECTORADD_ARGS();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 128)->VECTORADD_ARGS();
+
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 256)->VECTORADD_ARGS();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 256)->VECTORADD_ARGS();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 256)->VECTORADD_ARGS();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 256)->VECTORADD_ARGS();
+
+#endif // FAST_MODE
+
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 512)->VECTORADD_ARGS();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 512)->VECTORADD_ARGS();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 512)->VECTORADD_ARGS();
+BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 512)->VECTORADD_ARGS();
+
 #endif // USE_CUDA_EVENTS

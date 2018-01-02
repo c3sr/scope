@@ -71,6 +71,16 @@ static void CUDA_LAUNCH(benchmark::State &state) {
 
   const size_t N = state.range(0);
 
+  const dim3 blockDim(BLOCK_SIZE);
+  const dim3 gridDim(ceil(((float) N) / blockDim.x));
+
+  if (gridDim.x >= cuda_device_prop.maxGridSize[0]) {
+    const auto str = fmt::format("CUDA/LAUNCH/{} the grid dimension {} exceeds the max grid dimensions {}",
+                                 IMPLEMENTATION_NAME, gridDim.x, cuda_device_prop.maxGridSize[0]);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
   auto a = std::vector<T>(N);
 
   std::fill(a.begin(), a.end(), 1);
@@ -88,9 +98,6 @@ static void CUDA_LAUNCH(benchmark::State &state) {
   if (cuda_err != cudaSuccess) {
     return;
   }
-
-  dim3 blockDim(BLOCK_SIZE);
-  dim3 gridDim(ceil(((float) N) / blockDim.x));
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;

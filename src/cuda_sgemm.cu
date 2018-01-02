@@ -123,6 +123,23 @@ static void CUDA_SGEMM(benchmark::State &state) {
   (void) numCRows;
   (void) numCColumns;
 
+  dim3 blockDim(TILE_WIDTH, TILE_WIDTH, 1);
+  dim3 gridDim(ceil(((float) numBColumns) / blockDim.x), ceil(((float) numARows) / blockDim.y));
+
+  if (gridDim.x >= cuda_device_prop.maxGridSize[0]) {
+    const auto str = fmt::format("CUDA/SGEMM/{} the X grid dimension {} exceeds the max grid dimensions {}",
+                                 IMPLEMENTATION_NAME, gridDim.x, cuda_device_prop.maxGridSize[0]);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
+  if (gridDim.y >= cuda_device_prop.maxGridSize[1]) {
+    const auto str = fmt::format("CUDA/SGEMM/{} the Y grid dimension {} exceeds the max grid dimensions {}",
+                                 IMPLEMENTATION_NAME, gridDim.y, cuda_device_prop.maxGridSize[1]);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
   auto a = std::vector<float>(M * K);
   auto b = std::vector<float>(K * N);
   auto c = std::vector<float>(M * N);
@@ -168,9 +185,6 @@ static void CUDA_SGEMM(benchmark::State &state) {
   if (cuda_err != cudaSuccess) {
     return;
   }
-
-  dim3 blockDim(TILE_WIDTH, TILE_WIDTH, 1);
-  dim3 gridDim(ceil(((float) numBColumns) / blockDim.x), ceil(((float) numARows) / blockDim.y));
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;

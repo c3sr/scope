@@ -13,7 +13,7 @@
 // using optional = std::experimental::optional;
 // using nullopt = std::experimental::nullopt;
 
-static cudaDeviceProp device_prop;
+extern cudaDeviceProp cuda_device_prop;
 static float device_giga_bandwidth{0};
 static size_t device_free_physmem{0};
 static size_t device_total_physmem{0};
@@ -51,16 +51,17 @@ static cudaError_t init_cuda() {
       break;
     }
 
-    if (CUDA_PERROR(error = cudaGetDeviceProperties(&device_prop, FLAGS_cuda_device_id))) {
+    if (CUDA_PERROR(error = cudaGetDeviceProperties(&cuda_device_prop, FLAGS_cuda_device_id))) {
       break;
     }
 
-    if (device_prop.major < 1) {
+    if (cuda_device_prop.major < 1) {
       LOG(critical, "Device does not support CUDA.");
       exit(1);
     }
 
-    device_giga_bandwidth = float(device_prop.memoryBusWidth) * device_prop.memoryClockRate * 2 / 8 / 1000 / 1000;
+    device_giga_bandwidth =
+        float(cuda_device_prop.memoryBusWidth) * cuda_device_prop.memoryClockRate * 2 / 8 / 1000 / 1000;
   } while (0);
   return error;
 }
