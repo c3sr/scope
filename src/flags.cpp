@@ -3,6 +3,7 @@
 #include "commandlineflags.hpp"
 
 DEFINE_int32(cuda_device_id, 1, "The cuda device id to use.");
+// DEFINE_bool(fast, false, "Whether to run only parts of the tests.");
 DEFINE_int32(verbose, 1, "Verbose level.");
 
 static void parse(int* argc, char** argv) {

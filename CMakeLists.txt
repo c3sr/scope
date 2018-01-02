@@ -167,6 +167,8 @@ if (USE_CUDA_EVENTS)
   add_definitions(-DUSE_CUDA_EVENTS=1)
 endif(USE_CUDA_EVENTS)
 
+add_definitions(-DPROJECT_NAME=microbench)
+
 set_target_properties(bench PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON
 	CUDA_RESOLVE_DEVICE_SYMBOLS ON
@@ -180,9 +182,7 @@ target_link_libraries(bench cub::cub)
 # target_link_libraries(bench rangev3)
 # target_link_libraries(bench type_safe)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
-# target_link_libraries(bench protobuf::libprotobuf)
-target_link_libraries(bench ${PROTOBUF_LIBRARY} )
-target_link_libraries(bench cxxopts)
+# target_link_libraries(bench ${PROTOBUF_LIBRARY} )
 target_link_libraries(bench debug_assert)
 # target_link_libraries(bench absl::base absl::synchronization absl::strings)
 target_link_libraries(bench ${OpenBLAS_LIB})
