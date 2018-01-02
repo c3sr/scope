@@ -133,9 +133,23 @@ static void CUDA_SGEMM(benchmark::State &state) {
     return;
   }
 
+  if (gridDim.x >= CUDA_MAX_GRID_SIZE) {
+    const auto str = fmt::format("CUDA/SGEMM/{} the X grid dimension {} exceeds the max grid dimensions {}",
+                                 IMPLEMENTATION_NAME, gridDim.x, CUDA_MAX_GRID_SIZE);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
   if (gridDim.y >= cuda_device_prop.maxGridSize[1]) {
     const auto str = fmt::format("CUDA/SGEMM/{} the Y grid dimension {} exceeds the max grid dimensions {}",
                                  IMPLEMENTATION_NAME, gridDim.y, cuda_device_prop.maxGridSize[1]);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
+  if (gridDim.y >= CUDA_MAX_GRID_SIZE) {
+    const auto str = fmt::format("CUDA/SGEMM/{} the Y grid dimension {} exceeds the max grid dimensions {}",
+                                 IMPLEMENTATION_NAME, gridDim.y, CUDA_MAX_GRID_SIZE);
     state.SkipWithError(str.c_str());
     return;
   }

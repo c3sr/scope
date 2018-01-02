@@ -42,6 +42,13 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
     return;
   }
 
+  if (gridDim.x >= CUDA_MAX_GRID_SIZE) {
+    const auto str = fmt::format("CUDA/VECTOR_ADD/BASIC the grid dimension {} exceeds the max grid dimensions {}",
+                                 gridDim.x, CUDA_MAX_GRID_SIZE);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
   auto a = std::vector<T>(N);
   auto b = std::vector<T>(N);
   auto c = std::vector<T>(N);

@@ -81,6 +81,13 @@ static void CUDA_LAUNCH(benchmark::State &state) {
     return;
   }
 
+  if (gridDim.x >= CUDA_MAX_GRID_SIZE) {
+    const auto str = fmt::format("CUDA/LAUNCH/{} the grid dimension {} exceeds the max grid dimensions {}",
+                                 IMPLEMENTATION_NAME, gridDim.x, CUDA_MAX_GRID_SIZE);
+    state.SkipWithError(str.c_str());
+    return;
+  }
+
   auto a = std::vector<T>(N);
 
   std::fill(a.begin(), a.end(), 1);
