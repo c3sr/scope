@@ -132,10 +132,6 @@ set(TOP_DIR "${PROJECT_SOURCE_DIR}")
 set(THIRDPARTY_DIR "${TOP_DIR}/third_party")
 set(SRC_DIR "${TOP_DIR}/src")
 
-# add_subdirectory(${THIRDPARTY_DIR}/googletest)
-# add_subdirectory(${THIRDPARTY_DIR}/cctz)
-# add_subdirectory(${THIRDPARTY_DIR}/abseil-cpp)
-
 add_executable(bench
   ${SRC_DIR}/cblas_daxpy.cpp
   ${SRC_DIR}/cblas_sgemm.cpp
@@ -184,7 +180,6 @@ target_link_libraries(bench cub::cub)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
 # target_link_libraries(bench ${PROTOBUF_LIBRARY} )
 target_link_libraries(bench debug_assert)
-# target_link_libraries(bench absl::base absl::synchronization absl::strings)
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
