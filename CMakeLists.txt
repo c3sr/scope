@@ -15,7 +15,7 @@ set(VERBOSE_BUILD ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger package manager")
-
+set(USE_CUDA_EVENTS "ON" CACHE BOOL "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize")
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -51,23 +51,22 @@ else()
 endif()
 
 if (APPLE)
-  list(APPEND CMKAE_CXX_FLAGS "-fvisibility-inlines-hidden")
+  list(APPEND CMAKE_CXX_FLAGS "-fvisibility-inlines-hidden")
 endif(APPLE)
-
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
 # list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=compute_30 ")
 # list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=sm_30 ")
 # list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_32,code=sm_32 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_53,code=sm_53 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_53,code=sm_53 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60 ")
 list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_62,code=sm_62 ")
-# list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=sm_70 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_62,code=sm_62 ")
+list(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=sm_70 ")
 # list(APPEND CMAKE_CUDA_FLAGS " --expt-extended-lambda ")
 
 
@@ -156,6 +155,10 @@ include_directories(bench
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
 )
+
+if (USE_CUDA_EVENTS)
+  add_definitions(-DUSE_CUDA_EVENTS=1)
+endif(USE_CUDA_EVENTS)
 
 set_target_properties(bench PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON
