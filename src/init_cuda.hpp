@@ -33,18 +33,17 @@ static cudaError_t init_cuda() {
       exit(1);
     }
 
-    has_cuda       = true;
-    cuda_device_id = 0;
+    has_cuda = true;
 
-    if (cuda_device_id < 0) {
-      LOG(critical, "device = {} is not valid.", cuda_device_id);
+    if (FLAGS_cuda_device_id < 0) {
+      LOG(critical, "device = {} is not valid.", FLAGS_cuda_device_id);
       exit(1);
     }
-    if ((cuda_device_id > deviceCount - 1) || (cuda_device_id < 0)) {
-      cuda_device_id = 0;
+    if ((FLAGS_cuda_device_id > deviceCount - 1) || (FLAGS_cuda_device_id < 0)) {
+      FLAGS_cuda_device_id = 0;
     }
 
-    if (CUDA_PERROR(error = cudaSetDevice(cuda_device_id))) {
+    if (CUDA_PERROR(error = cudaSetDevice(FLAGS_cuda_device_id))) {
       break;
     }
 
@@ -52,7 +51,7 @@ static cudaError_t init_cuda() {
       break;
     }
 
-    if (CUDA_PERROR(error = cudaGetDeviceProperties(&device_prop, cuda_device_id))) {
+    if (CUDA_PERROR(error = cudaGetDeviceProperties(&device_prop, FLAGS_cuda_device_id))) {
       break;
     }
 

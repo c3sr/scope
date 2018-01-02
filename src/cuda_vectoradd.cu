@@ -102,12 +102,16 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
 #ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
-    cudaEventSynchronize(stop);
+    auto cuda_err = cudaEventSynchronize(stop);
 #else  // USE_CUDA_EVENTS
-    const auto cuda_err = cudaDeviceSynchronize();
+    auto cuda_err = cudaDeviceSynchronize();
 #endif // USE_CUDA_EVENTS
 
     state.PauseTiming();
+    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+      state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to launch kernel");
+      break;
+    }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
@@ -115,11 +119,6 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-#else  // USE_CUDA_EVENTS
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
-      state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to launch kernel");
-      break;
-    }
 #endif // USE_CUDA_EVENTS
     state.ResumeTiming();
   }

@@ -1,7 +1,21 @@
 #pragma once
 
 // M, N, K
-#define SGEMM_ARGS0() Args({1000, 1, 1})
+#ifdef FAST_MODE
+#define SGEMM_ARGS()                                                                                                   \
+  Args({1000, 1, 1})                                                                                                   \
+      ->Args({128, 169, 1728})                                                                                         \
+      ->Args({128, 729, 1200})                                                                                         \
+      ->Args({192, 169, 1728})                                                                                         \
+      ->Args({256, 169, 1})                                                                                            \
+      ->Args({256, 729, 1})                                                                                            \
+      ->Args({384, 169, 1})                                                                                            \
+      ->Args({384, 169, 2304})                                                                                         \
+      ->Args({50, 1000, 1})                                                                                            \
+      ->Args({50, 1000, 4096})                                                                                         \
+      ->Args({50, 4096, 1})                                                                                            \
+      ->Args({50, 4096, 4096})
+#else // FAST_MODE
 #define SGEMM_ARGS()                                                                                                   \
   Args({1000, 1, 1})                                                                                                   \
       ->Args({128, 169, 1728})                                                                                         \
@@ -93,3 +107,4 @@
       ->Args({1024, 6000, 1536})                                                                                       \
       ->Args({512, 4, 512})                                                                                            \
       ->Args({1024, 4, 512})
+#endif // FAST_MODE

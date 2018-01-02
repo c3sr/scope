@@ -1,39 +1,11 @@
 #pragma once
 
-#if 1
-#include <cxxopts.hpp>
-#else
-#include <cxxopts.hpp>
-#include <leathers/all>
-#include <leathers/pop>
-#include <leathers/push>
-#endif
-
 #include <iostream>
 
+#include "benchmark/benchmark.h"
+#include "commandlineflags.hpp"
 #include "config.hpp"
 
-static int cuda_device_id = 0;
+DECLARE_int32(cuda_device_id);
 
-static void init_flags(int argc, char **argv) {
-  try {
-    cxxopts::Options options(argv[0], "microbenchmark suite");
-
-    options.positional_help("[optional args]").show_positional_help();
-    options.add_options()("d,debug", "Enable debugging")("cuda_device", "CUDA device to use",
-                                                         cxxopts::value<int>()->default_value("0"));
-
-    auto result = options.parse(argc, argv);
-
-    if (result.count("help")) {
-      std::cout << options.help({}) << std::endl;
-      exit(0);
-    }
-
-    cuda_device_id = result["cuda_device"].as<int>();
-  } catch (const cxxopts::OptionException &e) {
-    // std::cout << "error parsing options: " << e.what() << std::endl;
-  }
-
-  return;
-}
+extern void init_flags(int argc, char **argv);

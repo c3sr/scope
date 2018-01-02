@@ -172,12 +172,16 @@ static void CUDA_SGEMM(benchmark::State &state) {
   dim3 blockDim(TILE_WIDTH, TILE_WIDTH, 1);
   dim3 gridDim(ceil(((float) numBColumns) / blockDim.x), ceil(((float) numARows) / blockDim.y));
 
+#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   CUDA_PERROR(cudaEventCreate(&start));
   CUDA_PERROR(cudaEventCreate(&stop));
+#endif //  USE_CUDA_EVENTS
 
   for (auto _ : state) {
+#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
+#endif // USE_CUDA_EVENTS
 
     switch (IMPLEMENTATION) {
       case CUDA_BLAS_IMPLEMENTATION::BASIC:
@@ -189,24 +193,28 @@ static void CUDA_SGEMM(benchmark::State &state) {
             <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
         break;
     }
-
-    cuda_err = cudaDeviceSynchronize();
-
+#ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
-    cudaEventSynchronize(stop);
+    auto cuda_err = cudaEventSynchronize(stop);
+#else  // USE_CUDA_EVENTS
+    auto cuda_err = cudaDeviceSynchronize();
+#endif // USE_CUDA_EVENTS
 
     state.PauseTiming();
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
-      state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to get synchronize", IMPLEMENTATION_NAME).c_str());
+      state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to synchronize", IMPLEMENTATION_NAME).c_str());
       break;
     }
 
+#ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
+#endif // USE_CUDA_EVENTS
+
     state.ResumeTiming();
   }
 
@@ -227,13 +235,14 @@ static void CUDA_SGEMM_TILED(benchmark::State &state) {
   CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::TILED, TILE_WIDTH>(state);
 }
 
+#ifdef USE_CUDA_EVENTS
 BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS()->UseManualTime();
-BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS();
-
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 16)->SGEMM_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 32)->SGEMM_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 64)->SGEMM_ARGS()->UseManualTime();
-
+#else  // USE_CUDA_EVENTS
+BENCHMARK(CUDA_SGEMM_BASIC)->SGEMM_ARGS();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 16)->SGEMM_ARGS();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 32)->SGEMM_ARGS();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 64)->SGEMM_ARGS();
+#endif // USE_CUDA_EVENTS

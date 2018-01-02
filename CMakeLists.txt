@@ -52,7 +52,7 @@ else()
 endif()
 
 if (APPLE)
-  list(APPEND CMAKE_CXX_FLAGS "-fvisibility-inlines-hidden")
+  list (APPEND CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
 endif(APPLE)
 
 
@@ -105,7 +105,8 @@ find_package(OpenBLAS REQUIRED)
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
-LIST(APPEND CUDA_NVCC_FLAGS -Wno-deprecated-gpu-targets)
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-lineinfo")
+LIST(APPEND CMAKE_CUDA_FLAGS -Wno-deprecated-gpu-targets)
 LIST(APPEND CUDA_NVCC_FLAGS --expt-extended-lambda)
 
 if(CUDA_MULTI_ARCH)
@@ -122,7 +123,6 @@ set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
 
-LIST(APPEND CMAKE_CUDA_FLAGS "-lineinfo --Werror cross-execution-space-call -Xptxas -v")
 
 message(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
                " archs: ${CUDA_ARCH_FLAGS_readable})")
@@ -135,7 +135,6 @@ set(SRC_DIR "${TOP_DIR}/src")
 # add_subdirectory(${THIRDPARTY_DIR}/googletest)
 # add_subdirectory(${THIRDPARTY_DIR}/cctz)
 # add_subdirectory(${THIRDPARTY_DIR}/abseil-cpp)
-add_subdirectory(${THIRDPARTY_DIR}/cxxopts)
 
 add_executable(bench
   ${SRC_DIR}/cblas_daxpy.cpp
@@ -148,7 +147,9 @@ add_executable(bench
   ${SRC_DIR}/cuda_sgemm.cu
   ${SRC_DIR}/cuda_vectoradd.cu
   ${SRC_DIR}/caffe_reader.cpp
+  ${SRC_DIR}/commandlineflags.cpp
   ${SRC_DIR}/logger.cpp
+  ${SRC_DIR}/flags.cpp
   ${SRC_DIR}/init.cpp
   ${SRC_DIR}/main.cpp
 )
