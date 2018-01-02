@@ -92,12 +92,16 @@ static void CUDA_LAUNCH(benchmark::State &state) {
   dim3 blockDim(BLOCK_SIZE);
   dim3 gridDim(ceil(((float) N) / blockDim.x));
 
+#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   CUDA_PERROR(cudaEventCreate(&start));
   CUDA_PERROR(cudaEventCreate(&stop));
+#endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
+#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
+#endif // USE_CUDA_EVENTS
 
     for (int ii = 0; ii < LAUNCH_COUNT; ii++) {
       switch (IMPLEMENTATION) {
@@ -113,16 +117,15 @@ static void CUDA_LAUNCH(benchmark::State &state) {
       }
     }
 
-    cuda_err = cudaDeviceSynchronize();
-
+#ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
+#else // USE_CUDA_EVENTS
+    const auto cuda_err = cudaDeviceSynchronize();
+#endif
 
     state.PauseTiming();
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
-      state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to synchronize", IMPLEMENTATION_NAME).c_str());
-      break;
-    }
+#ifdef USE_CUDA_EVENTS
 
     float msecTotal = 0.0f;
     if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
@@ -130,6 +133,13 @@ static void CUDA_LAUNCH(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
+#else  // USE_CUDA_EVENTS
+    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+      state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to synchronize", IMPLEMENTATION_NAME).c_str());
+      break;
+    }
+#endif // USE_CUDA_EVENTS
+
     state.ResumeTiming();
   }
 
@@ -156,9 +166,11 @@ static void CUDA_LAUNCH_RELU(benchmark::State &state) {
   return CUDA_LAUNCH<CUDA_LAUNCH_IMPLEMENTATION::RELU, T, LAUNCH_COUNT, ITERATION_COUNT, BLOCK_SIZE>(state);
 }
 
-#define BENCHMARK_CUDA_LAUNCH0(B, ...)                                                                                 \
-  BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()->UseManualTime();                                               \
-  BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()
+#ifdef USE_CUDA_EVENTS
+#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()->UseManualTime();
+#else // USE_CUDA_EVENTS
+#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()
+#endif // USE_CUDA_EVENTS
 #define BENCHMARK_CUDA_LAUNCH(B, ...)                                                                                  \
   BENCHMARK_CUDA_LAUNCH0(B, char, __VA_ARGS__);                                                                        \
   BENCHMARK_CUDA_LAUNCH0(B, int, __VA_ARGS__);                                                                         \
@@ -169,26 +181,32 @@ static void CUDA_LAUNCH_RELU(benchmark::State &state) {
 #define BENCHMARK_CUDA_LAUNCH_ADDTWO(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_ADDTWO, __VA_ARGS__)
 #define BENCHMARK_CUDA_LAUNCH_RELU(...) BENCHMARK_CUDA_LAUNCH(CUDA_LAUNCH_RELU, __VA_ARGS__)
 
+#ifndef FAST_MODE
 BENCHMARK_CUDA_LAUNCH_EMPTY(1, 1, 128);
 BENCHMARK_CUDA_LAUNCH_EMPTY(4, 1, 128);
 BENCHMARK_CUDA_LAUNCH_EMPTY(16, 1, 128);
 BENCHMARK_CUDA_LAUNCH_EMPTY(32, 1, 128);
 BENCHMARK_CUDA_LAUNCH_EMPTY(64, 1, 128);
 BENCHMARK_CUDA_LAUNCH_EMPTY(128, 1, 128);
+#endif // FAST_MODE
 BENCHMARK_CUDA_LAUNCH_EMPTY(256, 1, 128);
 
+#ifndef FAST_MODE
 BENCHMARK_CUDA_LAUNCH_ADDTWO(1, 1, 128);
 BENCHMARK_CUDA_LAUNCH_ADDTWO(4, 1, 128);
 BENCHMARK_CUDA_LAUNCH_ADDTWO(16, 1, 128);
 BENCHMARK_CUDA_LAUNCH_ADDTWO(32, 1, 128);
 BENCHMARK_CUDA_LAUNCH_ADDTWO(64, 1, 128);
 BENCHMARK_CUDA_LAUNCH_ADDTWO(128, 1, 128);
+#endif // FAST_MODE
 BENCHMARK_CUDA_LAUNCH_ADDTWO(256, 1, 128);
 
+#ifndef FAST_MODE
 BENCHMARK_CUDA_LAUNCH_RELU(1, 1, 128);
 BENCHMARK_CUDA_LAUNCH_RELU(4, 1, 128);
 BENCHMARK_CUDA_LAUNCH_RELU(16, 1, 128);
 BENCHMARK_CUDA_LAUNCH_RELU(32, 1, 128);
 BENCHMARK_CUDA_LAUNCH_RELU(64, 1, 128);
 BENCHMARK_CUDA_LAUNCH_RELU(128, 1, 128);
+#endif // FAST_MODE
 BENCHMARK_CUDA_LAUNCH_RELU(256, 1, 128);

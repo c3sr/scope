@@ -6,6 +6,8 @@
 #include <benchmark/benchmark.h>
 #include <cuda_runtime.h>
 
+
+#include "init.hpp"
 #include "utils.hpp"
 #include "utils_cuda.hpp"
 
