@@ -10,10 +10,10 @@
 #include "utils.hpp"
 #include "utils_cuda.hpp"
 
-static void CUDAMemcpyToGPU(benchmark::State &state) {
+static void CUDA_Memcpy_HostToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
-    state.SkipWithError("CUDA/MEMCPY/TOGPU no CUDA device found");
+    state.SkipWithError("CUDA/MEMCPY/HostToGPU no CUDA device found");
     return;
   }
 
@@ -50,13 +50,13 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
     state.PauseTiming();
 
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
-      state.SkipWithError("CUDA/MEMCPY/TOGPU failed to perform memcpy");
+      state.SkipWithError("CUDA/MEMCPY/HostToGPU failed to perform memcpy");
       break;
     }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
-      state.SkipWithError("CUDA/MEMCPY/TOGPU failed to get elapsed time");
+      state.SkipWithError("CUDA/MEMCPY/HostToGPU failed to get elapsed time");
     }
     state.SetIterationTime(msecTotal / 1000);
 #endif // USE_CUDA_EVENTS
@@ -66,10 +66,10 @@ static void CUDAMemcpyToGPU(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 }
 
-static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
+static void CUDA_Memcpy_PinnedToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
-    state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU no CUDA device found");
+    state.SkipWithError("CUDA/MEMCPY/PinnedToGPU no CUDA device found");
     return;
   }
 
@@ -113,13 +113,13 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
     state.PauseTiming();
 
     if (CUDA_PERROR(cuda_err) != cudaSuccess) {
-      state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU failed to perform memcpy");
+      state.SkipWithError("CUDA/MEMCPY/PinnedToGPU failed to perform memcpy");
       break;
     }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
-      state.SkipWithError("CUDA/PINNED_MEMCPY/TOGPU failed to get elapsed time");
+      state.SkipWithError("CUDA/MEMCPY/PinnedToGPU failed to get elapsed time");
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
@@ -132,9 +132,9 @@ static void CUDAPinnedMemcpyToGPU(benchmark::State &state) {
 }
 
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 31, 1)->UseManualTime();
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 31, 1)->UseManualTime();
+BENCHMARK(CUDA_Memcpy_HostToGPU)->DenseRange(1, 31, 1)->UseManualTime();
+BENCHMARK(CUDA_Memcpy_PinnedToGPU)->DenseRange(1, 31, 1)->UseManualTime();
 #else  // USE_CUDA_EVENTS
-BENCHMARK(CUDAMemcpyToGPU)->DenseRange(1, 31, 1);
-BENCHMARK(CUDAPinnedMemcpyToGPU)->DenseRange(1, 31, 1);
+BENCHMARK(CUDA_Memcpy_HostToGPU)->DenseRange(1, 31, 1);
+BENCHMARK(CUDA_Memcpy_PinnedToGPU)->DenseRange(1, 31, 1);
 #endif // USE_CUDA_EVENTS
