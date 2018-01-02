@@ -16,6 +16,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger package manager")
 set(USE_CUDA_EVENTS "ON" CACHE BOOL "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize")
+set(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -104,17 +105,23 @@ find_package(OpenBLAS REQUIRED)
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
-CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
+LIST(APPEND CUDA_NVCC_FLAGS -Wno-deprecated-gpu-targets)
+LIST(APPEND CUDA_NVCC_FLAGS --expt-extended-lambda)
+
+if(CUDA_MULTI_ARCH)
+  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
+else()
+  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
+endif()
+
 # MESSAGE(STATUS "USING ${CUDA_ARCH_FLAGS} architectures")
 LIST(APPEND CUDA_NVCC_FLAGS ${CUDA_ARCH_FLAGS})
-# list(APPEND CMAKE_CUDA_FLAGS " --expt-extended-lambda ")
 
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
 
-list(APPEND CUDA_NVCC_FLAGS "-Wno-deprecated-gpu-targets")
 LIST(APPEND CMAKE_CUDA_FLAGS "-lineinfo --Werror cross-execution-space-call -Xptxas -v")
 
 message(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
