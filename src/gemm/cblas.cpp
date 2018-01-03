@@ -9,11 +9,16 @@
 
 #include <cblas.h>
 
-#include "gemm/args.hpp"
 #include "utils/utils.hpp"
+
+#include "gemm/args.hpp"
+#include "gemm/utils.hpp"
 
 template <typename T>
 static void CBLAS(benchmark::State &state) {
+
+  static const std::string IMPLEMENTATION_NAME = gemm::detail::implementation_name<T>();
+
   const T one{1};
   const T zero{0};
 
@@ -50,7 +55,9 @@ static void CBLAS(benchmark::State &state) {
     }
   }
 
-  state.counters.insert({{"M", M}, {"N", N}, {"K", K}, {"Flops", 2 * M * N * K}});
+  state.counters.insert(
+      {{"M", M}, {"N", N}, {"K", K}, {"Flops", {2.0 * M * N * K, benchmark::Counter::kAvgThreadsRate}}});
+  state.SetLabel(IMPLEMENTATION_NAME);
   state.SetBytesProcessed(int64_t(state.iterations()) * a.size() * b.size() * c.size());
   state.SetItemsProcessed(int64_t(state.iterations()) * M * N * K);
 }
