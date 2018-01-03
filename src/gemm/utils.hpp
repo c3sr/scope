@@ -9,7 +9,10 @@ namespace gemm {
 namespace detail {
 
   template <typename T>
-  const char* implementation_name() {
+  static const char* implementation_name() {
+    if constexpr (std::is_same_v<T, __half>) {
+      return "HGEMM";
+    }
     if constexpr (std::is_same_v<T, float>) {
       return "SGEMM";
     }
@@ -25,7 +28,29 @@ namespace detail {
     return "UNKNOWN_GEMM";
   }
 
-  template <class T>
+  template <typename T>
+  static T one() {
+    return T{1};
+  };
+
+  template <>
+  __half one<__half>() {
+    const __half_raw x{1};
+    return __half{x};
+  };
+
+  template <typename T>
+  static T zero() {
+    return T{0};
+  };
+
+  template <>
+  __half zero<__half>() {
+    const __half_raw x{1};
+    return __half{x};
+  };
+
+  template <typename T>
   struct cuda_type {
     using type = T;
   };

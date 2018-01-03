@@ -18,15 +18,15 @@
 template <typename T>
 static void CUBLAS(benchmark::State &state) {
   static const std::string IMPLEMENTATION_NAME = gemm::detail::implementation_name<T>();
-  state.SetLabel(IMPLEMENTATION_NAME);
+  state.SetLabel(fmt::format("CUBLAS/{}", IMPLEMENTATION_NAME));
 
   if (!has_cuda) {
     state.SkipWithError("CUDA/SGEMM no CUDA device found");
     return;
   }
 
-  const T one{1};
-  const T zero{0};
+  const T one  = gemm::detail::one<T>();
+  const T zero = gemm::detail::zero<T>();
 
   const auto M = state.range(0);
   const auto N = state.range(1);
@@ -40,7 +40,7 @@ static void CUBLAS(benchmark::State &state) {
 
   std::fill(a.begin(), a.end(), one);
   std::fill(b.begin(), b.end(), one);
-  std::fill(c.begin(), c.end(), 0);
+  std::fill(c.begin(), c.end(), zero);
 
   cublasHandle_t cublas_handle;
 
@@ -149,6 +149,10 @@ static void CUBLAS(benchmark::State &state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * M * N * K);
 }
 
+static void CUBLAS_HGEMM(benchmark::State &state) {
+  return CUBLAS<__half>(state);
+}
+
 static void CUBLAS_SGEMM(benchmark::State &state) {
   return CUBLAS<float>(state);
 }
@@ -165,6 +169,7 @@ static void CUBLAS_ZGEMM(benchmark::State &state) {
   return CUBLAS<std::complex<double>>(state);
 }
 
+BENCHMARK(CUBLAS_HGEMM)->ALL_ARGS()->UseManualTime();
 BENCHMARK(CUBLAS_SGEMM)->ALL_ARGS()->UseManualTime();
 BENCHMARK(CUBLAS_DGEMM)->ALL_ARGS()->UseManualTime();
 BENCHMARK(CUBLAS_CGEMM)->ALL_ARGS()->UseManualTime();

@@ -18,10 +18,10 @@ template <typename T>
 static void CBLAS(benchmark::State &state) {
 
   static const std::string IMPLEMENTATION_NAME = gemm::detail::implementation_name<T>();
-  state.SetLabel(IMPLEMENTATION_NAME);
+  state.SetLabel(fmt::format("CBLAS/{}", IMPLEMENTATION_NAME));
 
-  const T one{1};
-  const T zero{0};
+  const T one  = gemm::detail::one<T>();
+  const T zero = gemm::detail::zero<T>();
 
   const auto M = state.range(0);
   const auto N = state.range(1);
