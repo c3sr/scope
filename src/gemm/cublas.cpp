@@ -123,5 +123,5 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
-BENCHMARK(CUBLAS_SGEMM)->SGEMM_ARGS();
-BENCHMARK(CUBLAS_SGEMM)->SGEMM_ARGS()->UseManualTime();
+BENCHMARK(CUBLAS_SGEMM)->ALL_ARGS();
+BENCHMARK(CUBLAS_SGEMM)->ALL_ARGS()->UseManualTime();

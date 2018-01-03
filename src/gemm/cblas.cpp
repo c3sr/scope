@@ -35,4 +35,4 @@ static void CBLAS_SGEMM(benchmark::State &state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * 2 * M * N * K);
 }
 
-BENCHMARK(CBLAS_SGEMM)->SGEMM_ARGS();
+BENCHMARK(CBLAS_SGEMM)->ALL_ARGS();

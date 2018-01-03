@@ -1,8 +1,8 @@
 #pragma once
 
 // M, N, K
-#ifdef FAST_MODE
-#define SGEMM_ARGS()                                                                                                   \
+
+#define SMALL_ARGS()                                                                                                   \
   Args({1000, 1, 1})                                                                                                   \
       ->Args({128, 169, 1728})                                                                                         \
       ->Args({128, 729, 1200})                                                                                         \
@@ -14,9 +14,10 @@
       ->Args({50, 1000, 1})                                                                                            \
       ->Args({50, 1000, 4096})                                                                                         \
       ->Args({50, 4096, 1})                                                                                            \
-      ->Args({50, 4096, 4096})
-#else // FAST_MODE
-#define SGEMM_ARGS()                                                                                                   \
+      ->Args({50, 4096, 4096})                                                                                         \
+      ->ArgNames({"M", "N", "K"})
+
+#define ALL_ARGS()                                                                                                     \
   Args({1000, 1, 1})                                                                                                   \
       ->Args({128, 169, 1728})                                                                                         \
       ->Args({128, 729, 1200})                                                                                         \
@@ -106,5 +107,5 @@
       ->Args({1024, 6000, 2560})                                                                                       \
       ->Args({1024, 6000, 1536})                                                                                       \
       ->Args({512, 4, 512})                                                                                            \
-      ->Args({1024, 4, 512})
-#endif // FAST_MODE
+      ->Args({1024, 4, 512})                                                                                           \
+      ->ArgNames({"M", "N", "K"})
