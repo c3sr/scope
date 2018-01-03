@@ -25,3 +25,9 @@
 [submodule "third_party/yaml-cpp"]
 	path = third_party/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "third_party/backward-cpp"]
+	path = third_party/backward-cpp
+	url = https://github.com/bombela/backward-cpp
+[submodule "third_party/safeenum"]
+	path = third_party/safeenum
+	url = https://github.com/tuxalin/safeenum
