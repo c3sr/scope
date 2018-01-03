@@ -248,7 +248,11 @@ static void CUDA_SGEMM(benchmark::State &state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"M", M}, {"N", N}, {"K", K}, {"Flops", {2.0 * M * N * K, benchmark::Counter::kAvgThreadsRate}}, {"IMPLEMENTATION_TYPE", (int) IMPLEMENTATION}});
+  state.counters.insert({{"M", M},
+                         {"N", N},
+                         {"K", K},
+                         {"Flops", {2.0 * M * N * K, benchmark::Counter::kAvgThreadsRate}},
+                         {"IMPLEMENTATION_TYPE", (int) IMPLEMENTATION}});
   if (IMPLEMENTATION != CUDA_BLAS_IMPLEMENTATION::BASIC) {
     state.counters.insert({{"TILE_WIDTH", TILE_WIDTH}});
   }
