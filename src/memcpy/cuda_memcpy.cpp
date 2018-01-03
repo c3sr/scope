@@ -3,12 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <benchmark/benchmark.h>
 #include <cuda_runtime.h>
 
-#include "init.hpp"
-#include "utils.hpp"
-#include "utils_cuda.hpp"
+#include "init/init.hpp"
+#include "utils/utils.hpp"
 
 static void CUDA_Memcpy_HostToGPU(benchmark::State &state) {
 
@@ -31,8 +29,8 @@ static void CUDA_Memcpy_HostToGPU(benchmark::State &state) {
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
-  CUDA_PERROR(cudaEventCreate(&start));
-  CUDA_PERROR(cudaEventCreate(&stop));
+  PRINT_IF_ERROR(cudaEventCreate(&start));
+  PRINT_IF_ERROR(cudaEventCreate(&stop));
 #endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
@@ -40,7 +38,7 @@ static void CUDA_Memcpy_HostToGPU(benchmark::State &state) {
     cudaEventRecord(start, NULL);
 #endif // USE_CUDA_EVENTS
 
-    auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
+    const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToDevice);
 
 #ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
@@ -49,14 +47,15 @@ static void CUDA_Memcpy_HostToGPU(benchmark::State &state) {
 
     state.PauseTiming();
 
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+    if (PRINT_IF_ERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError("CUDA/MEMCPY/HostToGPU failed to perform memcpy");
       break;
     }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
-    if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/MEMCPY/HostToGPU failed to get elapsed time");
+      break;
     }
     state.SetIterationTime(msecTotal / 1000);
 #endif // USE_CUDA_EVENTS
@@ -94,8 +93,8 @@ static void CUDA_Memcpy_PinnedToGPU(benchmark::State &state) {
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
-  CUDA_PERROR(cudaEventCreate(&start));
-  CUDA_PERROR(cudaEventCreate(&stop));
+  PRINT_IF_ERROR(cudaEventCreate(&start));
+  PRINT_IF_ERROR(cudaEventCreate(&stop));
 #endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
@@ -112,13 +111,13 @@ static void CUDA_Memcpy_PinnedToGPU(benchmark::State &state) {
 
     state.PauseTiming();
 
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+    if (PRINT_IF_ERROR(cuda_err)) {
       state.SkipWithError("CUDA/MEMCPY/PinnedToGPU failed to perform memcpy");
       break;
     }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
-    if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/MEMCPY/PinnedToGPU failed to get elapsed time");
       break;
     }

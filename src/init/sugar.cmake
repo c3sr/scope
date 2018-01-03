@@ -17,11 +17,14 @@ sugar_files(
     logger.hpp
     cuda.hpp
     cublas.hpp
+    flags.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
     logger.cpp
+    cuda.cpp
     init.cpp
+    flags.cpp
 )
 

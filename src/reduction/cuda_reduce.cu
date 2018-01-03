@@ -15,9 +15,8 @@
 
 #include "fmt/format.h"
 
-#include "init.hpp"
-#include "utils.hpp"
-#include "utils_cuda.hpp"
+#include "init/init.hpp"
+#include "utils/utils.hpp"
 
 using namespace cub;
 

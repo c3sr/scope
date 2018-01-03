@@ -1,5 +1,5 @@
 
-
+#if 0
 template <typename accum_t, typename scalar_t, typename output_t>
 struct fused_bias_relu_epilogue {
 
@@ -30,3 +30,5 @@ struct fused_bias_relu_epilogue {
     return max(threshold, result);
   }
 };
+
+#endif

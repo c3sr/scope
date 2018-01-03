@@ -8,10 +8,9 @@
 
 #include <cuda_runtime.h>
 
-#include "init.hpp"
-#include "utils.hpp"
-#include "utils_cuda.hpp"
-#include "utils_vectoradd.hpp"
+#include "init/init.hpp"
+#include "launch/args.hpp"
+#include "utils/utils.hpp"
 
 enum class CUDA_LAUNCH_IMPLEMENTATION : int { EMPTY = 1, ADDTWO, RELU };
 
@@ -94,22 +93,21 @@ static void CUDA_LAUNCH(benchmark::State &state) {
 
   T *d_a{nullptr};
 
-  auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data())))) {
     LOG(critical, "CUDA/LAUNCH/{} device memory allocation failed for vector A", IMPLEMENTATION_NAME);
     return;
   }
   defer(cudaFree(d_a));
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice))) {
+    LOG(critical, "CUDA/LAUNCH/{} failed to copy vector to device", IMPLEMENTATION_NAME);
     return;
   }
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
-  CUDA_PERROR(cudaEventCreate(&start));
-  CUDA_PERROR(cudaEventCreate(&stop));
+  PRINT_IF_ERROR(cudaEventCreate(&start));
+  PRINT_IF_ERROR(cudaEventCreate(&stop));
 #endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
@@ -133,20 +131,20 @@ static void CUDA_LAUNCH(benchmark::State &state) {
 
 #ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
-    auto cuda_err = cudaEventSynchronize(stop);
+    const auto cuda_err = cudaEventSynchronize(stop);
 #else // USE_CUDA_EVENTS
-    auto cuda_err = cudaDeviceSynchronize();
+    const auto cuda_err = cudaDeviceSynchronize();
 #endif
 
     state.PauseTiming();
 
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+    if (PRINT_IF_ERROR(cuda_err)) {
       state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to synchronize", IMPLEMENTATION_NAME).c_str());
       break;
     }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
-    if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
       break;
     }
@@ -180,9 +178,9 @@ static void CUDA_LAUNCH_RELU(benchmark::State &state) {
 }
 
 #ifdef USE_CUDA_EVENTS
-#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()->UseManualTime();
+#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->LAUNCH_ARGS()->UseManualTime();
 #else // USE_CUDA_EVENTS
-#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->VECTORADD_ARGS()
+#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->LAUNCH_ARGS()
 #endif // USE_CUDA_EVENTS
 #define BENCHMARK_CUDA_LAUNCH(B, ...)                                                                                  \
   BENCHMARK_CUDA_LAUNCH0(B, char, __VA_ARGS__);                                                                        \

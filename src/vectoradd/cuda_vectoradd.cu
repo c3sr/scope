@@ -9,10 +9,9 @@
 
 #include <cuda_runtime.h>
 
-#include "init.hpp"
-#include "utils.hpp"
-#include "utils_cuda.hpp"
-#include "utils_vectoradd.hpp"
+#include "init/init.hpp"
+#include "utils/utils.hpp"
+#include "vectoradd/args.hpp"
 
 template <typename T, int COARSINING_FACTOR = 1, int BLOCK_SIZE = 1>
 __global__ void cuda_vector_add(T *in1, T *in2, T *out, size_t len) {
@@ -59,52 +58,46 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
   T *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
 
-  auto cuda_err = cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data()));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data())))) {
     LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector A");
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector A");
     return;
   }
   defer(cudaFree(d_a));
 
-  cuda_err = cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data()));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data())))) {
     LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector B");
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector B");
     return;
   }
   defer(cudaFree(d_b));
 
-  cuda_err = cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data()));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data())))) {
     LOG(critical, "CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector C");
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory allocation failed for vector C");
     return;
   }
   defer(cudaFree(d_c));
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMemcpy(d_a, a.data(), a.size() * sizeof(*a.data()), cudaMemcpyHostToDevice))) {
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector A");
     return;
   }
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()), cudaMemcpyHostToDevice));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMemcpy(d_b, b.data(), b.size() * sizeof(*b.data()), cudaMemcpyHostToDevice))) {
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector B");
     return;
   }
 
-  cuda_err = CUDA_PERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()), cudaMemcpyHostToDevice));
-  if (cuda_err != cudaSuccess) {
+  if (PRINT_IF_ERROR(cudaMemcpy(d_c, c.data(), c.size() * sizeof(*c.data()), cudaMemcpyHostToDevice))) {
     state.SkipWithError("CUDA/VECTOR_ADD/BASIC device memory copy failed for vector C");
     return;
   }
 
 #ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
-  CUDA_PERROR(cudaEventCreate(&start));
-  CUDA_PERROR(cudaEventCreate(&stop));
+  PRINT_IF_ERROR(cudaEventCreate(&start));
+  PRINT_IF_ERROR(cudaEventCreate(&stop));
 #endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
@@ -116,19 +109,19 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
 
 #ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
-    auto cuda_err = cudaEventSynchronize(stop);
+    const auto cuda_err = cudaEventSynchronize(stop);
 #else  // USE_CUDA_EVENTS
-    auto cuda_err = cudaDeviceSynchronize();
+    const auto cuda_err = cudaDeviceSynchronize();
 #endif // USE_CUDA_EVENTS
 
     state.PauseTiming();
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+    if (PRINT_IF_ERROR(cuda_err)) {
       state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to launch kernel");
       break;
     }
 #ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
-    if (cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to get elapsed time");
       break;
     }

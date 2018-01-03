@@ -2,6 +2,8 @@
 #include <cuda_profiler_api.h>
 #include <nvToolsExtCudaRt.h>
 
+#if 0
+
 CudaProfileRange::CudaProfileRange(const char *format, ...) {
   char name[256];
   va_list ap;
@@ -44,3 +46,5 @@ void profileNameOsThread(unsigned threadId, const char *format, ...) {
 
   nvtxNameOsThread(threadId, name);
 }
+
+#endif

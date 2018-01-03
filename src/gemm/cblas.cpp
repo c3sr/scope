@@ -7,7 +7,8 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "utils_sgemm.hpp"
+#include "gemm/args.hpp"
+#include "utils/utils.hpp"
 
 static void CBLAS_SGEMM(benchmark::State &state) {
   const auto M     = state.range(0);

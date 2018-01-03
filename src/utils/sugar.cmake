@@ -22,7 +22,6 @@ sugar_files(
     cublas.hpp
     benchmark.hpp
     cudnn.hpp
-    flags.hpp
     nocopy.hpp
     nccl.hpp
     memory.hpp
@@ -35,7 +34,6 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    flags.cpp
     commandlineflags.cpp
 )
 

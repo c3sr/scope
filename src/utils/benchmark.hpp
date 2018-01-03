@@ -1,6 +1,8 @@
 #pragma once
 
-#include "benchmark\reporter.h"
+#include "benchmark/benchmark.h"
+
+#if 0
 
 class Benchmark : public benchmark::internal::Benchmark {
 public:
@@ -92,3 +94,5 @@ private:
 
   bool first_report_;
 };
+
+#endif

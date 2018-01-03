@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <utility>
 
-
 template <class Function>
 class defer_func {
 public:
@@ -30,4 +29,3 @@ defer_func<typename std::decay<F>::type> make_defer(F &&defer_function) {
 #define DEFER_2(x, y) DEFER_1(x, y)
 #define DEFER_3(x) DEFER_2(x, __COUNTER__)
 #define defer(code) auto DEFER_3(_defer_) = make_defer([&]() { code; })
-

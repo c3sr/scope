@@ -1,10 +1,8 @@
 #pragma once
 
-#include <cuda_runtime.h>
+#include "config.hpp"
 
-#include "init/logger.hpp"
-#include "init/cublas.hpp"
-#include "init/cuda.hpp"
+#include <cuda_runtime.h>
 
 extern bool has_cuda;
 extern cudaDeviceProp cuda_device_prop;

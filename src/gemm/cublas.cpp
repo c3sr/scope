@@ -9,9 +9,9 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-#include "init.hpp"
-#include "utils.hpp"
-#include "utils_sgemm.hpp"
+#include "gemm/args.hpp"
+#include "init/init.hpp"
+#include "utils/utils.hpp"
 
 static void CUBLAS_SGEMM(benchmark::State &state) {
 
@@ -85,8 +85,8 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   }
 
   cudaEvent_t start, stop;
-  CUDA_PERROR(cudaEventCreate(&start));
-  CUDA_PERROR(cudaEventCreate(&stop));
+  PRINT_IF_ERROR(cudaEventCreate(&start));
+  PRINT_IF_ERROR(cudaEventCreate(&stop));
 
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
@@ -95,23 +95,23 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     const auto cublas_err =
         cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, d_b, M, d_a, K, &beta, d_c, N);
 
-    auto cuda_err = cudaDeviceSynchronize();
+    const auto cuda_err = cudaDeviceSynchronize();
 
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
 
     state.PauseTiming();
-    if (cublas_err != CUBLAS_STATUS_SUCCESS) {
+    if (PRINT_IF_ERROR(cublas_err)) {
       state.SkipWithError("CUBLAS/SGEMM failed to launch kernel");
       break;
     }
-    if (CUDA_PERROR(cuda_err) != cudaSuccess) {
+    if (PRINT_IF_ERROR(cuda_err)) {
       state.SkipWithError("CUBLAS/SGEMM failed to synchronize kernel");
       break;
     }
 
     float msecTotal = 0.0f;
-    if ((cuda_err = CUDA_PERROR(cudaEventElapsedTime(&msecTotal, start, stop)))) {
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUBLAS/SGEMM failed to get elapsed time");
     }
     state.SetIterationTime(msecTotal / 1000);

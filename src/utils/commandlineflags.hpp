@@ -4,26 +4,26 @@
 #include <cstdint>
 #include <string>
 
-namespace utils {
+namespace bench {
 namespace flags {}
-} // namespace utils
+} // namespace bench
 
 // Macro for referencing flags.
-#define FLAG(name) utils::flags::##name
+#define FLAG(name) bench::flags::name
 
 #define FLAGS_NS(stmt)                                                                                                 \
-  namespace utils {                                                                                                    \
+  namespace bench {                                                                                                    \
     namespace flags {                                                                                                  \
       stmt;                                                                                                            \
     }                                                                                                                  \
   }
 
 // Macros for declaring flags.
-#define DECLARE_bool(name) extern bool FLAG(name)
-#define DECLARE_int32(name) extern int32_t FLAG(name)
-#define DECLARE_int64(name) extern int64_t FLAG(name)
-#define DECLARE_double(name) extern double FLAG(name)
-#define DECLARE_string(name) extern std::string FLAG(name)
+#define DECLARE_bool(name) FLAGS_NS(extern bool name)
+#define DECLARE_int32(name) FLAGS_NS(extern int32_t name)
+#define DECLARE_int64(name) FLAGS_NS(extern int64_t name)
+#define DECLARE_double(name) FLAGS_NS(extern double name)
+#define DECLARE_string(name) FLAGS_NS(extern std::string name)
 
 // Macros for defining flags.
 #define DEFINE_bool(name, default_val, doc) FLAGS_NS(bool name = (default_val))
