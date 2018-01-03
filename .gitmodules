@@ -22,3 +22,6 @@
 [submodule "third_party/leathers"]
 	path = third_party/leathers
 	url = https://github.com/ruslo/leathers
+[submodule "third_party/yaml-cpp"]
+	path = third_party/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
