@@ -13,11 +13,11 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_SOURCES
-    cblas_sgemv.cpp
+    cblas.cpp
 )
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cuda_sgemv.cu
+    cuda.cu
 )
 
