@@ -18,6 +18,7 @@
 template <typename T>
 static void CUBLAS(benchmark::State &state) {
   static const std::string IMPLEMENTATION_NAME = gemm::detail::implementation_name<T>();
+  state.SetLabel(IMPLEMENTATION_NAME);
 
   if (!has_cuda) {
     state.SkipWithError("CUDA/SGEMM no CUDA device found");
@@ -144,7 +145,6 @@ static void CUBLAS(benchmark::State &state) {
 
   state.counters.insert(
       {{"M", M}, {"N", N}, {"K", K}, {"Flops", {2.0 * M * N * K, benchmark::Counter::kAvgThreadsRate}}});
-  state.SetLabel(IMPLEMENTATION_NAME);
   state.SetBytesProcessed(int64_t(state.iterations()) * a.size() * b.size() * c.size());
   state.SetItemsProcessed(int64_t(state.iterations()) * M * N * K);
 }
@@ -169,4 +169,3 @@ BENCHMARK(CUBLAS_SGEMM)->ALL_ARGS()->UseManualTime();
 BENCHMARK(CUBLAS_DGEMM)->ALL_ARGS()->UseManualTime();
 BENCHMARK(CUBLAS_CGEMM)->ALL_ARGS()->UseManualTime();
 BENCHMARK(CUBLAS_ZGEMM)->ALL_ARGS()->UseManualTime();
-
