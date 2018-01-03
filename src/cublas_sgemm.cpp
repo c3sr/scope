@@ -66,7 +66,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
   }
   defer(cudaFree(d_c));
 
-  cublas_err = cublasSetMatrix(M, N, sizeof(*a.data()), a.data(), M, d_a, M);
+  cublas_err = cublasSetMatrix(M, K, sizeof(*a.data()), a.data(), M, d_a, M);
   if (cublas_err != CUBLAS_STATUS_SUCCESS) {
     LOG(critical, "CUBLAS/SGEMM setting of A matrix failed");
     return;
@@ -78,7 +78,7 @@ static void CUBLAS_SGEMM(benchmark::State &state) {
     return;
   }
 
-  cublas_err = cublasSetMatrix(M, K, sizeof(*c.data()), c.data(), M, d_c, M);
+  cublas_err = cublasSetMatrix(M, N, sizeof(*c.data()), c.data(), M, d_c, M);
   if (cublas_err != CUBLAS_STATUS_SUCCESS) {
     LOG(critical, "CUBLAS/SGEMM setting of C matrix failed");
     return;
