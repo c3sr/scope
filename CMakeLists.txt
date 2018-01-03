@@ -14,9 +14,9 @@ set(CMAKE_COLOR_MAKEFILE ON)
 set(VERBOSE_BUILD ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(CONFIG_USE_HUNTER "ON" CACHE BOOL "Turn on to enable using the hunteger package manager")
-set(USE_CUDA_EVENTS "ON" CACHE BOOL "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize")
-set(CUDA_MULTI_ARCH "OFF" CACHE BOOL "Whether to generate CUDA code for multiple architectures")
+option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
+option(USE_CUDA_EVENTS "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize" ON)
+option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -28,11 +28,16 @@ endif (CONFIG_USE_HUNTER)
 
 
 
-project(microbenchmark LANGUAGES CXX CUDA)
+project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
+
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
 include(cotire)
+include(GetGitRevisionDescription)
+include(CTest)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -101,6 +106,34 @@ find_package(CUDA REQUIRED)
 find_package(OpenBLAS REQUIRED)
 #find_package(Protobuf REQUIRED)
 
+if (UNIX AND NOT APPLE)
+  execute_process(COMMAND ${CMAKE_CXX_COMPILER} 
+                  -fuse-ld=gold -Wl,--version 
+                  ERROR_QUIET OUTPUT_VARIABLE ld_version)
+  if ("${ld_version}" MATCHES "GNU gold")
+    message(STATUS "Found Gold linker, use faster linker")
+    set(CMAKE_EXE_LINKER_FLAGS 
+        "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
+    set(CMAKE_SHARED_LINKER_FLAGS
+        "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold ")
+  endif()
+endif()
+
+
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
+# Disable extended variants of C++ dialects
+# i.e. don't choose gnu++17 over c++17
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++"
+  CACHE STRING "Toolchain C++ compiler flags." FORCE)
+
+set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
+  CACHE STRING "Toolchain C++ linker flags." FORCE)
+endif()
 
 
 # CUDA flags
