@@ -22,9 +22,9 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    logger.cpp
-    cuda.cpp
-    init.cpp
     flags.cpp
+    cuda.cpp
+    logger.cpp
+    init.cpp
 )
 

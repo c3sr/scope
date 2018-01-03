@@ -13,13 +13,11 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    benchmark.hpp
     args.hpp
 )
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cuda_vectoradd_stream.cu
-    cuda_vectoradd.cu
+    cuda.cu
 )
 

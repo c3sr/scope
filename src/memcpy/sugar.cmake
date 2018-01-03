@@ -12,7 +12,15 @@ endif()
 include(sugar_files)
 
 sugar_files(
+    BENCHMARK_HEADERS
+    args.hpp
+)
+
+sugar_files(
     BENCHMARK_SOURCES
-    cuda_memcpy.cpp
+    pinned_to_gpu.cpp
+    gpu_to_host.cpp
+    gpu_to_pinned.cpp
+    host_to_gpu.cpp
 )
 

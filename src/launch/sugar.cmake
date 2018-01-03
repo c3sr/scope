@@ -13,12 +13,11 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    benchmark.hpp
     args.hpp
 )
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cuda_launch.cu
+    cuda.cu
 )
 
