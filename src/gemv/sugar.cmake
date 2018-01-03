@@ -16,3 +16,8 @@ sugar_files(
     cblas_sgemv.cpp
 )
 
+sugar_files(
+    BENCHMARK_CUDA_SOURCES
+    cuda_sgemv.cu
+)
+

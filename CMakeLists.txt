@@ -106,6 +106,10 @@ find_package(CUDA REQUIRED)
 find_package(OpenBLAS REQUIRED)
 #find_package(Protobuf REQUIRED)
 
+
+include(sugar_doxygen_generate)
+include(sugar_include)
+
 if (UNIX AND NOT APPLE)
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} 
                   -fuse-ld=gold -Wl,--version 
@@ -119,8 +123,6 @@ if (UNIX AND NOT APPLE)
   endif()
 endif()
 
-
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 
 # Disable extended variants of C++ dialects
 # i.e. don't choose gnu++17 over c++17
@@ -165,23 +167,11 @@ set(TOP_DIR "${PROJECT_SOURCE_DIR}")
 set(THIRDPARTY_DIR "${TOP_DIR}/third_party")
 set(SRC_DIR "${TOP_DIR}/src")
 
-add_executable(bench
-  ${SRC_DIR}/cblas_daxpy.cpp
-  ${SRC_DIR}/cblas_sgemm.cpp
-  ${SRC_DIR}/cuda_memcpy.cpp
-  ${SRC_DIR}/cuda_launch.cu
-  ${SRC_DIR}/cuda_reduce.cu
-  ${SRC_DIR}/cuda_stream.cu
-  ${SRC_DIR}/cublas_sgemm.cpp
-  ${SRC_DIR}/cuda_sgemm.cu
-  ${SRC_DIR}/cuda_vectoradd.cu
-  ${SRC_DIR}/caffe_reader.cpp
-  ${SRC_DIR}/commandlineflags.cpp
-  ${SRC_DIR}/logger.cpp
-  ${SRC_DIR}/flags.cpp
-  ${SRC_DIR}/init.cpp
-  ${SRC_DIR}/main.cpp
-)
+sugar_include("./src")
+
+
+add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
+
 
 include_directories(bench
   ${SRC_DIR}

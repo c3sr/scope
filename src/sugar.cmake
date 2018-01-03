@@ -25,6 +25,7 @@ sugar_include(gemv)
 sugar_include(atomic)
 sugar_include(gemm)
 sugar_include(reduction)
+sugar_include(tensor)
 sugar_include(vectoradd)
 sugar_include(axpy)
 

@@ -1,8 +1,8 @@
-#include "init.hpp"
+#include "init/init.hpp"
 
-#include "flags.hpp"
-#include "init_cuda.hpp"
-#include "logger.hpp"
+#include "utils/flags.hpp"
+#include "init/cuda.hpp"
+#include "init/logger.hpp"
 
 bool has_cuda = false;
 cudaDeviceProp cuda_device_prop;

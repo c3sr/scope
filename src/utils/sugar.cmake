@@ -13,14 +13,23 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
+    mpl.hpp
+    hostname.hpp
     cuda.hpp
-    unused.hpp
+    error.hpp
+    nvptx.hpp
+    timer.hpp
     cublas.hpp
     benchmark.hpp
     cudnn.hpp
     flags.hpp
+    nocopy.hpp
+    nccl.hpp
+    memory.hpp
+    compat.hpp
     utils.hpp
     defer.hpp
+    marker.hpp
     commandlineflags.hpp
 )
 

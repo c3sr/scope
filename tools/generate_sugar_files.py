@@ -90,12 +90,19 @@ class Generator:
 
     def process_file(relative, source_variable, tests_variable, file_name, filelist, dirlist):
         def is_header(f):
-            return f.endswith(".hpp") or f.endswith(".h") or f.endswith(".hxx") or f.endswith(".hh")
+            return f.endswith(".hpp") or f.endswith(".h") or f.endswith(".hxx") or f.endswith(".hh") or f.endswith(".cuh")
 
         def is_source(f):
             return f.endswith(".cpp") or f.endswith(".cc") or f.endswith(".c") or f.endswith(".cxx")
+
+        def is_cuda_header(f):
+            return f.endswith(".cuh")
+
+        def is_cuda_source(f):
+            return f.endswith(".cu")
+
         cpp_or_hpp_files = [
-            f for f in filelist if is_header(f) or is_source(f)]
+            f for f in filelist if is_header(f) or is_cuda_header(f) or is_source(f) or is_cuda_source(f)]
         if cpp_or_hpp_files == []:
             return
         with open(file_name, 'w') as file_id:
@@ -140,12 +147,36 @@ class Generator:
                     file_id.write('\n')
             if filelist:
                 files = [f for f in filelist if not f.endswith(
+                    "_test.cpp") and is_cuda_header(f)]
+                if files != []:
+                    file_id.write("sugar_files(\n")
+                    # file_id.write("    {}\n".format(hg + "SOURCES"))
+                    file_id.write("    {}\n".format(
+                        source_variable + "_CUDA_HEADERS"))
+                    for x in files:
+                        file_id.write("    {}\n".format(x))
+                    file_id.write(")\n")
+                    file_id.write('\n')
+            if filelist:
+                files = [f for f in filelist if not f.endswith(
                     "_test.cpp") and is_source(f)]
                 if files != []:
                     file_id.write("sugar_files(\n")
                     # file_id.write("    {}\n".format(hg + "SOURCES"))
                     file_id.write("    {}\n".format(
                         source_variable + "_SOURCES"))
+                    for x in files:
+                        file_id.write("    {}\n".format(x))
+                    file_id.write(")\n")
+                    file_id.write('\n')
+            if filelist:
+                files = [f for f in filelist if not f.endswith(
+                    "_test.cpp") and is_cuda_source(f)]
+                if files != []:
+                    file_id.write("sugar_files(\n")
+                    # file_id.write("    {}\n".format(hg + "SOURCES"))
+                    file_id.write("    {}\n".format(
+                        source_variable + "_CUDA_SOURCES"))
                     for x in files:
                         file_id.write("    {}\n".format(x))
                     file_id.write(")\n")

@@ -16,3 +16,10 @@ sugar_files(
     cudnn_conv.cpp
 )
 
+sugar_files(
+    BENCHMARK_CUDA_SOURCES
+    cuda_conv_activation_lrn_pool_fused.cu
+    cuda_conv_activation_lrn_pool_basic.cu
+    cuda_convolution.cu
+)
+

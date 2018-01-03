@@ -17,3 +17,8 @@ sugar_files(
     args.hpp
 )
 
+sugar_files(
+    BENCHMARK_CUDA_SOURCES
+    cuda_launch.cu
+)
+

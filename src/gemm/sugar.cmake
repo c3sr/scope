@@ -19,8 +19,14 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    cublas_sgemm.cpp
-    cblas_sgemm.cpp
+    cblas.cpp
+    cublas.cpp
     cudnn.cpp
+)
+
+sugar_files(
+    BENCHMARK_CUDA_SOURCES
+    cutlas.cu
+    cuda.cu
 )
 
