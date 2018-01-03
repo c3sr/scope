@@ -4,8 +4,19 @@
 #include <cstdint>
 #include <string>
 
+namespace utils {
+namespace flags {}
+} // namespace utils
+
 // Macro for referencing flags.
-#define FLAG(name) FLAGS_##name
+#define FLAG(name) utils::flags::##name
+
+#define FLAGS_NS(stmt)                                                                                                 \
+  namespace utils {                                                                                                    \
+    namespace flags {                                                                                                  \
+      stmt;                                                                                                            \
+    }                                                                                                                  \
+  }
 
 // Macros for declaring flags.
 #define DECLARE_bool(name) extern bool FLAG(name)
@@ -15,11 +26,11 @@
 #define DECLARE_string(name) extern std::string FLAG(name)
 
 // Macros for defining flags.
-#define DEFINE_bool(name, default_val, doc) bool FLAG(name) = (default_val)
-#define DEFINE_int32(name, default_val, doc) int32_t FLAG(name) = (default_val)
-#define DEFINE_int64(name, default_val, doc) int64_t FLAG(name) = (default_val)
-#define DEFINE_double(name, default_val, doc) double FLAG(name) = (default_val)
-#define DEFINE_string(name, default_val, doc) std::string FLAG(name) = (default_val)
+#define DEFINE_bool(name, default_val, doc) FLAGS_NS(bool name = (default_val))
+#define DEFINE_int32(name, default_val, doc) FLAGS_NS(int32_t name = (default_val))
+#define DEFINE_int64(name, default_val, doc) FLAGS_NS(int64_t name = (default_val))
+#define DEFINE_double(name, default_val, doc) FLAGS_NS(double name = (default_val))
+#define DEFINE_string(name, default_val, doc) FLAGS_NS(std::string name = (default_val))
 
 namespace utils {
 // Parses 'str' for a 32-bit signed integer.  If successful, writes the result

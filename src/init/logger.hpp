@@ -2,10 +2,12 @@
 
 #include "spdlog/spdlog.h"
 
-namespace utils {
-namespace logger {
-  extern std::shared_ptr<spdlog::logger> console;
-}
-} // namespace utils
+namespace bench {
+namespace init {
+  namespace logger {
+    extern std::shared_ptr<spdlog::logger> console;
+  }
+} // namespace init
+} // namespace bench
 
-#define LOG(level, ...) utils::logger::console->level(__VA_ARGS__)
+#define LOG(level, ...) bench::init::logger::console->level(__VA_ARGS__)
