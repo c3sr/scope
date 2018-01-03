@@ -13,12 +13,18 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    benchmark.hpp
+    utils.hpp
+    args.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
-    cublas_daxpy.cpp
+    cublas.cpp
     clbas.cpp
+)
+
+sugar_files(
+    BENCHMARK_CUDA_SOURCES
+    cuda.cu
 )
 
