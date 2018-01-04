@@ -21,10 +21,11 @@ static void cblas_gemm(const CBLAS_TRANSPOSE TransA, const CBLAS_TRANSPOSE Trans
 template <>
 void cblas_gemm<float>(const CBLAS_TRANSPOSE TransA, const CBLAS_TRANSPOSE TransB, const int M, const int N,
                        const int K, const float alpha, const float* A, const float* B, const float beta, float* C) {
-  const int lda = (TransA == CblasNoTrans) ? K : M;
-  const int ldb = (TransB == CblasNoTrans) ? N : K;
 
-  cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, N);
+  const int lda = (TransA == CblasNoTrans) ? M : K;
+  const int ldb = (TransB == CblasNoTrans) ? K : N;
+
+  cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, lda);
 }
 
 template <>
@@ -32,10 +33,10 @@ void cblas_gemm<double>(const CBLAS_TRANSPOSE TransA, const CBLAS_TRANSPOSE Tran
                         const int K, const double alpha, const double* A, const double* B, const double beta,
                         double* C) {
 
-  const int lda = (TransA == CblasNoTrans) ? K : M;
-  const int ldb = (TransB == CblasNoTrans) ? N : K;
+  const int lda = (TransA == CblasNoTrans) ? M : K;
+  const int ldb = (TransB == CblasNoTrans) ? K : N;
 
-  cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, N);
+  cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, lda);
 }
 
 template <>
@@ -46,12 +47,12 @@ void cblas_gemm<std::complex<float>>(const CBLAS_TRANSPOSE TransA, const CBLAS_T
 
   using scalar_type = float;
 
-  const int lda = (TransA == CblasNoTrans) ? K : M;
-  const int ldb = (TransB == CblasNoTrans) ? N : K;
+  const int lda = (TransA == CblasNoTrans) ? M : K;
+  const int ldb = (TransB == CblasNoTrans) ? K : N;
 
   cblas_cgemm(CblasRowMajor, TransA, TransB, M, N, K, reinterpret_cast<const scalar_type(&)[2]>(alpha),
               reinterpret_cast<const scalar_type*>(A), lda, reinterpret_cast<const scalar_type*>(B), ldb,
-              reinterpret_cast<const scalar_type(&)[2]>(beta), reinterpret_cast<scalar_type*>(C), N);
+              reinterpret_cast<const scalar_type(&)[2]>(beta), reinterpret_cast<scalar_type*>(C), lda);
 }
 
 template <>
@@ -62,12 +63,12 @@ void cblas_gemm<std::complex<double>>(const CBLAS_TRANSPOSE TransA, const CBLAS_
 
   using scalar_type = double;
 
-  const int lda = (TransA == CblasNoTrans) ? K : M;
-  const int ldb = (TransB == CblasNoTrans) ? N : K;
+  const int lda = (TransA == CblasNoTrans) ? M : K;
+  const int ldb = (TransB == CblasNoTrans) ? K : N;
 
   cblas_zgemm(CblasRowMajor, TransA, TransB, M, N, K, reinterpret_cast<const scalar_type(&)[2]>(alpha),
               reinterpret_cast<const scalar_type*>(A), lda, reinterpret_cast<const scalar_type*>(B), ldb,
-              reinterpret_cast<const scalar_type(&)[2]>(beta), reinterpret_cast<scalar_type*>(C), N);
+              reinterpret_cast<const scalar_type(&)[2]>(beta), reinterpret_cast<scalar_type*>(C), lda);
 }
 
 template <typename T>
