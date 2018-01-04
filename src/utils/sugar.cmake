@@ -10,6 +10,10 @@ else()
 endif()
 
 include(sugar_files)
+include(sugar_include)
+
+sugar_include(io)
+sugar_include(tensor)
 
 sugar_files(
     BENCHMARK_HEADERS
