@@ -10,19 +10,19 @@ namespace detail {
 
   template <typename T>
   static const char* implementation_name() {
-    if constexpr (std::is_same_v<T, __half>) {
+    if (std::is_same_v<T, __half>) {
       return "HGEMM";
     }
-    if constexpr (std::is_same_v<T, float>) {
+    if (std::is_same_v<T, float>) {
       return "SGEMM";
     }
-    if constexpr (std::is_same_v<T, double>) {
+    if (std::is_same_v<T, double>) {
       return "DGEMM";
     }
-    if constexpr (std::is_same_v<T, std::complex<float>>) {
+    if (std::is_same_v<T, std::complex<float>>) {
       return "CGEMM";
     }
-    if constexpr (std::is_same_v<T, std::complex<double>>) {
+    if (std::is_same_v<T, std::complex<double>>) {
       return "ZGEMM";
     }
     return "UNKNOWN_GEMM";

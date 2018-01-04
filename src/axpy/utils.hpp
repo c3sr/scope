@@ -10,16 +10,16 @@ namespace detail {
 
   template <typename T>
   static const char* implementation_name() {
-    if constexpr (std::is_same_v<T, float>) {
+    if (std::is_same_v<T, float>) {
       return "SAXPY";
     }
-    if constexpr (std::is_same_v<T, double>) {
+    if (std::is_same_v<T, double>) {
       return "DAXPY";
     }
-    if constexpr (std::is_same_v<T, std::complex<float>>) {
+    if (std::is_same_v<T, std::complex<float>>) {
       return "CAXPY";
     }
-    if constexpr (std::is_same_v<T, std::complex<double>>) {
+    if (std::is_same_v<T, std::complex<double>>) {
       return "ZAXPY";
     }
     return "UNKNOWN_AXPY";

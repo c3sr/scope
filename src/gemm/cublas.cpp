@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include <cblas.h>
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
@@ -15,8 +16,70 @@
 #include "gemm/args.hpp"
 #include "gemm/utils.hpp"
 
+template <typename T, typename Function>
+static cublasStatus_t cublas_gemm_proxy(cublasHandle_t cublas_handle, Function F, const CBLAS_TRANSPOSE TransA,
+                                        const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                                        const T* alpha, const T* A, const T* B, const T* beta, T* C) {
+
+  const int lda              = (TransA == CblasNoTrans) ? K : M;
+  const int ldb              = (TransB == CblasNoTrans) ? N : K;
+  cublasOperation_t cuTransA = (TransA == CblasNoTrans) ? CUBLAS_OP_N : CUBLAS_OP_T;
+  cublasOperation_t cuTransB = (TransB == CblasNoTrans) ? CUBLAS_OP_N : CUBLAS_OP_T;
+
+  // Use the fact that C^T = (B^T . A^T)^T for optimization
+  return F(cublas_handle, cuTransB, cuTransA, N, M, K, alpha, B, ldb, A, lda, beta, C, N);
+}
+
 template <typename T>
-static void CUBLAS(benchmark::State &state) {
+static cublasStatus_t cublas_gemm(cublasHandle_t cublas_handle, const CBLAS_TRANSPOSE TransA,
+                                  const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const T* alpha,
+                                  const T* A, const T* B, const T* beta, T* C);
+
+template <>
+cublasStatus_t cublas_gemm<__half>(cublasHandle_t cublas_handle, const CBLAS_TRANSPOSE TransA,
+                                   const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                                   const __half* alpha, const __half* A, const __half* B, const __half* beta,
+                                   __half* C) {
+  return cublas_gemm_proxy<__half>(cublas_handle, cublasHgemm, TransA, TransB, M, N, K, alpha, A, B, beta, C);
+}
+
+template <>
+cublasStatus_t cublas_gemm<float>(cublasHandle_t cublas_handle, const CBLAS_TRANSPOSE TransA,
+                                  const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                                  const float* alpha, const float* A, const float* B, const float* beta, float* C) {
+
+  return cublas_gemm_proxy<float>(cublas_handle, cublasSgemm, TransA, TransB, M, N, K, alpha, A, B, beta, C);
+}
+
+template <>
+cublasStatus_t cublas_gemm<double>(cublasHandle_t cublas_handle, const CBLAS_TRANSPOSE TransA,
+                                   const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                                   const double* alpha, const double* A, const double* B, const double* beta,
+                                   double* C) {
+
+  return cublas_gemm_proxy<double>(cublas_handle, cublasDgemm, TransA, TransB, M, N, K, alpha, A, B, beta, C);
+}
+
+template <>
+cublasStatus_t cublas_gemm<cuComplex>(cublasHandle_t cublas_handle, const CBLAS_TRANSPOSE TransA,
+                                      const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                                      const cuComplex* alpha, const cuComplex* A, const cuComplex* B,
+                                      const cuComplex* beta, cuComplex* C) {
+
+  return cublas_gemm_proxy<cuComplex>(cublas_handle, cublasCgemm, TransA, TransB, M, N, K, alpha, A, B, beta, C);
+}
+
+template <>
+cublasStatus_t cublas_gemm<cuDoubleComplex>(cublasHandle_t cublas_handle, const CBLAS_TRANSPOSE TransA,
+                                            const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                                            const cuDoubleComplex* alpha, const cuDoubleComplex* A,
+                                            const cuDoubleComplex* B, const cuDoubleComplex* beta, cuDoubleComplex* C) {
+
+  return cublas_gemm_proxy<cuDoubleComplex>(cublas_handle, cublasZgemm, TransA, TransB, M, N, K, alpha, A, B, beta, C);
+}
+
+template <typename T>
+static void CUBLAS(benchmark::State& state) {
   static const std::string IMPLEMENTATION_NAME = gemm::detail::implementation_name<T>();
   state.SetLabel(fmt::format("CUBLAS/{}", IMPLEMENTATION_NAME));
 
@@ -55,7 +118,7 @@ static void CUBLAS(benchmark::State &state) {
 
   device_type *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};
 
-  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_a, a.size() * sizeof(*a.data())))) {
+  if (PRINT_IF_ERROR(cudaMalloc((void**) &d_a, a.size() * sizeof(*a.data())))) {
     LOG(critical, "CUBLAS/{} device memory allocation failed for matrix A", IMPLEMENTATION_NAME);
     state.SkipWithError(
         fmt::format("CUBLAS/{} device memory allocation failed for matrix A", IMPLEMENTATION_NAME).c_str());
@@ -63,7 +126,7 @@ static void CUBLAS(benchmark::State &state) {
   }
   defer(cudaFree(d_a));
 
-  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_b, b.size() * sizeof(*b.data())))) {
+  if (PRINT_IF_ERROR(cudaMalloc((void**) &d_b, b.size() * sizeof(*b.data())))) {
     LOG(critical, "CUBLAS/{} device memory allocation failed for matrix B", IMPLEMENTATION_NAME);
     state.SkipWithError(
         fmt::format("CUBLAS/{} device memory allocation failed for matrix B", IMPLEMENTATION_NAME).c_str());
@@ -71,7 +134,7 @@ static void CUBLAS(benchmark::State &state) {
   }
   defer(cudaFree(d_b));
 
-  if (PRINT_IF_ERROR(cudaMalloc((void **) &d_c, c.size() * sizeof(*c.data())))) {
+  if (PRINT_IF_ERROR(cudaMalloc((void**) &d_c, c.size() * sizeof(*c.data())))) {
     LOG(critical, "CUBLAS/{} device memory allocation failed for matrix C", IMPLEMENTATION_NAME);
     state.SkipWithError(
         fmt::format("CUBLAS/{} device memory allocation failed for matrix C", IMPLEMENTATION_NAME).c_str());
@@ -104,22 +167,9 @@ static void CUBLAS(benchmark::State &state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    cublasStatus_t cublas_err;
-
-    // Use the fact that C^T = (B^T . A^T)^T for optimization
-    if constexpr (std::is_same<T, float>::value) {
-      cublas_err = cublasSgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, d_b, M, d_a, K, &beta, d_c, N);
-    } else if constexpr (std::is_same<T, double>::value) {
-      cublas_err = cublasDgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, d_b, M, d_a, K, &beta, d_c, N);
-    } else if constexpr (std::is_same<T, std::complex<float>>::value) {
-      cublas_err =
-          cublasCgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, reinterpret_cast<device_type *>(&alpha), d_b, M,
-                      d_a, K, reinterpret_cast<device_type *>(&beta), d_c, N);
-    } else if constexpr (std::is_same<T, std::complex<double>>::value) {
-      cublas_err =
-          cublasZgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, reinterpret_cast<device_type *>(&alpha), d_b, M,
-                      d_a, K, reinterpret_cast<device_type *>(&beta), d_c, N);
-    }
+    const cublasStatus_t cublas_err = cublas_gemm<device_type>(cublas_handle, CblasNoTrans, CblasNoTrans, M, N, K,
+                                                               reinterpret_cast<device_type*>(&alpha), d_a, d_b,
+                                                               reinterpret_cast<device_type*>(&beta), d_c);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -149,23 +199,23 @@ static void CUBLAS(benchmark::State &state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * M * N * K);
 }
 
-static void CUBLAS_HGEMM(benchmark::State &state) {
+static void CUBLAS_HGEMM(benchmark::State& state) {
   return CUBLAS<__half>(state);
 }
 
-static void CUBLAS_SGEMM(benchmark::State &state) {
+static void CUBLAS_SGEMM(benchmark::State& state) {
   return CUBLAS<float>(state);
 }
 
-static void CUBLAS_DGEMM(benchmark::State &state) {
+static void CUBLAS_DGEMM(benchmark::State& state) {
   return CUBLAS<double>(state);
 }
 
-static void CUBLAS_CGEMM(benchmark::State &state) {
+static void CUBLAS_CGEMM(benchmark::State& state) {
   return CUBLAS<std::complex<float>>(state);
 }
 
-static void CUBLAS_ZGEMM(benchmark::State &state) {
+static void CUBLAS_ZGEMM(benchmark::State& state) {
   return CUBLAS<std::complex<double>>(state);
 }
 

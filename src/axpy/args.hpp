@@ -1,6 +1,7 @@
 #pragma once
 
-#define ARGS_FULL() Args({10, 1, 1})                                                                                   \
+#define ARGS_FULL()                                                                                                    \
+  Args({10, 1, 1})                                                                                                     \
       ->Args({100, 1, 1})                                                                                              \
       ->Args({1000, 1, 1})                                                                                             \
       ->Args({10000, 1, 1})                                                                                            \

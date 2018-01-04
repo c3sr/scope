@@ -14,7 +14,43 @@
 #include "axpy/utils.hpp"
 
 template <typename T>
-static void CBLAS(benchmark::State &state) {
+void cblas_axpy(const int N, const T alpha, const T* X, const int x_incr, T* Y, const int y_incr);
+
+template <>
+void cblas_axpy<float>(const int N, const float alpha, const float* X, const int x_incr, float* Y, const int y_incr) {
+
+  cblas_saxpy(N, alpha, X, x_incr, Y, y_incr);
+}
+
+template <>
+void cblas_axpy<double>(const int N, const double alpha, const double* X, const int x_incr, double* Y,
+                        const int y_incr) {
+
+  cblas_daxpy(N, alpha, X, x_incr, Y, y_incr);
+}
+
+template <>
+void cblas_axpy<std::complex<float>>(const int N, const std::complex<float> alpha, const std::complex<float>* X,
+                                     const int x_incr, std::complex<float>* Y, const int y_incr) {
+
+  using scalar_type = float;
+
+  cblas_caxpy(N, reinterpret_cast<const scalar_type(&)[2]>(alpha), reinterpret_cast<const scalar_type*>(X), x_incr,
+              reinterpret_cast<scalar_type*>(Y), y_incr);
+}
+
+template <>
+void cblas_axpy<std::complex<double>>(const int N, const std::complex<double> alpha, const std::complex<double>* X,
+                                      const int x_incr, std::complex<double>* Y, const int y_incr) {
+
+  using scalar_type = double;
+
+  cblas_zaxpy(N, reinterpret_cast<const scalar_type(&)[2]>(alpha), reinterpret_cast<const scalar_type*>(X), x_incr,
+              reinterpret_cast<scalar_type*>(Y), y_incr);
+}
+
+template <typename T>
+static void CBLAS(benchmark::State& state) {
 
   static const std::string IMPLEMENTATION_NAME = axpy::detail::implementation_name<T>();
   state.SetLabel(fmt::format("CBLAS/{}", IMPLEMENTATION_NAME));
@@ -33,20 +69,7 @@ static void CBLAS(benchmark::State &state) {
   std::fill(y.begin(), y.end(), one);
 
   for (auto _ : state) {
-
-    if constexpr (std::is_same<T, float>::value) {
-      cblas_saxpy(N, alpha, x.data(), x_incr, y.data(), y_incr);
-    } else if constexpr (std::is_same<T, double>::value) {
-      cblas_daxpy(N, alpha, x.data(), x_incr, y.data(), y_incr);
-    } else if constexpr (std::is_same<T, std::complex<float>>::value) {
-      using scalar_type = typename T::value_type;
-      cblas_caxpy(N, reinterpret_cast<scalar_type(&)[2]>(alpha), reinterpret_cast<scalar_type *>(x.data()), x_incr,
-                  reinterpret_cast<scalar_type *>(y.data()), y_incr);
-    } else if constexpr (std::is_same<T, std::complex<double>>::value) {
-      using scalar_type = typename T::value_type;
-      cblas_zaxpy(N, reinterpret_cast<scalar_type(&)[2]>(alpha), reinterpret_cast<scalar_type *>(x.data()), x_incr,
-                  reinterpret_cast<scalar_type *>(y.data()), y_incr);
-    }
+    cblas_axpy<T>(N, alpha, x.data(), x_incr, y.data(), y_incr);
   }
 
   state.counters.insert({{"N", N},
@@ -58,19 +81,19 @@ static void CBLAS(benchmark::State &state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * 3 * N);
 }
 
-static void CBLAS_SAXPY(benchmark::State &state) {
+static void CBLAS_SAXPY(benchmark::State& state) {
   CBLAS<float>(state);
 }
 
-static void CBLAS_DAXPY(benchmark::State &state) {
+static void CBLAS_DAXPY(benchmark::State& state) {
   CBLAS<double>(state);
 }
 
-static void CBLAS_CAXPY(benchmark::State &state) {
+static void CBLAS_CAXPY(benchmark::State& state) {
   CBLAS<std::complex<float>>(state);
 }
 
-static void CBLAS_ZAXPY(benchmark::State &state) {
+static void CBLAS_ZAXPY(benchmark::State& state) {
   CBLAS<std::complex<double>>(state);
 }
 
