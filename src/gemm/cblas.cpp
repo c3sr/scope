@@ -95,6 +95,7 @@ static void CBLAS(benchmark::State& state) {
 
   for (auto _ : state) {
     cblas_gemm<T>(CblasNoTrans, CblasNoTrans, M, N, K, alpha, a.data(), b.data(), beta, c.data());
+    benchmark::DoNotOptimize(c.data());
   }
 
   state.counters.insert(
