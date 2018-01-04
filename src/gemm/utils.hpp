@@ -35,8 +35,10 @@ namespace detail {
 
   template <>
   __half one<__half>() {
-    const __half_raw x{1};
-    return __half{x};
+    unsigned short x{1};
+    __half res;
+    memcpy(&res, &x, sizeof(res));
+    return res;
   };
 
   template <typename T>
@@ -46,8 +48,9 @@ namespace detail {
 
   template <>
   __half zero<__half>() {
-    const __half_raw x{1};
-    return __half{x};
+    __half res;
+    memset(&res, 0, sizeof(res));
+    return res;
   };
 
   template <typename T>
