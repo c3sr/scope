@@ -53,7 +53,7 @@ if(MSVC)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
 	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
-  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wno-unused-command-line-argument -Wfatal-errors ${CXX_WARNINGS} -O3")
+  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wno-unused-variable -Wno-unused-command-line-argument -Wfatal-errors ${CXX_WARNINGS} -O3")
 endif()
 
 if (APPLE)

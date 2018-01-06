@@ -21,6 +21,28 @@
 #endif // __syncwarp
 #endif // CUDA_VERSION < 9000
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4100 4101 4181 4211 4244 4273 4324 4503 4512 4522 4700 4714 4717 4800)
+#elif defined __INTEL_COMPILER
+#pragma warning push
+#pragma warning disable 2196 279 1684 2259
+#elif defined __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wall"
+#pragma clang diagnostic ignored "-Wextra"
+#pragma clang diagnostic ignored "-Wunused"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#elif defined __GNUC__ && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
+#pragma GCC diagnostic ignored "-Wextra"
+#pragma GCC diagnostic ignored "-Wunused"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
+
 // Cutlass GEMM API
 #include <cutlass/gemm/dispatch.h>
 #include <cutlass/gemm/epilogue_function.h>
@@ -41,12 +63,12 @@ static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* be
   using namespace cutlass;
   using namespace cutlass::gemm;
 
-  using value_t          = T;
-  using accum_t          = T;
-  constexpr auto math_op = math_operation_class_t::scalar;
+  using value_t = T;
+  using accum_t = T;
 
   constexpr auto accumulator_alignment = sizeof(accum_t);
   constexpr auto operator_alignment    = accumulator_alignment;
+  constexpr auto math_op               = math_operation_class_t::scalar;
 
   constexpr auto TransformA = matrix_transform_t::Transpose;
   constexpr auto TransformB = matrix_transform_t::Transpose;
@@ -182,32 +204,120 @@ static void CUTLASS(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * M * N * K);
 }
 
-// static void CUTLASS_HGEMM(benchmark::State& state) {
-//   return CUTLASS<__half>(state);
-// }
+template <cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
+static void CUTLASS_HGEMM(benchmark::State& state) {
+  return CUTLASS<__half, tiling_strategy>(state);
+}
 
 template <cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
 static void CUTLASS_SGEMM(benchmark::State& state) {
   return CUTLASS<float, tiling_strategy>(state);
 }
+template <cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
+static void CUTLASS_DGEMM(benchmark::State& state) {
+  return CUTLASS<double, tiling_strategy>(state);
+}
+template <cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
+static void CUTLASS_I8GEMM(benchmark::State& state) {
+  return CUTLASS<int8_t, tiling_strategy>(state);
+}
+template <cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
+static void CUTLASS_I32GEMM(benchmark::State& state) {
+  return CUTLASS<int32_t, tiling_strategy>(state);
+}
 
-// static void CUTLASS_DGEMM(benchmark::State& state) {
-//   return CUTLASS<double>(state);
-// }
+#define BENCHMARK_SMALL_TILING(b)                                                                                      \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Small)                                                         \
+      ->Args({256, 169, 1})                                                                                            \
+      ->Args({256, 729, 1})                                                                                            \
+      ->Args({384, 169, 1})                                                                                            \
+      ->Args({128, 169, 129})
 
-// static void CUTLASS_CGEMM(benchmark::State& state) {
-//   return CUTLASS<std::complex<float>>(state);
-// }
+#define BENCHMARK_MEDIUM_TILING(b)                                                                                     \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Large)                                                         \
+      ->Args({1000, 1, 1})                                                                                             \
+      ->Args({50, 1000, 1})                                                                                            \
+      ->Args({512, 2, 512})                                                                                            \
+      ->Args({1024, 2, 512})                                                                                           \
+      ->Args({512, 4, 512})                                                                                            \
+      ->Args({1024, 4, 512})
 
-// static void CUTLASS_ZGEMM(benchmark::State& state) {
-//   return CUTLASS<std::complex<double>>(state);
-// }
+#define BENCHMARK_LARGE_TILING(b)                                                                                      \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Large)                                                         \
+      ->Args({384, 169, 2304})                                                                                         \
+      ->Args({50, 1000, 4096})                                                                                         \
+      ->Args({50, 4096, 1})                                                                                            \
+      ->Args({96, 3025, 1})                                                                                            \
+      ->Args({96, 3025, 363})                                                                                          \
+      ->Args({35, 700, 2048})                                                                                          \
+      ->Args({1024, 700, 512})
 
-// BENCHMARK(CUTLASS_HGEMM)->ALL_ARGS()->UseManualTime();
-BENCHMARK_TEMPLATE(CUTLASS_SGEMM, cutlass::gemm::tiling_strategy::Large)
-    ->Args({128, 169, 129})
-    ->Args({1029, 169, 129})
-    ->UseManualTime();
-// BENCHMARK(CUTLASS_DGEMM)->ALL_ARGS()->UseManualTime();
-// BENCHMARK(CUTLASS_CGEMM)->ALL_ARGS()->UseManualTime();
-// BENCHMARK(CUTLASS_ZGEMM)->ALL_ARGS()->UseManualTime();
+#define BENCHMARK_HUGE_TILING(b)                                                                                       \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Huge)                                                          \
+      ->Args({128, 169, 1728})                                                                                         \
+      ->Args({128, 729, 1200})                                                                                         \
+      ->Args({192, 169, 1728})                                                                                         \
+      ->Args({50, 4096, 4096})                                                                                         \
+      ->Args({50, 4096, 9216})                                                                                         \
+      ->Args({5124, 700, 2048})                                                                                        \
+      ->Args({5124, 700, 2560})                                                                                        \
+      ->Args({7680, 1, 2560})                                                                                          \
+      ->Args({7680, 2, 2560})                                                                                          \
+      ->Args({7680, 4, 2560})                                                                                          \
+      ->Args({3072, 1, 1024})                                                                                          \
+      ->Args({3072, 2, 1024})                                                                                          \
+      ->Args({3072, 4, 1024})                                                                                          \
+      ->Args({7680, 1500, 2560})                                                                                       \
+      ->Args({6144, 1500, 2048})                                                                                       \
+      ->Args({4608, 1500, 1536})                                                                                       \
+      ->Args({8448, 1500, 2816})                                                                                       \
+      ->Args({3072, 1500, 1024})                                                                                       \
+      ->Args({7680, 3000, 2560})                                                                                       \
+      ->Args({6144, 3000, 2048})                                                                                       \
+      ->Args({4608, 3000, 1536})                                                                                       \
+      ->Args({8448, 3000, 2816})                                                                                       \
+      ->Args({3072, 3000, 1024})                                                                                       \
+      ->Args({7680, 6000, 2560})                                                                                       \
+      ->Args({6144, 6000, 2048})                                                                                       \
+      ->Args({4608, 6000, 1536})                                                                                       \
+      ->Args({8448, 6000, 2816})                                                                                       \
+      ->Args({3072, 6000, 1024})
+
+#define BENCHMARK_WIDE_TILING(b)                                                                                       \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Wide)                                                          \
+      ->Args({128, 169, 1728})                                                                                         \
+      ->Args({128, 729, 1200})                                                                                         \
+      ->Args({192, 169, 1728})
+
+#define BENCHMARK_TALL_TILING(b)                                                                                       \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Tall)                                                          \
+      ->Args({512, 1, 500000})                                                                                         \
+      ->Args({1024, 1, 500000})                                                                                        \
+      ->Args({512, 2, 500000})                                                                                         \
+      ->Args({1024, 2, 500000})                                                                                        \
+      ->Args({512, 4, 500000})                                                                                         \
+      ->Args({1024, 4, 500000})
+
+#define BENCHMARK_CUTLASS(b)                                                                                           \
+  BENCHMARK_SMALL_TILING(b)->UseManualTime();                                                                          \
+  BENCHMARK_MEDIUM_TILING(b)->UseManualTime();                                                                         \
+  BENCHMARK_LARGE_TILING(b)->UseManualTime();                                                                          \
+  BENCHMARK_HUGE_TILING(b)->UseManualTime();                                                                           \
+  BENCHMARK_WIDE_TILING(b)->UseManualTime();                                                                           \
+  BENCHMARK_TALL_TILING(b)->UseManualTime()
+
+// BENCHMARK_CUTLASS(CUTLASS_HGEMM);
+BENCHMARK_CUTLASS(CUTLASS_SGEMM);
+// BENCHMARK_CUTLASS(CUTLASS_DGEMM);
+// BENCHMARK_CUTLASS(CUTLASS_I32GEMM);
+// BENCHMARK_CUTLASS(CUTLASS_I8GEMM);
+
+// #ifdef _MSC_VER
+// #pragma warning(pop)
+// #elif defined __INTEL_COMPILER
+// #pragma warning pop
+// #elif defined __clang__
+// #pragma clang diagnostic pop
+// #elif defined __GNUC__ && __GNUC__ >= 5
+// #pragma GCC diagnostic pop
+// #endif
