@@ -345,6 +345,12 @@ static void CUDNN_Impl(benchmark::State& state,
 
 template <typename T>
 static void CUDNN(benchmark::State& state) {
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_GEMM",
+      "This algorithm expresses the convolution as an explicit matrix product. A "
+      "significant memory workspace is needed to store the matrix that holds the "
+      "input tensor data.");
   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM>(
       state,
       "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM",
@@ -360,12 +366,7 @@ static void CUDNN(benchmark::State& state) {
       "This algorithm expresses the convolution as a matrix product "
       "without actually explicitly form the matrix that holds the input "
       "tensor data.");
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_GEMM",
-      "This algorithm expresses the convolution as an explicit matrix product. A "
-      "significant memory workspace is needed to store the matrix that holds the "
-      "input tensor data.");
+#if 0
   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT>(
       state,
       "CUDNN_CONVOLUTION_FWD_ALGO_DIRECT",
@@ -395,6 +396,7 @@ static void CUDNN(benchmark::State& state) {
                                                               "This algorithm uses the Winograd Transform approach to "
                                                               "compute the convolution. Significant workspace may be "
                                                               "needed to store intermediate results.");
+#endif
 }
 
 static void CUDNN_CONV_INT8(benchmark::State& state) {
@@ -418,11 +420,11 @@ static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
 }
 
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(CUDNN_CONV_INT32)->ALL_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS()->UseManualTime();
 BENCHMARK(CUDNN_CONV_FLOAT)->ALL_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS()->UseManualTime();
+//BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS()->UseManualTime();
+//BENCHMARK(CUDNN_CONV_INT32)->ALL_CONV_PROBLEMS()->UseManualTime();
+//BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS()->UseManualTime();
+//BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS()->UseManualTime();
 #else  // USE_CUDA_EVENTS
 BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS();
 BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS();
