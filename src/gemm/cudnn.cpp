@@ -36,8 +36,8 @@ static void CUDNN_CONV(benchmark::State& state) {
 
   const auto height        = state.range(0);
   const auto width         = state.range(1);
-  const auto kernel        = state.range(2);
-  const auto kernel_height = kernel, kernel_width = kernel;
+  const auto kernel_height = state.range(2);
+  const auto kernel_width  = kernel_height;
 
   auto image      = std::vector<float>(batch_size * channels * height * width);
   int image_bytes = batch_size * channels * height * width * sizeof(float);
@@ -129,14 +129,14 @@ static void CUDNN_CONV(benchmark::State& state) {
   }
   defer(cudaFree(d_input));
 
-  if (PRINT_IF_ERROR(cudaMemcpy(d_input, image.data(), image_bytes, cudaMemcpyHostToDevice)) {
+  if (PRINT_IF_ERROR(cudaMemcpy(d_input, image.data(), image_bytes, cudaMemcpyHostToDevice))) {
     LOG(critical, "CUDNN/CONV failed to copy image vector to device");
     state.SkipWithError("CUDNN/CONV failed to copy image vector to device");
     return;
   }
 
   float* d_output{nullptr};
-  if (PRINT_IF_ERROR(  cudaMalloc(&d_output, image_bytes))) {
+  if (PRINT_IF_ERROR(cudaMalloc(&d_output, image_bytes))) {
     LOG(critical, "CUDNN/CONV device memory allocation failed for input");
     state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
     return;
@@ -206,8 +206,10 @@ static void CUDNN_CONV(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert(
-      {{"height",height}, {"width", width}, {"kernel", kernel}, {"Flops", {2.0 * height * width * kernel, benchmark::Counter::kAvgThreadsRate}}});
+  state.counters.insert({{"height", height},
+                         {"width", width},
+                         {"kernel_height", kernel_height},
+                         {"Flops", {2.0 * height * width * kernel_height, benchmark::Counter::kAvgThreadsRate}}});
   // state.SetBytesProcessed(int64_t(state.iterations()) * a.size() * b.size() * c.size());
-  state.SetItemsProcessed(int64_t(state.iterations()) * height * width * kernel);
+  state.SetItemsProcessed(int64_t(state.iterations()) * height * width * kernel_height);
 }
