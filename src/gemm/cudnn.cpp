@@ -12,9 +12,39 @@
 #include "utils/utils.hpp"
 
 #include "gemm/args.hpp"
+#include "gemm/utils.hpp"
+
+template <typename T>
+struct dataType {};
+
+template <>
+struct dataType<int8_t> {
+  static const cudnnDataType_t type = CUDNN_DATA_INT8;
+};
+
+template <>
+struct dataType<int32_t> {
+  static const cudnnDataType_t type = CUDNN_DATA_INT32;
+};
+
+template <>
+struct dataType<__half> {
+  static const cudnnDataType_t type = CUDNN_DATA_HALF;
+};
+
+template <>
+struct dataType<float> {
+  static const cudnnDataType_t type = CUDNN_DATA_FLOAT;
+};
+
+template <>
+struct dataType<double> {
+  static const cudnnDataType_t type = CUDNN_DATA_DOUBLE;
+};
 
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
-static void CUDNN_CONV(benchmark::State& state) {
+template <typename T>
+static void CUDNN(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError("CUDNN/CONV no CUDA device found");
     return;
@@ -32,13 +62,15 @@ static void CUDNN_CONV(benchmark::State& state) {
   const auto kernel_height = state.range(2);
   const auto kernel_width  = kernel_height;
 
-  auto image      = std::vector<float>(batch_size * channels * height * width);
-  int image_bytes = batch_size * channels * height * width * sizeof(float);
-  std::fill(image.begin(), image.end(), 1.0f);
+  auto image      = std::vector<T>(batch_size * channels * height * width);
+  int image_bytes = batch_size * channels * height * width * sizeof(T);
+  std::fill(image.begin(), image.end(), gemm::detail::one<T>());
 
-  auto kernel      = std::vector<float>(batch_size * channels * kernel_height * kernel_width);
-  int kernel_bytes = batch_size * channels * kernel_height * kernel_width * sizeof(float);
-  std::fill(kernel.begin(), kernel.end(), 1.0f);
+  auto kernel      = std::vector<T>(batch_size * channels * kernel_height * kernel_width);
+  int kernel_bytes = batch_size * channels * kernel_height * kernel_width * sizeof(T);
+  std::fill(kernel.begin(), kernel.end(), gemm::detail::one<T>());
+
+  const auto N = batch_size, K = kernel_height, C = channels, I = height, W = width;
 
   cudnnHandle_t cudnn_handle;
 
@@ -55,7 +87,7 @@ static void CUDNN_CONV(benchmark::State& state) {
   }
   if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(input_descriptor,
                                                 /*format=*/CUDNN_TENSOR_NHWC,
-                                                /*dataType=*/CUDNN_DATA_FLOAT,
+                                                /*dataType=*/dataType<T>::type,
                                                 /*batch_size=*/batch_size,
                                                 /*channels=*/channels,
                                                 /*image_height=*/height,
@@ -72,7 +104,7 @@ static void CUDNN_CONV(benchmark::State& state) {
   }
   if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(output_descriptor,
                                                 /*format=*/CUDNN_TENSOR_NHWC,
-                                                /*dataType=*/CUDNN_DATA_FLOAT,
+                                                /*dataType=*/dataType<T>::type,
                                                 /*batch_size=*/batch_size,
                                                 /*channels=*/channels,
                                                 /*image_height=*/height,
@@ -88,7 +120,7 @@ static void CUDNN_CONV(benchmark::State& state) {
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetFilter4dDescriptor(kernel_descriptor,
-                                                /*dataType=*/CUDNN_DATA_FLOAT,
+                                                /*dataType=*/dataType<T>::type,
                                                 /*format=*/CUDNN_TENSOR_NCHW,
                                                 /*out_channels=*/channels,
                                                 /*in_channels=*/channels,
@@ -112,7 +144,7 @@ static void CUDNN_CONV(benchmark::State& state) {
                                                      /*dilation_height=*/1,
                                                      /*dilation_width=*/1,
                                                      /*mode=*/conv_mode,
-                                                     /*computeType=*/CUDNN_DATA_FLOAT))) {
+                                                     /*computeType=*/dataType<T>::type))) {
     state.SkipWithError("CUDNN/CONV failed to cudnnSetConvolution2dDescriptor");
     return;
   }
@@ -139,7 +171,7 @@ static void CUDNN_CONV(benchmark::State& state) {
   }
   defer(cudaFree(d_workspace));
 
-  float* d_input{nullptr};
+  T* d_input{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_input, image_bytes))) {
     LOG(critical, "CUDNN/CONV device memory allocation failed for input");
     state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
@@ -153,7 +185,7 @@ static void CUDNN_CONV(benchmark::State& state) {
     return;
   }
 
-  float* d_output{nullptr};
+  T* d_output{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_output, image_bytes))) {
     LOG(critical, "CUDNN/CONV device memory allocation failed for input");
     state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
@@ -167,7 +199,7 @@ static void CUDNN_CONV(benchmark::State& state) {
     return;
   }
 
-  float* d_kernel{nullptr};
+  T* d_kernel{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_kernel, kernel_bytes))) {
     LOG(critical, "CUDNN/CONV device memory allocation failed for input");
     state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
@@ -224,13 +256,45 @@ static void CUDNN_CONV(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"height", height}, {"width", width}, {"kernel_height", kernel_height}});
+  state.counters.insert({{"height", height},
+                         {"width", width},
+                         {"kernel_height", kernel_width},
+                         {"kernel_height", kernel_height},
+                         {"Flops", {2.0 * N * K * C * I * I * W * W, benchmark::Counter::kAvgThreadsRate}}});
   // state.SetBytesProcessed(int64_t(state.iterations()) * a.size() * b.size() * c.size());
   state.SetItemsProcessed(int64_t(state.iterations()) * height * width * kernel_height);
 }
 
+static void CUDNN_CONV_INT8(benchmark::State& state) {
+  CUDNN<int8_t>(state);
+}
+
+static void CUDNN_CONV_INT32(benchmark::State& state) {
+  CUDNN<int32_t>(state);
+}
+
+static void CUDNN_CONV_HALF(benchmark::State& state) {
+  CUDNN<__half>(state);
+}
+
+static void CUDNN_CONV_FLOAT(benchmark::State& state) {
+  CUDNN<float>(state);
+}
+
+static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
+  CUDNN<double>(state);
+}
+
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDNN_CONV)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_INT8)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_INT32)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_HALF)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_FLOAT)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_ARGS()->UseManualTime();
 #else  // USE_CUDA_EVENTS
-BENCHMARK(CUDNN_CONV)->ALL_ARGS();
+BENCHMARK(CUDNN_CONV_INT8)->ALL_ARGS();
+BENCHMARK(CUDNN_CONV_INT32)->ALL_ARGS();
+BENCHMARK(CUDNN_CONV_HALF)->ALL_ARGS();
+BENCHMARK(CUDNN_CONV_FLOAT)->ALL_ARGS();
+BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_ARGS();
 #endif // USE_CUDA_EVENTS
