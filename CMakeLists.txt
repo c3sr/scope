@@ -103,6 +103,7 @@ endif (CONFIG_USE_HUNTER)
 
 
 find_package(CUDA REQUIRED)
+find_package(CuDNN REQUIRED)
 find_package(OpenBLAS REQUIRED)
 #find_package(Protobuf REQUIRED)
 
@@ -176,10 +177,12 @@ add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 include_directories(bench
   ${SRC_DIR}
   ${THIRDPARTY_DIR}
+  ${THIRDPARTY_DIR}/cutlass
   ${THIRDPARTY_DIR}/leathers/Source
   ${TOP_DIR}/include
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
+  ${CUDNN_INCLUDE_DIR}
 )
 
 if (USE_CUDA_EVENTS)
@@ -203,6 +206,7 @@ target_link_libraries(bench cub::cub)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
 # target_link_libraries(bench ${PROTOBUF_LIBRARY} )
 target_link_libraries(bench debug_assert)
+target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 

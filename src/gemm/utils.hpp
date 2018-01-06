@@ -12,20 +12,17 @@ namespace detail {
   static const char* implementation_name() {
     if (std::is_same<T, __half>::value) {
       return "HGEMM";
-    }
-    if (std::is_same<T, float>::value) {
+    } else if (std::is_same<T, float>::value) {
       return "SGEMM";
-    }
-    if (std::is_same<T, double>::value) {
+    } else if (std::is_same<T, double>::value) {
       return "DGEMM";
-    }
-    if (std::is_same<T, std::complex<float>>::value) {
+    } else if (std::is_same<T, std::complex<float>>::value) {
       return "CGEMM";
-    }
-    if (std::is_same<T, std::complex<double>>::value) {
+    } else if (std::is_same<T, std::complex<double>>::value) {
       return "ZGEMM";
+    } else {
+      return "UNKNOWN_GEMM";
     }
-    return "UNKNOWN_GEMM";
   }
 
   template <typename T>

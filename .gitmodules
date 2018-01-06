@@ -31,3 +31,6 @@
 [submodule "third_party/safeenum"]
 	path = third_party/safeenum
 	url = https://github.com/tuxalin/safeenum
+[submodule "third_party/transwarp"]
+	path = third_party/transwarp
+	url = https://github.com/bloomen/transwarp

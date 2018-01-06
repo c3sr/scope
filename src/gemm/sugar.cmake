@@ -26,7 +26,7 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cutlas.cu
+    cutlass.cu
     cuda.cu
 )
 
