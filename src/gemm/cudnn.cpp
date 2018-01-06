@@ -137,8 +137,8 @@ static void CUDNN(benchmark::State& state) {
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetConvolution2dDescriptor(convolution_descriptor,
-                                                     /*pad_height=*/1,
-                                                     /*pad_width=*/1,
+                                                     /*pad_height=*/0,
+                                                     /*pad_width=*/0,
                                                      /*vertical_stride=*/1,
                                                      /*horizontal_stride=*/1,
                                                      /*dilation_height=*/1,
