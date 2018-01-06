@@ -50,69 +50,94 @@ static void CUDNN_CONV(benchmark::State& state) {
   std::fill(kernel.begin(), kernel.end(), 1.0f);
 
   cudnnHandle_t cudnn_handle;
-  checkCUDNN(cudnnCreate(&cudnn_handle));
 
   if (PRINT_IF_ERROR(cudnnCreate(&cudnn_handle))) {
-    LOG(critical, "CUDNN/CONV initialization failed");
-    state.SkipWithError("CUDNN/CONV initialization failed");
+    state.SkipWithError("CUDNN/CONV failed to cudnnCreate");
     return;
   }
   defer(cudnnDestroy(cudnn_handle));
 
   cudnnTensorDescriptor_t input_descriptor;
-  checkCUDNN(cudnnCreateTensorDescriptor(&input_descriptor));
-  checkCUDNN(cudnnSetTensor4dDescriptor(input_descriptor,
-                                        /*format=*/CUDNN_TENSOR_NHWC,
-                                        /*dataType=*/CUDNN_DATA_FLOAT,
-                                        /*batch_size=*/batch_size,
-                                        /*channels=*/channels,
-                                        /*image_height=*/height,
-                                        /*image_width=*/width));
+  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnCreateTensorDescriptor");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(input_descriptor,
+                                                /*format=*/CUDNN_TENSOR_NHWC,
+                                                /*dataType=*/CUDNN_DATA_FLOAT,
+                                                /*batch_size=*/batch_size,
+                                                /*channels=*/channels,
+                                                /*image_height=*/height,
+                                                /*image_width=*/width))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnSetTensor4dDescriptor");
+    return;
+  }
   defer(cudnnDestroyTensorDescriptor(input_descriptor));
 
   cudnnTensorDescriptor_t output_descriptor;
-  checkCUDNN(cudnnCreateTensorDescriptor(&output_descriptor));
-  checkCUDNN(cudnnSetTensor4dDescriptor(output_descriptor,
-                                        /*format=*/CUDNN_TENSOR_NHWC,
-                                        /*dataType=*/CUDNN_DATA_FLOAT,
-                                        /*batch_size=*/batch_size,
-                                        /*channels=*/channels,
-                                        /*image_height=*/height,
-                                        /*image_width=*/width));
+  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&output_descriptor))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnCreateTensorDescriptor");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(output_descriptor,
+                                                /*format=*/CUDNN_TENSOR_NHWC,
+                                                /*dataType=*/CUDNN_DATA_FLOAT,
+                                                /*batch_size=*/batch_size,
+                                                /*channels=*/channels,
+                                                /*image_height=*/height,
+                                                /*image_width=*/width))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnSetTensor4dDescriptor");
+    return;
+  }
   defer(cudnnDestroyTensorDescriptor(output_descriptor));
 
   cudnnFilterDescriptor_t kernel_descriptor;
-  checkCUDNN(cudnnCreateFilterDescriptor(&kernel_descriptor));
-  checkCUDNN(cudnnSetFilter4dDescriptor(kernel_descriptor,
-                                        /*dataType=*/CUDNN_DATA_FLOAT,
-                                        /*format=*/CUDNN_TENSOR_NCHW,
-                                        /*out_channels=*/channels,
-                                        /*in_channels=*/channels,
-                                        /*kernel_height=*/kernel_height,
-                                        /*kernel_width=*/kernel_width));
+  if (PRINT_IF_ERROR(cudnnCreateFilterDescriptor(&kernel_descriptor))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnCreateFilterDescriptor");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudnnSetFilter4dDescriptor(kernel_descriptor,
+                                                /*dataType=*/CUDNN_DATA_FLOAT,
+                                                /*format=*/CUDNN_TENSOR_NCHW,
+                                                /*out_channels=*/channels,
+                                                /*in_channels=*/channels,
+                                                /*kernel_height=*/kernel_height,
+                                                /*kernel_width=*/kernel_width))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnSetFilter4dDescriptor");
+    return;
+  }
   defer(cudnnDestroyFilterDescriptor(kernel_descriptor));
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
-  checkCUDNN(cudnnCreateConvolutionDescriptor(&convolution_descriptor));
-  checkCUDNN(cudnnSetConvolution2dDescriptor(convolution_descriptor,
-                                             /*pad_height=*/1,
-                                             /*pad_width=*/1,
-                                             /*vertical_stride=*/1,
-                                             /*horizontal_stride=*/1,
-                                             /*dilation_height=*/1,
-                                             /*dilation_width=*/1,
-                                             /*mode=*/conv_mode,
-                                             /*computeType=*/CUDNN_DATA_FLOAT));
+  if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnCreateConvolutionDescriptor");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudnnSetConvolution2dDescriptor(convolution_descriptor,
+                                                     /*pad_height=*/1,
+                                                     /*pad_width=*/1,
+                                                     /*vertical_stride=*/1,
+                                                     /*horizontal_stride=*/1,
+                                                     /*dilation_height=*/1,
+                                                     /*dilation_width=*/1,
+                                                     /*mode=*/conv_mode,
+                                                     /*computeType=*/CUDNN_DATA_FLOAT))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnSetConvolution2dDescriptor");
+    return;
+  }
   defer(cudnnDestroyConvolutionDescriptor(convolution_descriptor));
 
   size_t workspace_bytes = 0;
-  checkCUDNN(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
-                                                     input_descriptor,
-                                                     kernel_descriptor,
-                                                     convolution_descriptor,
-                                                     output_descriptor,
-                                                     convolution_algorithm,
-                                                     &workspace_bytes));
+  if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
+                                                             input_descriptor,
+                                                             kernel_descriptor,
+                                                             convolution_descriptor,
+                                                             output_descriptor,
+                                                             convolution_algorithm,
+                                                             &workspace_bytes))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolutionForwardWorkspaceSize");
+    return;
+  }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
 
   void* d_workspace{nullptr};
@@ -191,7 +216,7 @@ static void CUDNN_CONV(benchmark::State& state) {
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError("CUDNN/CONV failed to launch kernel");
+      state.SkipWithError("CUDNN/CONV failed to perform cudnnConvolutionForward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {
@@ -208,10 +233,7 @@ static void CUDNN_CONV(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"height", height},
-                         {"width", width},
-                         {"kernel_height", kernel_height},
-                         {"Flops", {2.0 * height * width * kernel_height, benchmark::Counter::kAvgThreadsRate}}});
+  state.counters.insert({{"height", height}, {"width", width}, {"kernel_height", kernel_height}});
   // state.SetBytesProcessed(int64_t(state.iterations()) * a.size() * b.size() * c.size());
   state.SetItemsProcessed(int64_t(state.iterations()) * height * width * kernel_height);
 }
