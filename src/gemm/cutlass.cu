@@ -36,7 +36,7 @@
 #include "gemm/args.hpp"
 #include "gemm/utils.hpp"
 
-template <typename T>
+template <typename T, cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
 static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* beta, T* C) {
   using namespace cutlass;
   using namespace cutlass::gemm;
@@ -56,22 +56,22 @@ static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* be
 
   const epilogue_op_t epilogue_op(*alpha, *beta);
 
-  const auto conf = cutlass::gemm::device_gemm<tiling_strategy::Large, ///< Tile-sizing classification
-                                               math_op,    ///< Indicates which class of math operation to select
-                                               TransformA, ///< Transformation op for matrix A
-                                               operator_alignment,   ///< Alignment (in bytes) of A operand
-                                               TransformB,           ///< Transformation op for matrix B
-                                               operator_alignment,   ///< Alignment (in bytes) of B operand
-                                               value_t,              ///< Multiplicand value type (matrices A and B)
-                                               accum_t,              ///< Accumulator value type (matrix C and scalars)
-                                               epilogue_op_t,        ///< Epilogue operation to update matrix C
-                                               accumulator_alignment ///< Alignment (in bytes) of C operand
+  const auto conf = cutlass::gemm::device_gemm<tiling_strategy,    //< Tile-sizing classification
+                                               math_op,            //< Indicates which class of math operation to select
+                                               TransformA,         //< Transformation op for matrix A
+                                               operator_alignment, //< Alignment (in bytes) of A operand
+                                               TransformB,         //< Transformation op for matrix B
+                                               operator_alignment, //< Alignment (in bytes) of B operand
+                                               value_t,            //< Multiplicand value type (matrices A and B)
+                                               accum_t,            //< Accumulator value type (matrix C and scalars)
+                                               epilogue_op_t,      //< Epilogue operation to update matrix C
+                                               accumulator_alignment //< Alignment (in bytes) of C operand
                                                >(M, N, K, epilogue_op, B, A, C);
 
   return conf.result;
 }
 
-template <typename T>
+template <typename T, cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
 static void CUTLASS(benchmark::State& state) {
   static const std::string IMPLEMENTATION_NAME = gemm::detail::implementation_name<T>();
   state.SetLabel(fmt::format("CUTLASS/{}", IMPLEMENTATION_NAME));
@@ -151,22 +151,21 @@ static void CUTLASS(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const auto cutlass_err = cutlass_gemm<device_type>(M, N, K, reinterpret_cast<device_type*>(&alpha), d_a, d_b,
-                              reinterpret_cast<device_type*>(&beta), d_c);
+    const auto cutlass_err = cutlass_gemm<device_type, tiling_strategy>(
+        M, N, K, reinterpret_cast<device_type*>(&alpha), d_a, d_b, reinterpret_cast<device_type*>(&beta), d_c);
 
     cudaEventRecord(stop, NULL);
-   const auto cuda_err = cudaEventSynchronize(stop);
-
+    const auto cuda_err = cudaEventSynchronize(stop);
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cutlass_err)) {
       state.SkipWithError(fmt::format("CUTLASS/{} failed to launch kernel", IMPLEMENTATION_NAME).c_str());
       break;
     }
-   if (PRINT_IF_ERROR(cuda_err)) {
-     state.SkipWithError(fmt::format("CUTLASS/{} failed to synchronize kernel", IMPLEMENTATION_NAME).c_str());
-     break;
-   }
+    if (PRINT_IF_ERROR(cuda_err)) {
+      state.SkipWithError(fmt::format("CUTLASS/{} failed to synchronize kernel", IMPLEMENTATION_NAME).c_str());
+      break;
+    }
 
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
@@ -187,8 +186,9 @@ static void CUTLASS(benchmark::State& state) {
 //   return CUTLASS<__half>(state);
 // }
 
+template <cutlass::gemm::tiling_strategy::kind_t tiling_strategy>
 static void CUTLASS_SGEMM(benchmark::State& state) {
-  return CUTLASS<float>(state);
+  return CUTLASS<float, tiling_strategy>(state);
 }
 
 // static void CUTLASS_DGEMM(benchmark::State& state) {
@@ -204,7 +204,10 @@ static void CUTLASS_SGEMM(benchmark::State& state) {
 // }
 
 // BENCHMARK(CUTLASS_HGEMM)->ALL_ARGS()->UseManualTime();
-BENCHMARK(CUTLASS_SGEMM)->Args({128, 169, 129})->Args({1029, 169, 129})->UseManualTime();
+BENCHMARK_TEMPLATE(CUTLASS_SGEMM, cutlass::gemm::tiling_strategy::Large)
+    ->Args({128, 169, 129})
+    ->Args({1029, 169, 129})
+    ->UseManualTime();
 // BENCHMARK(CUTLASS_DGEMM)->ALL_ARGS()->UseManualTime();
 // BENCHMARK(CUTLASS_CGEMM)->ALL_ARGS()->UseManualTime();
 // BENCHMARK(CUTLASS_ZGEMM)->ALL_ARGS()->UseManualTime();
