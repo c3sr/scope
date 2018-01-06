@@ -56,7 +56,7 @@ static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* be
                                                accum_t,              ///< Accumulator value type (matrix C and scalars)
                                                epilogue_op_t,        ///< Epilogue operation to update matrix C
                                                accumulator_alignment ///< Alignment (in bytes) of C operand
-                                               >(M, N, K, epilogue_op, A, B, C, 0, true);
+                                               >(M, N, K, epilogue_op, A, B, C);
 
   return conf.result;
 }
