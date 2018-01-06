@@ -10,6 +10,20 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
+// Mask for all 32 threads in a warp.
+#define CUDA_WARP_ALL 0xFFFFFFFF
+
+#if defined(CUDA_VERSION) && CUDA_VERSION < 9000
+// CUDA 9.0 introduces a new, light-weight barrier synchronization primitive
+// that operates at the warp-scope. This is required to ensure visibility of
+// reads/writes among threads that can make indepenent progress on Volta.
+// For previous CUDA versions these synchronizations not necessary, and we
+// define an empty function as a convenience for backward compatibility.
+__device__ inline void __syncwarp(unsigned mask = CUDA_WARP_ALL) {
+}
+
+#endif // defined(CUDA_VERSION) && CUDA_VERSION < 9000
+
 // Cutlass GEMM API
 #include <cutlass/gemm/dispatch.h>
 #include <cutlass/gemm/epilogue_function.h>
@@ -24,20 +38,6 @@
 
 #include "gemm/args.hpp"
 #include "gemm/utils.hpp"
-
-// Mask for all 32 threads in a warp.
-#define CUDA_WARP_ALL 0xFFFFFFFF
-
-#if defined(CUDA_VERSION) && CUDA_VERSION < 9000
-// CUDA 9.0 introduces a new, light-weight barrier synchronization primitive
-// that operates at the warp-scope. This is required to ensure visibility of
-// reads/writes among threads that can make indepenent progress on Volta.
-// For previous CUDA versions these synchronizations not necessary, and we
-// define an empty function as a convenience for backward compatibility.
-__device__ inline void __syncwarp(unsigned mask = CUDA_WARP_ALL) {
-}
-
-#endif
 
 template <typename T>
 static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* beta, T* C) {
