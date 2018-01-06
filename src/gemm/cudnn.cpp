@@ -71,8 +71,6 @@ static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stri
   return (input_dim - filter_dim + 2 * padd) / stride + 1;
 }
 
-std::once_flag cudnnInitFlag;
-
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
 template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm = CUDNN_CONVOLUTION_FWD_ALGO_GEMM>
@@ -112,8 +110,11 @@ static void CUDNN(benchmark::State& state) {
 
   static cudnnHandle_t cudnn_handle;
 
-  std::call_once(cudnnInitFlag, [&]() { PRINT_IF_ERROR(cudnnCreate(&cudnn_handle)); });
-  // defer(cudnnDestroy(cudnn_handle));
+  if( PRINT_IF_ERROR(cudnnCreate(&cudnn_handle))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnCreate");
+    return;
+  }
+   defer(cudnnDestroy(cudnn_handle));
 
   cudnnTensorDescriptor_t input_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
