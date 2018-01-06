@@ -12,14 +12,20 @@ endif()
 include(sugar_files)
 
 sugar_files(
+    BENCHMARK_HEADERS
+    utils.hpp
+    args.hpp
+)
+
+sugar_files(
     BENCHMARK_SOURCES
-    cudnn_conv.cpp
+    cudnn.cpp
 )
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
     cuda_conv_activation_lrn_pool_fused.cu
     cuda_conv_activation_lrn_pool_basic.cu
-    cuda_convolution.cu
+    cuda.cu
 )
 

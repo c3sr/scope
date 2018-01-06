@@ -18,6 +18,7 @@ sugar_include(tensor)
 sugar_files(
     BENCHMARK_HEADERS
     mpl.hpp
+    transwarp.h
     hostname.hpp
     cuda.hpp
     error.hpp

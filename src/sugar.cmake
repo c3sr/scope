@@ -13,6 +13,7 @@ include(sugar_files)
 include(sugar_include)
 
 sugar_include(init)
+sugar_include(layers)
 sugar_include(framework)
 sugar_include(launch)
 sugar_include(stream)

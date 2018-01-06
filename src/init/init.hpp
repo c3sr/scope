@@ -4,7 +4,8 @@
 
 #include <cuda_runtime.h>
 
-extern bool has_cuda;
-extern cudaDeviceProp cuda_device_prop;
+#include "init/cublas.hpp"
+#include "init/cuda.hpp"
+#include "init/cudnn.hpp"
 
 void init(int argc, char **argv);

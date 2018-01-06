@@ -105,15 +105,6 @@ static void CUBLAS(benchmark::State& state) {
   std::fill(b.begin(), b.end(), one);
   std::fill(c.begin(), c.end(), zero);
 
-  cublasHandle_t cublas_handle;
-
-  if (PRINT_IF_ERROR(cublasCreate(&cublas_handle))) {
-    LOG(critical, "CUBLAS/{} initialization failed", IMPLEMENTATION_NAME);
-    state.SkipWithError(fmt::format("CUBLAS/{} initialization failed", IMPLEMENTATION_NAME).c_str());
-    return;
-  }
-  defer(cublasDestroy(cublas_handle));
-
   using device_type = typename gemm::detail::cuda_type<T>::type;
 
   device_type *d_a{nullptr}, *d_b{nullptr}, *d_c{nullptr};

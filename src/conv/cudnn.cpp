@@ -12,8 +12,8 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "gemm/args.hpp"
-#include "gemm/utils.hpp"
+#include "conv/args.hpp"
+#include "conv/utils.hpp"
 
 template <typename T>
 struct valueDataType {};
@@ -115,16 +115,8 @@ static void CUDNN_Impl(benchmark::State& state,
   auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
   auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
 
-  std::fill(input_image.begin(), input_image.end(), gemm::detail::one<T>());
-  std::fill(kernel.begin(), kernel.end(), gemm::detail::one<T>());
-
-  cudnnHandle_t cudnn_handle;
-
-  if (PRINT_IF_ERROR(cudnnCreate(&cudnn_handle))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnCreate");
-    return;
-  }
-  defer(cudnnDestroy(cudnn_handle));
+  std::fill(input_image.begin(), input_image.end(), conv::detail::one<T>());
+  std::fill(kernel.begin(), kernel.end(), conv::detail::one<T>());
 
   cudnnTensorDescriptor_t input_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
