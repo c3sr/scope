@@ -213,3 +213,9 @@ static void CUDNN_CONV(benchmark::State& state) {
   // state.SetBytesProcessed(int64_t(state.iterations()) * a.size() * b.size() * c.size());
   state.SetItemsProcessed(int64_t(state.iterations()) * height * width * kernel_height);
 }
+
+#ifdef USE_CUDA_EVENTS
+BENCHMARK(CUDNN_CONV)->ALL_ARGS()->UseManualTime();
+#else  // USE_CUDA_EVENTS
+BENCHMARK(CUDNN_CONV)->ALL_ARGS();
+#endif // USE_CUDA_EVENTS
