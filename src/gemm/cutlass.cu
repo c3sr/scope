@@ -48,16 +48,15 @@ static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* be
   constexpr auto accumulator_alignment = sizeof(accum_t);
   constexpr auto operator_alignment    = accumulator_alignment;
 
-  constexpr auto TransformA = matrix_transform_t::NonTranspose;
-  constexpr auto TransformB = matrix_transform_t::NonTranspose;
+  constexpr auto TransformA = matrix_transform_t::Transpose;
+  constexpr auto TransformB = matrix_transform_t::Transpose;
 
-  // using block_task_policy_t = gemm_policy<T, T, TransformA, TransformB, tiling_strategy::Medium>;
   // Define the epilogue functor
   using epilogue_op_t = blas_scaled_epilogue<T, T, T>;
 
   const epilogue_op_t epilogue_op(*alpha, *beta);
 
-  const auto conf = cutlass::gemm::device_gemm<tiling_strategy::Medium, ///< Tile-sizing classification
+  const auto conf = cutlass::gemm::device_gemm<tiling_strategy::Large, ///< Tile-sizing classification
                                                math_op,    ///< Indicates which class of math operation to select
                                                TransformA, ///< Transformation op for matrix A
                                                operator_alignment,   ///< Alignment (in bytes) of A operand
@@ -67,7 +66,7 @@ static cudaError_t cutlass_gemm(int M, int N, int K, T* alpha, T* A, T* B, T* be
                                                accum_t,              ///< Accumulator value type (matrix C and scalars)
                                                epilogue_op_t,        ///< Epilogue operation to update matrix C
                                                accumulator_alignment ///< Alignment (in bytes) of C operand
-                                               >(M, N, K, epilogue_op, A, B, C);
+                                               >(M, N, K, epilogue_op, B, A, C);
 
   return conf.result;
 }
@@ -152,17 +151,22 @@ static void CUTLASS(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    cutlass_gemm<device_type>(M, N, K, reinterpret_cast<device_type*>(&alpha), d_a, d_b,
+    const auto cutlass_err = cutlass_gemm<device_type>(M, N, K, reinterpret_cast<device_type*>(&alpha), d_a, d_b,
                               reinterpret_cast<device_type*>(&beta), d_c);
 
     cudaEventRecord(stop, NULL);
-    const auto cuda_err = cudaEventSynchronize(stop);
+   const auto cuda_err = cudaEventSynchronize(stop);
+
 
     state.PauseTiming();
-    if (PRINT_IF_ERROR(cuda_err)) {
-      state.SkipWithError(fmt::format("CUTLASS/{} failed to synchronize kernel", IMPLEMENTATION_NAME).c_str());
+    if (PRINT_IF_ERROR(cutlass_err)) {
+      state.SkipWithError(fmt::format("CUTLASS/{} failed to launch kernel", IMPLEMENTATION_NAME).c_str());
       break;
     }
+   if (PRINT_IF_ERROR(cuda_err)) {
+     state.SkipWithError(fmt::format("CUTLASS/{} failed to synchronize kernel", IMPLEMENTATION_NAME).c_str());
+     break;
+   }
 
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
@@ -200,7 +204,7 @@ static void CUTLASS_SGEMM(benchmark::State& state) {
 // }
 
 // BENCHMARK(CUTLASS_HGEMM)->ALL_ARGS()->UseManualTime();
-BENCHMARK(CUTLASS_SGEMM)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUTLASS_SGEMM)->Args({128, 169, 129})->Args({1029, 169, 129})->UseManualTime();
 // BENCHMARK(CUTLASS_DGEMM)->ALL_ARGS()->UseManualTime();
 // BENCHMARK(CUTLASS_CGEMM)->ALL_ARGS()->UseManualTime();
 // BENCHMARK(CUTLASS_ZGEMM)->ALL_ARGS()->UseManualTime();
