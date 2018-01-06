@@ -10,7 +10,7 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-#if defined(CUDA_VERSION) && CUDA_VERSION < 9000
+#if CUDA_VERSION < 9000
 // CUDA 9.0 introduces a new, light-weight barrier synchronization primitive
 // that operates at the warp-scope. This is required to ensure visibility of
 // reads/writes among threads that can make indepenent progress on Volta.
@@ -19,7 +19,7 @@
 #ifndef __syncwarp
 #define __syncwarp(...)
 #endif // __syncwarp
-#endif // defined(CUDA_VERSION) && CUDA_VERSION < 9000
+#endif // CUDA_VERSION < 9000
 
 // Cutlass GEMM API
 #include <cutlass/gemm/dispatch.h>
