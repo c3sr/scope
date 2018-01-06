@@ -21,6 +21,7 @@
 #endif // __syncwarp
 #endif // CUDA_VERSION < 9000
 
+#if 0
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4100 4101 4181 4211 4244 4273 4324 4503 4512 4522 4700 4714 4717 4800)
@@ -41,6 +42,7 @@
 #pragma GCC diagnostic ignored "-Wunused"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 #endif
 
 // Cutlass GEMM API
@@ -308,16 +310,18 @@ static void CUTLASS_I32GEMM(benchmark::State& state) {
 
 // BENCHMARK_CUTLASS(CUTLASS_HGEMM);
 BENCHMARK_CUTLASS(CUTLASS_SGEMM);
-// BENCHMARK_CUTLASS(CUTLASS_DGEMM);
+BENCHMARK_CUTLASS(CUTLASS_DGEMM);
 // BENCHMARK_CUTLASS(CUTLASS_I32GEMM);
 // BENCHMARK_CUTLASS(CUTLASS_I8GEMM);
 
-// #ifdef _MSC_VER
-// #pragma warning(pop)
-// #elif defined __INTEL_COMPILER
-// #pragma warning pop
-// #elif defined __clang__
-// #pragma clang diagnostic pop
-// #elif defined __GNUC__ && __GNUC__ >= 5
-// #pragma GCC diagnostic pop
-// #endif
+#if 0
+#ifdef _MSC_VER
+#pragma warning(pop)
+#elif defined __INTEL_COMPILER
+#pragma warning pop
+#elif defined __clang__
+#pragma clang diagnostic pop
+#elif defined __GNUC__ && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
+#endif

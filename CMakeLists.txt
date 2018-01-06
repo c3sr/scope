@@ -42,23 +42,7 @@ include(CMakePackageConfigHelpers)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(MSVC)
-  # /wd4005  macro-redefinition
-  # /wd4068  unknown pragma
-  # /wd4244  conversion from 'type1' to 'type2'
-  # /wd4267  conversion from 'size_t' to 'type2'
-  # /wd4800  force value to bool 'true' or 'false' (performance warning)
-  add_compile_options(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
-  add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
-else()
-	add_definitions(-DCONSTEXPR=constexpr)
-	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough")
-  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wno-unused-variable -Wno-unused-command-line-argument -Wfatal-errors ${CXX_WARNINGS} -O3")
-endif()
 
-if (APPLE)
-  list (APPEND CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
-endif(APPLE)
 
 
 if (CONFIG_USE_HUNTER)
@@ -111,6 +95,21 @@ find_package(OpenBLAS REQUIRED)
 include(sugar_doxygen_generate)
 include(sugar_include)
 
+# Disable extended variants of C++ dialects
+# i.e. don't choose gnu++17 over c++17
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
+
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++"
+  CACHE STRING "Toolchain C++ compiler flags." FORCE)
+
+
+set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
+  CACHE STRING "Toolchain C++ linker flags." FORCE)
+endif()
+
 if (UNIX AND NOT APPLE)
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} 
                   -fuse-ld=gold -Wl,--version 
@@ -125,18 +124,24 @@ if (UNIX AND NOT APPLE)
 endif()
 
 
-# Disable extended variants of C++ dialects
-# i.e. don't choose gnu++17 over c++17
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-
-if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++"
-  CACHE STRING "Toolchain C++ compiler flags." FORCE)
-
-set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
-  CACHE STRING "Toolchain C++ linker flags." FORCE)
+if(MSVC)
+  # /wd4005  macro-redefinition
+  # /wd4068  unknown pragma
+  # /wd4244  conversion from 'type1' to 'type2'
+  # /wd4267  conversion from 'size_t' to 'type2'
+  # /wd4800  force value to bool 'true' or 'false' (performance warning)
+  add_compile_options(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
+  add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
+else()
+	add_definitions(-DCONSTEXPR=constexpr)
+	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
+  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
 endif()
+
+if (APPLE)
+  list (APPEND CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
+endif(APPLE)
 
 
 # CUDA flags
@@ -211,9 +216,9 @@ target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
 
-# Request that particles be built with -std=c++11
+# Request that bench be built with -std=c++11
 # As this is a public compile feature anything that links to
-# particles will also build with -std=c++11
+# bench will also build with -std=c++11
 target_compile_features(bench PUBLIC cxx_std_11)
 
 

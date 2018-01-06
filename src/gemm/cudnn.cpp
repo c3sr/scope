@@ -15,30 +15,58 @@
 #include "gemm/utils.hpp"
 
 template <typename T>
-struct dataType {};
+struct valueDataType {};
 
 template <>
-struct dataType<int8_t> {
+struct valueDataType<int8_t> {
   static const cudnnDataType_t type = CUDNN_DATA_INT8;
 };
 
 template <>
-struct dataType<int32_t> {
+struct valueDataType<int32_t> {
   static const cudnnDataType_t type = CUDNN_DATA_INT32;
 };
 
 template <>
-struct dataType<__half> {
+struct valueDataType<__half> {
   static const cudnnDataType_t type = CUDNN_DATA_HALF;
 };
 
 template <>
-struct dataType<float> {
+struct valueDataType<float> {
   static const cudnnDataType_t type = CUDNN_DATA_FLOAT;
 };
 
 template <>
-struct dataType<double> {
+struct valueDataType<double> {
+  static const cudnnDataType_t type = CUDNN_DATA_DOUBLE;
+};
+
+template <typename T>
+struct accumDataType {};
+
+template <>
+struct accumDataType<int8_t> {
+  static const cudnnDataType_t type = CUDNN_DATA_INT8;
+};
+
+template <>
+struct accumDataType<int32_t> {
+  static const cudnnDataType_t type = CUDNN_DATA_INT32;
+};
+
+template <>
+struct accumDataType<__half> {
+  static const cudnnDataType_t type = CUDNN_DATA_HALF;
+};
+
+template <>
+struct accumDataType<float> {
+  static const cudnnDataType_t type = CUDNN_DATA_FLOAT;
+};
+
+template <>
+struct accumDataType<double> {
   static const cudnnDataType_t type = CUDNN_DATA_DOUBLE;
 };
 
@@ -87,7 +115,7 @@ static void CUDNN(benchmark::State& state) {
   }
   if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(input_descriptor,
                                                 /*format=*/CUDNN_TENSOR_NHWC,
-                                                /*dataType=*/dataType<T>::type,
+                                                /*valueDataType=*/valueDataType<T>::type,
                                                 /*batch_size=*/batch_size,
                                                 /*channels=*/channels,
                                                 /*image_height=*/height,
@@ -104,7 +132,7 @@ static void CUDNN(benchmark::State& state) {
   }
   if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(output_descriptor,
                                                 /*format=*/CUDNN_TENSOR_NHWC,
-                                                /*dataType=*/dataType<T>::type,
+                                                /*valueDataType=*/valueDataType<T>::type,
                                                 /*batch_size=*/batch_size,
                                                 /*channels=*/channels,
                                                 /*image_height=*/height,
@@ -120,7 +148,7 @@ static void CUDNN(benchmark::State& state) {
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetFilter4dDescriptor(kernel_descriptor,
-                                                /*dataType=*/dataType<T>::type,
+                                                /*valueDataType=*/valueDataType<T>::type,
                                                 /*format=*/CUDNN_TENSOR_NCHW,
                                                 /*out_channels=*/channels,
                                                 /*in_channels=*/channels,
@@ -144,7 +172,7 @@ static void CUDNN(benchmark::State& state) {
                                                      /*dilation_height=*/1,
                                                      /*dilation_width=*/1,
                                                      /*mode=*/conv_mode,
-                                                     /*computeType=*/dataType<T>::type))) {
+                                                     /*computeType=*/valueDataType<T>::type))) {
     state.SkipWithError("CUDNN/CONV failed to cudnnSetConvolution2dDescriptor");
     return;
   }
