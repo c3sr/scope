@@ -12,7 +12,7 @@
 
 #if CUDA_VERSION < 9000
 #ifndef __syncwarp
-#define __syncwarp(...) __syncthreads()
+#define __syncwarp(...)
 #endif // __syncwarp
 #endif // CUDA_VERSION
 
