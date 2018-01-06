@@ -1,4 +1,4 @@
-#include <benchmark/benchmark.h>
+// #include <benchmark/benchmark.h>
 
 #include <iostream>
 #include <numeric>
@@ -30,7 +30,7 @@ cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
   auto image = std::vector<float>(batch_size * channels * height * width);
   int image_bytes = batch_size * channels * height * width * sizeof(float);
 
-  std::fill(a.begin(), a.end(), one);
+  std::fill(image.begin(), image.end(), 1.0f);
 
 
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
