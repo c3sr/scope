@@ -11,7 +11,9 @@
 #include <cuda_runtime.h>
 
 #if CUDA_VERSION < 9000
+#ifndef __syncwarp
 #define __syncwarp(...) __syncthreads()
+#endif // __syncwarp
 #endif // CUDA_VERSION
 
 // Cutlass GEMM API
