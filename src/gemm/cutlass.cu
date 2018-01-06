@@ -10,6 +10,10 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
+#if CUDA_VERSION < 9000
+#define __syncwarp(...) __syncthreads()
+#endif // CUDA_VERSION
+
 // Cutlass GEMM API
 #include <cutlass/gemm/dispatch.h>
 #include <cutlass/gemm/epilogue_function.h>
