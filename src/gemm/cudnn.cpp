@@ -52,6 +52,11 @@ struct accumDataType<int8_t> {
 };
 
 template <>
+struct accumDataType<int32_t> {
+  static const cudnnDataType_t type = CUDNN_DATA_INT32;
+};
+
+template <>
 struct accumDataType<__half> {
   static const cudnnDataType_t type = CUDNN_DATA_HALF;
 };
@@ -73,12 +78,17 @@ static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stri
 
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
-template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm = CUDNN_CONVOLUTION_FWD_ALGO_GEMM>
-static void CUDNN(benchmark::State& state) {
+template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm>
+static void CUDNN_Impl(benchmark::State& state,
+                       std::string convolution_algorithm_name,
+                       std::string convolution_algorithm_description) {
   if (!has_cuda) {
     state.SkipWithError("CUDNN/CONV no CUDA device found");
     return;
   }
+
+  (void) convolution_algorithm_name;
+  (void) convolution_algorithm_description;
 
   const float alpha = 1, beta = 0;
   const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
@@ -100,7 +110,7 @@ static void CUDNN(benchmark::State& state) {
   const int kernel_bytes      = kernel_size * channels * filter_height * filter_width * sizeof(T);
 
   const auto N = batch_size, K = kernel_size, C = channels, H = height, W = width, R = filter_height, S = filter_width;
-  const auto format = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW ;
+  const auto format = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
 
   auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
   auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
@@ -110,11 +120,11 @@ static void CUDNN(benchmark::State& state) {
 
   cudnnHandle_t cudnn_handle;
 
-  if( PRINT_IF_ERROR(cudnnCreate(&cudnn_handle))) {
+  if (PRINT_IF_ERROR(cudnnCreate(&cudnn_handle))) {
     state.SkipWithError("CUDNN/CONV failed to cudnnCreate");
     return;
   }
-   defer(cudnnDestroy(cudnn_handle));
+  defer(cudnnDestroy(cudnn_handle));
 
   cudnnTensorDescriptor_t input_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
@@ -145,7 +155,12 @@ static void CUDNN(benchmark::State& state) {
                                                 /*in_channels=*/channels,
                                                 /*kernel_height=*/filter_height,
                                                 /*kernel_width=*/filter_width))) {
-    const auto err_msg = fmt::format("CUDNN/CONV failed to cudnnSetFilter4dDescriptor with out_channels = {}, in_channels = {}, filter_height = {}, filter_width = {}", kernel_size, channels, filter_height, filter_width);
+    const auto err_msg = fmt::format("CUDNN/CONV failed to cudnnSetFilter4dDescriptor with out_channels = {}, "
+                                     "in_channels = {}, filter_height = {}, filter_width = {}",
+                                     kernel_size,
+                                     channels,
+                                     filter_height,
+                                     filter_width);
     state.SkipWithError(err_msg.c_str());
     return;
   }
@@ -330,32 +345,92 @@ static void CUDNN(benchmark::State& state) {
                          {"stride_height", stride_height},
                          {"stride_width", stride_width},
                          {"workspace_bytes", workspace_bytes},
-                         {"workspace_megabytes", workspace_bytes/ 1048576.0},
+                         {"workspace_megabytes", workspace_bytes / 1048576.0},
+                         {"convolution_algorithm", convolution_algorithm},
                          {"Flops", {flops, benchmark::Counter::kAvgThreadsRate}}});
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
+template <typename T>
+static void CUDNN(benchmark::State& state) {
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM",
+      "This algorithm expresses the convolution as a matrix product without actually explicitly form the matrix that "
+      "holds the input tensor data, but still needs some memory workspace to precompute some indices in order to "
+      "facilitate the implicit construction of the matrix that holds the input tensor data.");
+  if (std::is_same<T, int8_t>::value) {
+    return;
+  }
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM",
+      "This algorithm expresses the convolution as a matrix product "
+      "without actually explicitly form the matrix that holds the input "
+      "tensor data.");
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_GEMM",
+      "This algorithm expresses the convolution as an explicit matrix product. A "
+      "significant memory workspace is needed to store the matrix that holds the "
+      "input tensor data.");
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_DIRECT",
+      "This algorithm expresses the convolution as a direct convolution (e.g "
+      "without implicitly or explicitly doing a matrix multiplication).");
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_FFT",
+      "This algorithm uses the Fast-Fourier Transform approach to compute the "
+      "convolution. A significant memory workspace is needed to store "
+      "intermediate results.");
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING",
+      "This algorithm uses the Fast-Fourier Transform approach but splits "
+      "the inputs into tiles. A significant memory workspace is needed to "
+      "store intermediate results but less than "
+      "CUDNN_CONVOLUTION_FWD_ALGO_FFT for large size images.");
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD>(
+      state,
+      "CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD",
+      "This algorithm uses the Winograd Transform approach to compute the "
+      "convolution. A reasonably sized workspace is needed to store "
+      "intermediate results.");
+  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED>(state,
+                                                              "CUDNN_CONVOLUTION_FWD_ALGO_​WINOGRAD_NONFUSED",
+                                                              "This algorithm uses the Winograd Transform approach to "
+                                                              "compute the convolution. Significant workspace may be "
+                                                              "needed to store intermediate results.");
+}
+
 static void CUDNN_CONV_INT8(benchmark::State& state) {
-  CUDNN<int8_t, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM>(state);
+  CUDNN<int8_t>(state);
+}
+
+static void CUDNN_CONV_INT32(benchmark::State& state) {
+  CUDNN<int32_t>(state);
 }
 
 static void CUDNN_CONV_HALF(benchmark::State& state) {
-  CUDNN<__half,CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(state);
+  CUDNN<__half>(state);
 }
 
 static void CUDNN_CONV_FLOAT(benchmark::State& state) {
-  CUDNN<float, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(state);
+  CUDNN<float>(state);
 }
 
 static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
-  CUDNN<double, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(state);
+  CUDNN<double>(state);
 }
 
 #ifdef USE_CUDA_EVENTS
-//BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS()->UseManualTime();
-//BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_INT32)->ALL_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS()->UseManualTime();
 BENCHMARK(CUDNN_CONV_FLOAT)->ALL_CONV_PROBLEMS()->UseManualTime();
-//BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS()->UseManualTime();
 #else  // USE_CUDA_EVENTS
 BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS();
 BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS();
