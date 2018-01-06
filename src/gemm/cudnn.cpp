@@ -11,6 +11,8 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
+#include "gemm/args.hpp"
+
 #define checkCUDNN(expression)                                                                                         \
   {                                                                                                                    \
     cudnnStatus_t status = (expression);                                                                               \
