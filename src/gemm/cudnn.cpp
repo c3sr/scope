@@ -108,7 +108,7 @@ static void CUDNN(benchmark::State& state) {
   std::fill(input_image.begin(), input_image.end(), gemm::detail::one<T>());
   std::fill(kernel.begin(), kernel.end(), gemm::detail::one<T>());
 
-  static cudnnHandle_t cudnn_handle;
+  cudnnHandle_t cudnn_handle;
 
   if( PRINT_IF_ERROR(cudnnCreate(&cudnn_handle))) {
     state.SkipWithError("CUDNN/CONV failed to cudnnCreate");
@@ -354,7 +354,7 @@ static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
 #ifdef USE_CUDA_EVENTS
 //BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS()->UseManualTime();
 //BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(CUDNN_CONV_FLOAT)->SMALL_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(CUDNN_CONV_FLOAT)->ALL_CONV_PROBLEMS()->UseManualTime();
 //BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS()->UseManualTime();
 #else  // USE_CUDA_EVENTS
 BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS();
