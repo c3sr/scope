@@ -13,15 +13,6 @@
 
 #include "gemm/args.hpp"
 
-#define checkCUDNN(expression)                                                                                         \
-  {                                                                                                                    \
-    cudnnStatus_t status = (expression);                                                                               \
-    if (status != CUDNN_STATUS_SUCCESS) {                                                                              \
-      std::cerr << "Error on line " << __LINE__ << ": " << cudnnGetErrorString(status) << std::endl;                   \
-      std::exit(EXIT_FAILURE);                                                                                         \
-    }                                                                                                                  \
-  }
-
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 static void CUDNN_CONV(benchmark::State& state) {
   if (!has_cuda) {
@@ -31,10 +22,10 @@ static void CUDNN_CONV(benchmark::State& state) {
 
   const auto batch_size = 1, channels = 3;
   const float alpha = 1, beta = 0;
-  cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
+  const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
 
   // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
-  cudnnConvolutionFwdAlgo_t convolution_algorithm = CUDNN_CONVOLUTION_FWD_ALGO_GEMM;
+  const cudnnConvolutionFwdAlgo_t convolution_algorithm = CUDNN_CONVOLUTION_FWD_ALGO_GEMM;
 
   const auto height        = state.range(0);
   const auto width         = state.range(1);
