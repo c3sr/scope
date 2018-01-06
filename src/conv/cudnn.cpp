@@ -80,8 +80,8 @@ static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stri
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
 template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void CUDNN_Impl(benchmark::State& state,
-                       std::string convolution_algorithm_name,
-                       std::string convolution_algorithm_description) {
+                       std::string convolution_algorithm_name        = "",
+                       std::string convolution_algorithm_description = "") {
   if (!has_cuda) {
     state.SkipWithError("CUDNN/CONV no CUDA device found");
     return;
@@ -343,91 +343,107 @@ static void CUDNN_Impl(benchmark::State& state,
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
-template <typename T>
-static void CUDNN(benchmark::State& state) {
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_GEMM",
-      "This algorithm expresses the convolution as an explicit matrix product. A "
-      "significant memory workspace is needed to store the matrix that holds the "
-      "input tensor data.");
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM",
-      "This algorithm expresses the convolution as a matrix product without actually explicitly form the matrix that "
-      "holds the input tensor data, but still needs some memory workspace to precompute some indices in order to "
-      "facilitate the implicit construction of the matrix that holds the input tensor data.");
-  if (std::is_same<T, int8_t>::value) {
-    return;
-  }
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM",
-      "This algorithm expresses the convolution as a matrix product "
-      "without actually explicitly form the matrix that holds the input "
-      "tensor data.");
-#if 0
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_DIRECT",
-      "This algorithm expresses the convolution as a direct convolution (e.g "
-      "without implicitly or explicitly doing a matrix multiplication).");
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_FFT",
-      "This algorithm uses the Fast-Fourier Transform approach to compute the "
-      "convolution. A significant memory workspace is needed to store "
-      "intermediate results.");
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING",
-      "This algorithm uses the Fast-Fourier Transform approach but splits "
-      "the inputs into tiles. A significant memory workspace is needed to "
-      "store intermediate results but less than "
-      "CUDNN_CONVOLUTION_FWD_ALGO_FFT for large size images.");
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD>(
-      state,
-      "CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD",
-      "This algorithm uses the Winograd Transform approach to compute the "
-      "convolution. A reasonably sized workspace is needed to store "
-      "intermediate results.");
-  CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED>(state,
-                                                              "CUDNN_CONVOLUTION_FWD_ALGO_​WINOGRAD_NONFUSED",
-                                                              "This algorithm uses the Winograd Transform approach to "
-                                                              "compute the convolution. Significant workspace may be "
-                                                              "needed to store intermediate results.");
-#endif
-}
+// template <typename T>
+// static void CUDNN(benchmark::State& state) {
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_GEMM",
+//       "This algorithm expresses the convolution as an explicit matrix product. A "
+//       "significant memory workspace is needed to store the matrix that holds the "
+//       "input tensor data.");
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM",
+//       "This algorithm expresses the convolution as a matrix product without actually explicitly form the matrix that
+//       " "holds the input tensor data, but still needs some memory workspace to precompute some indices in order to "
+//       "facilitate the implicit construction of the matrix that holds the input tensor data.");
+//   if (std::is_same<T, int8_t>::value) {
+//     return;
+//   }
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM",
+//       "This algorithm expresses the convolution as a matrix product "
+//       "without actually explicitly form the matrix that holds the input "
+//       "tensor data.");
+// #if 0
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_DIRECT",
+//       "This algorithm expresses the convolution as a direct convolution (e.g "
+//       "without implicitly or explicitly doing a matrix multiplication).");
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_FFT",
+//       "This algorithm uses the Fast-Fourier Transform approach to compute the "
+//       "convolution. A significant memory workspace is needed to store "
+//       "intermediate results.");
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING",
+//       "This algorithm uses the Fast-Fourier Transform approach but splits "
+//       "the inputs into tiles. A significant memory workspace is needed to "
+//       "store intermediate results but less than "
+//       "CUDNN_CONVOLUTION_FWD_ALGO_FFT for large size images.");
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD>(
+//       state,
+//       "CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD",
+//       "This algorithm uses the Winograd Transform approach to compute the "
+//       "convolution. A reasonably sized workspace is needed to store "
+//       "intermediate results.");
+//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED>(state,
+//                                                               "CUDNN_CONVOLUTION_FWD_ALGO_​WINOGRAD_NONFUSED",
+//                                                               "This algorithm uses the Winograd Transform approach to
+//                                                               " "compute the convolution. Significant workspace may
+//                                                               be " "needed to store intermediate results.");
+// #endif
+// }
 
+template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void CUDNN_CONV_INT8(benchmark::State& state) {
-  CUDNN<int8_t>(state);
+  CUDNN_Impl<int8_t, convolution_algorithm>(state);
 }
 
+template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void CUDNN_CONV_INT32(benchmark::State& state) {
-  CUDNN<int32_t>(state);
+  CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
+template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void CUDNN_CONV_HALF(benchmark::State& state) {
-  CUDNN<__half>(state);
+  CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
+template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void CUDNN_CONV_FLOAT(benchmark::State& state) {
-  CUDNN<float>(state);
+  CUDNN_Impl<float, convolution_algorithm>(state);
 }
 
+template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
-  CUDNN<double>(state);
+  CUDNN_Impl<double, convolution_algorithm>(state);
 }
+
+#define CONV_PROBLEMS ALL_CONV_PROBLEMS
 
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDNN_CONV_FLOAT)->ALL_CONV_PROBLEMS()->UseManualTime();
-//BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS()->UseManualTime();
-//BENCHMARK(CUDNN_CONV_INT32)->ALL_CONV_PROBLEMS()->UseManualTime();
-//BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS()->UseManualTime();
-//BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS()->UseManualTime();
-#else  // USE_CUDA_EVENTS
-BENCHMARK(CUDNN_CONV_INT8)->ALL_CONV_PROBLEMS();
-BENCHMARK(CUDNN_CONV_HALF)->ALL_CONV_PROBLEMS();
-BENCHMARK(CUDNN_CONV_FLOAT)->ALL_CONV_PROBLEMS();
-BENCHMARK(CUDNN_CONV_DOUBLE)->ALL_CONV_PROBLEMS();
+#define UseTime UseManualTime
+#else // USE_CUDA_EVENTS
+#define UseTime UseRealTime
 #endif // USE_CUDA_EVENTS
+
+#define BENCHMARK_CUDNN(b)                                                                                             \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseTime();                         \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM)->CONV_PROBLEMS()->UseTime();                 \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_GEMM)->CONV_PROBLEMS()->UseTime();                                  \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT)->CONV_PROBLEMS()->UseTime();                                \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT)->CONV_PROBLEMS()->UseTime();                                   \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING)->CONV_PROBLEMS()->UseTime();                            \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseTime();                              \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseTime()
+
+BENCHMARK_CUDNN(CUDNN_CONV_INT8);
+BENCHMARK_CUDNN(CUDNN_CONV_INT32);
+BENCHMARK_CUDNN(CUDNN_CONV_HALF);
+BENCHMARK_CUDNN(CUDNN_CONV_FLOAT);
+BENCHMARK_CUDNN(CUDNN_CONV_DOUBLE);
