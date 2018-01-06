@@ -19,9 +19,9 @@
 // reads/writes among threads that can make indepenent progress on Volta.
 // For previous CUDA versions these synchronizations not necessary, and we
 // define an empty function as a convenience for backward compatibility.
-__device__ inline void __syncwarp(unsigned mask = CUDA_WARP_ALL) {
-}
-
+#ifndef __syncwarp
+#define __syncwarp(...)
+#endif // __syncwarp
 #endif // defined(CUDA_VERSION) && CUDA_VERSION < 9000
 
 // Cutlass GEMM API
