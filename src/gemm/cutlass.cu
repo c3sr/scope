@@ -302,11 +302,14 @@ static void CUTLASS_I32GEMM(benchmark::State& state) {
 
 #define BENCHMARK_CUTLASS(b)                                                                                           \
   BENCHMARK_SMALL_TILING(b)->UseManualTime();                                                                          \
-  BENCHMARK_MEDIUM_TILING(b)->UseManualTime();                                                                         \
+  BENCHMARK_MEDIUM_TILING(b)->UseManualTime();
+
+#if 0
   BENCHMARK_LARGE_TILING(b)->UseManualTime();                                                                          \
   BENCHMARK_HUGE_TILING(b)->UseManualTime();                                                                           \
   BENCHMARK_WIDE_TILING(b)->UseManualTime();                                                                           \
   BENCHMARK_TALL_TILING(b)->UseManualTime()
+#endif
 
 // BENCHMARK_CUTLASS(CUTLASS_HGEMM);
 BENCHMARK_CUTLASS(CUTLASS_SGEMM);
