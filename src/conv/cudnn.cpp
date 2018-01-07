@@ -326,10 +326,10 @@ static void CUDNN_Impl(benchmark::State& state,
                          {"input_width", width},
                          {"input_channels", channels},
                          {"input_batch_size", batch_size},
-                         {"input_height", out_h},
-                         {"input_width", out_w},
-                         {"input_channels", out_c},
-                         {"input_batch_size", out_n},
+                         {"output_height", out_h},
+                         {"output_width", out_w},
+                         {"output_channels", out_c},
+                         {"output_batch_size", out_n},
                          {"filter_height", filter_height},
                          {"filter_width", filter_width},
                          {"pad_height", pad_height},
@@ -433,7 +433,7 @@ static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
 #endif // USE_CUDA_EVENTS
 
 #define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseTime();                         \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->SetName()->CONV_PROBLEMS()->UseTime();              \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM)->CONV_PROBLEMS()->UseTime();                 \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_GEMM)->CONV_PROBLEMS()->UseTime();                                  \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT)->CONV_PROBLEMS()->UseTime();                                \
