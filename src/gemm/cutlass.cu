@@ -1,5 +1,7 @@
 #include <benchmark/benchmark.h>
 
+#ifdef ENABLE_CUTLASS
+
 #include <iostream>
 #include <numeric>
 #include <stdio.h>
@@ -328,3 +330,5 @@ BENCHMARK_CUTLASS(CUTLASS_DGEMM);
 #pragma GCC diagnostic pop
 #endif
 #endif
+
+#endif // ENABLE_CUTLASS
