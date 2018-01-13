@@ -31,7 +31,7 @@ To compile the project run the following commands
 
     mkdir -p build
     cd build
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON ..
     make
 
 ## Available Benchmarks
@@ -59,11 +59,11 @@ for example
 
 futher controls over the benchmarks are explained in the `--help` option
 
-## Run
+## Run all the benchmarks
 
     ./bench
 
-The above will output
+The above will output to stdout somthing like 
 
     ------------------------------------------------------------------------------
     Benchmark                       Time           CPU Iterations UserCounters...
@@ -96,7 +96,7 @@ or preferably
 ## On Minsky With PowerAI
 
 ```
-cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
+cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DUSE_CUDA_EVENTS=ON -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
 ```
 
 ## Disable CPU frequency scaling
