@@ -36,7 +36,7 @@ To compile the project run the following commands
     
 if you get errors about nvcc not supporting your gcc compiler, then you may want to use
 
-    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=gcc-6 ..  
+    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=`which gcc-6` ..  
 
 
 ## Available Benchmarks
