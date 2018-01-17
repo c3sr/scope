@@ -3,6 +3,7 @@ option(OpenBLAS "Path to OpenBLAS Installation Directory" "")
 
 SET(Open_BLAS_INCLUDE_SEARCH_PATHS
       ${OpenBLAS}
+      /usr/include/x86_64-linux-gnu/
       /usr/include
       /usr/include/openblas
       /usr/include/openblas-base
@@ -18,6 +19,7 @@ SET(Open_BLAS_INCLUDE_SEARCH_PATHS
 
 SET(Open_BLAS_LIB_SEARCH_PATHS
       ${OpenBLAS}/lib
+      /usr/lib/x86_64-linux-gnu/
       /lib/
       /lib/openblas-base
       /lib64/
