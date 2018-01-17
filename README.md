@@ -33,6 +33,11 @@ To compile the project run the following commands
     cd build
     cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON ..
     make
+    
+if you get errors about nvcc not supporting your gcc compiler, you may want to use
+
+    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=gcc-6 ..  
+
 
 ## Available Benchmarks
 
