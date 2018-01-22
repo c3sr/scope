@@ -20,7 +20,6 @@ sugar_files(
     mpl.hpp
     transwarp.h
     hostname.hpp
-    b5_papi.hpp
     cuda.hpp
     error.hpp
     nvptx.hpp
@@ -40,8 +39,6 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    papi.cpp
     commandlineflags.cpp
-    b5_papi.cpp
 )
 

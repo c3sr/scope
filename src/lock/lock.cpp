@@ -6,6 +6,8 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
+#include "lock/args.hpp"
+
 static std::string mutex_type_string(const int type) {
   switch (type) {
     case PTHREAD_MUTEX_NORMAL:
