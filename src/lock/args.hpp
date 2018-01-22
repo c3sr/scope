@@ -1,8 +1,8 @@
 #pragma once
 
-#define ARGS_FULL()                                                                                                    \
-  Args({1})
-      ->Args({10})                                                                                                  \
+#define ARGS_FULL()                                                                                              \
+  Args({1})                                                                                                      \
+      ->Args({10})                                                                                               \
       ->Args({100})                                                                                              \
       ->Args({1000})                                                                                             \
       ->Args({10000})                                                                                            \
