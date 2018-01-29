@@ -1,13 +1,11 @@
 
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-if (APPLE)
-  set(CMAKE_C_COMPILER clang-5.0)
-  set(CMAKE_CXX_COMPILER clang++-5.0)
+  set(CMAKE_C_COMPILER gcc)
+  set(CMAKE_CXX_COMPILER g++)
   set(CUDACXX /usr/local/cuda/bin/nvcc)
   set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
-  set(CMAKE_CUDA_HOST_COMPILER clang-3.7)
-endif(APPLE)
+  set(CMAKE_CUDA_HOST_COMPILER gcc)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
@@ -111,12 +109,12 @@ set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
 endif()
 
 if (UNIX AND NOT APPLE)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} 
-                  -fuse-ld=gold -Wl,--version 
+  execute_process(COMMAND ${CMAKE_CXX_COMPILER}
+                  -fuse-ld=gold -Wl,--version
                   ERROR_QUIET OUTPUT_VARIABLE ld_version)
   if ("${ld_version}" MATCHES "GNU gold")
     message(STATUS "Found Gold linker, use faster linker")
-    set(CMAKE_EXE_LINKER_FLAGS 
+    set(CMAKE_EXE_LINKER_FLAGS
         "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
     set(CMAKE_SHARED_LINKER_FLAGS
         "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold ")
