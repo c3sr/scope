@@ -3,15 +3,16 @@
 ## Installing latest cmake
 
 cmake version >=3.8 is required.
+(there's a problem with hunter using cmake 3.10.2)
 
 ```
 cd /tmp
 wget https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.sh
 sudo sh cmake-3.10.1-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
 ```
-
 you may also want to remove the default installation `sudo apt-get remove cmake`
 
+you need to install from source if on ppc64le
 
 ## Checkout all submodules
 
