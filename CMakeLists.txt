@@ -111,12 +111,12 @@ set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
 endif()
 
 if (UNIX AND NOT APPLE)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} 
-                  -fuse-ld=gold -Wl,--version 
+  execute_process(COMMAND ${CMAKE_CXX_COMPILER}
+                  -fuse-ld=gold -Wl,--version
                   ERROR_QUIET OUTPUT_VARIABLE ld_version)
   if ("${ld_version}" MATCHES "GNU gold")
     message(STATUS "Found Gold linker, use faster linker")
-    set(CMAKE_EXE_LINKER_FLAGS 
+    set(CMAKE_EXE_LINKER_FLAGS
         "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
     set(CMAKE_SHARED_LINKER_FLAGS
         "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold ")
@@ -146,9 +146,6 @@ endif(APPLE)
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
-set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-lineinfo")
-LIST(APPEND CMAKE_CUDA_FLAGS -Wno-deprecated-gpu-targets)
-LIST(APPEND CUDA_NVCC_FLAGS --expt-extended-lambda)
 
 if(CUDA_MULTI_ARCH)
   CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
@@ -156,17 +153,21 @@ else()
   CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
 endif()
 
-# MESSAGE(STATUS "USING ${CUDA_ARCH_FLAGS} architectures")
-LIST(APPEND CUDA_NVCC_FLAGS ${CUDA_ARCH_FLAGS})
+LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
+					         -Wno-deprecated-gpu-targets
+					         -lineinfo
+					         --expt-extended-lambda
+)
+string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
+
+
+MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
+			   " archs: ${CUDA_ARCH_FLAGS_readable})")
 
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
-
-
-message(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
-               " archs: ${CUDA_ARCH_FLAGS_readable})")
 
 
 set(TOP_DIR "${PROJECT_SOURCE_DIR}")
