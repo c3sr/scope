@@ -98,9 +98,8 @@ include(sugar_include)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++"
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
   CACHE STRING "Toolchain C++ compiler flags." FORCE)
 
 
