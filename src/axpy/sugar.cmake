@@ -13,8 +13,8 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    utils.hpp
     args.hpp
+    utils.hpp
 )
 
 sugar_files(

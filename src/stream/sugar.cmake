@@ -13,7 +13,7 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cuda_sleep.cu
     cuda_stream.cu
+    cuda_sleep.cu
 )
 

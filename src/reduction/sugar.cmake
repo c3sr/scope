@@ -13,7 +13,7 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cooperative_groups.cu
     cuda_reduce.cu
+    cooperative_groups.cu
 )
 

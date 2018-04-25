@@ -13,14 +13,14 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    io.hpp
-    mxnet_ndarray_reader.hpp
     caffe_reader.hpp
+    mxnet_ndarray_reader.hpp
+    io.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
-    mxnet_ndarray_reader.cpp
     caffe_reader.cpp
+    mxnet_ndarray_reader.cpp
 )
 
