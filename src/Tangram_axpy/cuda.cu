@@ -100,7 +100,7 @@ void zaxpy_1D_29(T *input_X_30, T *input_Y_31, T *output_Z_32,
 state.counters.insert({{"N", x_size_35},
                          {"GRID_SIZE", p_34},
                          {"BLOCK_SIZE", TGM_TEMPLATE_1},
-                         {"Flops", {state.iterations() * 1.0 * x_size_35, benchmark::Counter::kAvgThreadsRate}}});
+                         {"Flops", {state.iterations() * 2.0 * x_size_35, benchmark::Counter::kAvgThreadsRate}}});
   state.SetBytesProcessed(int64_t(state.iterations()) * x_size_35 * sizeof(T));
   state.SetItemsProcessed(int64_t(state.iterations()) * x_size_35);
 

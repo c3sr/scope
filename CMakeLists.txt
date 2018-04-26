@@ -5,7 +5,8 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
   set(CMAKE_CXX_COMPILER g++)
   set(CUDACXX /usr/local/cuda/bin/nvcc)
   set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
-  set(CMAKE_CUDA_HOST_COMPILER gcc)
+  set(CMAKE_CUDA_COMPILER_FORCED ON)
+  set(CMAKE_CUDA_HOST_COMPILER gcc-5)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
@@ -31,7 +32,6 @@ project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
-include(cotire)
 include(GetGitRevisionDescription)
 include(CTest)
 include(GNUInstallDirs)
@@ -87,7 +87,7 @@ endif (CONFIG_USE_HUNTER)
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
 find_package(OpenBLAS REQUIRED)
-#find_package(Protobuf REQUIRED)
+find_package(OpenMP REQUIRED)
 
 
 include(sugar_doxygen_generate)
@@ -97,15 +97,18 @@ include(sugar_include)
 # i.e. don't choose gnu++17 over c++17
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
   CACHE STRING "Toolchain C++ compiler flags." FORCE)
 
 
-set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi -fuse-ld=lld -fopenmp"
   CACHE STRING "Toolchain C++ linker flags." FORCE)
 endif()
+
+message(STATUS "Adding " ${OpenMP_CXX_FLAGS})
+list(APPEND CMAKE_C_FLAGS ${OpenMP_C_FLAGS})
+list(APPEND CMAKE_CXX_FLAGS ${OpenMP_CXX_FLAGS})
 
 if (UNIX AND NOT APPLE)
   execute_process(COMMAND ${CMAKE_CXX_COMPILER}
@@ -133,7 +136,7 @@ if(MSVC)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
 	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
-  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
 endif()
 
 if (APPLE)
@@ -151,6 +154,8 @@ else()
 endif()
 
 LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
+                            -ccbin g++-5
+                            -std=c++11
 					         -Wno-deprecated-gpu-targets
 					         -lineinfo
 					         --expt-extended-lambda
@@ -219,8 +224,6 @@ target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 # bench will also build with -std=c++11
 target_compile_features(bench PUBLIC cxx_std_11)
 
-
-cotire(bench)
 
 if(APPLE)
   # We need to add the path to the driver (libcuda.dylib) as an rpath,
