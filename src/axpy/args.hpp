@@ -1,8 +1,7 @@
 #pragma once
 
 #define ARGS_FULL()                                                                                                    \
-  Args({10, 1, 1})                                                                                                     \
-      ->Args({256, 1, 1})                                                                                              \
+      Args({256, 1, 1})                                                                                              \
       ->Args({512, 1, 1})                                                                                             \
       ->Args({1024, 1, 1})                                                                                            \
       ->Args({2048, 1, 1})                                                                                           \
