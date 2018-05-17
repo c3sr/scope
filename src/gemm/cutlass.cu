@@ -238,7 +238,7 @@ static void CUTLASS_I32GEMM(benchmark::State& state) {
       ->Args({128, 169, 129})
 
 #define BENCHMARK_MEDIUM_TILING(b)                                                                                     \
-  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Large)                                                         \
+  BENCHMARK_TEMPLATE(b, cutlass::gemm::tiling_strategy::Medium)                                                         \
       ->Args({1000, 1, 1})                                                                                             \
       ->Args({50, 1000, 1})                                                                                            \
       ->Args({512, 2, 512})                                                                                            \
