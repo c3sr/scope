@@ -212,6 +212,7 @@ target_link_libraries(bench debug_assert)
 target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
+target_link_libraries(bench numa)
 
 
 # Request that bench be built with -std=c++11

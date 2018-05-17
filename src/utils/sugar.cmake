@@ -17,24 +17,24 @@ sugar_include(tensor)
 
 sugar_files(
     BENCHMARK_HEADERS
-    mpl.hpp
-    transwarp.h
-    hostname.hpp
     cuda.hpp
-    error.hpp
-    nvptx.hpp
     timer.hpp
-    cublas.hpp
-    benchmark.hpp
-    cudnn.hpp
+    compat.hpp
+    memory.hpp
+    hostname.hpp
+    marker.hpp
+    transwarp.h
+    defer.hpp
     nocopy.hpp
     nccl.hpp
-    memory.hpp
-    compat.hpp
     utils.hpp
-    defer.hpp
-    marker.hpp
     commandlineflags.hpp
+    nvptx.hpp
+    benchmark.hpp
+    mpl.hpp
+    error.hpp
+    cudnn.hpp
+    cublas.hpp
 )
 
 sugar_files(

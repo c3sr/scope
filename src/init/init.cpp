@@ -5,6 +5,7 @@
 #include "init/cudnn.hpp"
 #include "init/flags.hpp"
 #include "init/logger.hpp"
+#include "init/numa.hpp"
 
 void init(int argc, char **argv) {
   bench::init::logger::console = spdlog::stdout_logger_mt(argv[0]);
@@ -12,4 +13,5 @@ void init(int argc, char **argv) {
   init_cuda();
   init_cublas();
   init_cudnn();
+  init_numa();
 }

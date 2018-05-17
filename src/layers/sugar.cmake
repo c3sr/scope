@@ -13,9 +13,9 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    conv.cu
-    im2col.cu
-    col2im.cu
     activation.cu
+    col2im.cu
+    im2col.cu
+    conv.cu
 )
 
