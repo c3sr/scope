@@ -15,5 +15,6 @@
 #include "mpl.hpp"
 #include "nccl.hpp"
 #include "nocopy.hpp"
+#include "numa.hpp"
 #include "nvptx.hpp"
 #include "timer.hpp"

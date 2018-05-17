@@ -90,11 +90,37 @@ static void CUDANUMA_Memcpy_GPUToHost(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
+
+  // reset to run on any node
+  if (0 != numa_run_on_node(-1)) {
+    state.SkipWithError("CUDANUMA/MEMCPY/GPUToHost couldn't allow bindings to all nodes");
+    return;
+  }
 }
 
+
+static void CustomArguments(benchmark::internal::Benchmark* b) {
+
+  int n;
+  cudaError_t err = cudaGetDeviceCount(&n);
+  if (PRINT_IF_ERROR(cudaGetDeviceCount(&n))) {
+    exit(1);
+  }
+
+  for (auto numa_id : numa_nodes()) {
+    for (int gpu_id = 0; gpu_id < n; ++gpu_id) {
+      for (int j = 8; j <= 31; ++j) {
+        b->Args({j, numa_id, gpu_id});
+      }
+    }
+  }
+
+}
+
+
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->TEST_ARGS()->UseManualTime();
+BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(CustomArguments)->UseManualTime();
 // BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->ALL_ARGS()->UseManualTime();
 #else  // USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->ALL_ARGS();
+BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(CustomArguments);
 #endif // USE_CUDA_EVENTS
