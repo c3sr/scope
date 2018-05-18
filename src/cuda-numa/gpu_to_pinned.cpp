@@ -20,6 +20,11 @@ static void CUDANUMA_Memcpy_GPUToPinned(benchmark::State &state) {
     return;
   }
 
+  if (PRINT_IF_ERROR(cudaDeviceReset())) {
+    state.SkipWithError(NAME " failed to reset device");
+    return;
+  }
+
   if (!has_numa) {
     state.SkipWithError(NAME " NUMA not available");
     return;
