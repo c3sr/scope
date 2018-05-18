@@ -11,9 +11,9 @@
 
 #include "cuda-numa/args.hpp"
 
-#define NAME "CUDANUMA/Memcpy/GpuToHost"
+#define NAME "CUDANUMA/Memcpy/GPUToPinned"
 
-static void CUDANUMA_Memcpy_GPUToHost(benchmark::State &state) {
+static void CUDANUMA_Memcpy_GPUToPinned(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -30,9 +30,13 @@ static void CUDANUMA_Memcpy_GPUToHost(benchmark::State &state) {
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   char *src        = nullptr;
-  char *dst        = new char[bytes];
 
-  defer(delete[] dst);
+  char *dst = nullptr;
+  if (PRINT_IF_ERROR(cudaHostAlloc(&dst, bytes, cudaHostAllocDefault))) {
+    state.SkipWithError(NAME " failed to perform pinned cudaHostAlloc");
+    return;
+  }
+  defer(cudaFreeHost(dst));
 
   if (0 != numa_run_on_node(numa_id)) {
     state.SkipWithError(NAME " couldn't bind to NUMA node");
@@ -101,8 +105,7 @@ static void CUDANUMA_Memcpy_GPUToHost(benchmark::State &state) {
 }
 
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(CustomArguments)->UseManualTime();
-// BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->ALL_ARGS()->UseManualTime();
+BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(CustomArguments)->UseManualTime();
 #else  // USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(CustomArguments);
+BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(CustomArguments);
 #endif // USE_CUDA_EVENTS
