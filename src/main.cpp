@@ -28,14 +28,14 @@ benchmark [--benchmark_list_tests={true|false}]
 int main(int argc, char **argv) {
   init(argc, argv);
 
-  if (FLAG(help)) {
-    std::cout << help << "\n";
-    return 0;
-  }
+  // if (FLAG(help)) {
+  //   std::cout << help << "\n";
+  //   return 0;
+  // }
 
   benchmark::Initialize(&argc, argv);
 
-  // if (::benchmark::ReportUnrecognizedArguments(argc, argv)) return 1;
+  if (::benchmark::ReportUnrecognizedArguments(argc, argv)) return 1;
 
   // auto options = benchmark::internal::GetOutputOptions();
 

@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SRC_MEMCPY_SUGAR_CMAKE_)
+if(DEFINED SRC_NUMA_UM_SUGAR_CMAKE_)
   return()
 else()
-  set(SRC_MEMCPY_SUGAR_CMAKE_ 1)
+  set(SRC_NUMA_UM_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
@@ -17,10 +17,7 @@ sugar_files(
 )
 
 sugar_files(
-    BENCHMARK_SOURCES
-    gpu_to_host.cpp
-    host_to_gpu.cpp
-    gpu_to_pinned.cpp
-    pinned_to_gpu.cpp
+    BENCHMARK_CUDA_SOURCES
+    gpu_to_host.cu
 )
 

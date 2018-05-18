@@ -15,21 +15,21 @@ sugar_files(
     BENCHMARK_HEADERS
     numa.hpp
     cuda.hpp
-    flags.hpp
-    logger.hpp
-    init.hpp
     cudnn.hpp
+    logger.hpp
     cublas.hpp
+    flags.hpp
+    init.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
-    cuda.cpp
-    cublas.cpp
-    cudnn.cpp
-    numa.cpp
     init.cpp
+    cudnn.cpp
+    cuda.cpp
     flags.cpp
     logger.cpp
+    cublas.cpp
+    numa.cpp
 )
 

@@ -13,7 +13,7 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    mxnet.hpp
     framework.hpp
+    mxnet.hpp
 )
 

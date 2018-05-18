@@ -19,8 +19,8 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    cublas.cpp
     clbas.cpp
+    cublas.cpp
 )
 
 sugar_files(

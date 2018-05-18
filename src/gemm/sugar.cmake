@@ -19,13 +19,13 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    cblas.cpp
     cublas.cpp
+    cblas.cpp
 )
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cutlass.cu
     cuda.cu
+    cutlass.cu
 )
 
