@@ -13,9 +13,9 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    mxnet_ndarray_reader.hpp
     io.hpp
     caffe_reader.hpp
+    mxnet_ndarray_reader.hpp
 )
 
 sugar_files(

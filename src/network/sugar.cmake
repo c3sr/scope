@@ -13,7 +13,7 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cuda_alexnet_fused.cu
     cuda_alexnet_simple.cu
+    cuda_alexnet_fused.cu
 )
 

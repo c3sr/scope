@@ -11,13 +11,7 @@
 
 #include "numa-um/args.hpp"
 
-#define NAME "NUMAUM/Coherence/GpuToHost"
-
-static void cpu_write(char *ptr, const size_t n, const size_t stride) {
-  for (size_t i = 0; i < n; i += stride) {
-    benchmark::DoNotOptimize(ptr[i] = 0);
-  }
-}
+#define NAME "NUMAUM/Coherence/HostToGPU"
 
 template <bool NOOP = false>
 __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
@@ -44,7 +38,7 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   }
 }
 
-static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
+static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -56,19 +50,18 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
     return;
   }
 
-  const int numa_id = state.range(1);
-  const int cuda_id = state.range(2);
-
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const int src_numa = state.range(1);
+  const int dst_gpu = state.range(2);
 
-
-  if (0 != numa_run_on_node(numa_id)) {
+  if (0 != numa_run_on_node(src_numa)) {
     state.SkipWithError(NAME " couldn't bind to NUMA node");
     return;
   }
 
-  if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
-    state.SkipWithError(NAME " failed to set CUDA device");
+
+  if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
+    state.SkipWithError(NAME " failed to set CUDA src device");
     return;
   }
   if (PRINT_IF_ERROR(cudaDeviceReset())) {
@@ -88,38 +81,30 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
     return;
   }
 
+
   for (auto _ : state) {
     state.PauseTiming();
-    cudaDeviceSynchronize();
-    cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cuda_id);
-    if (cudaErrorInvalidDevice == err) {
-      gpu_write<<<256,256>>>(ptr, bytes, 4096);
+    cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId);
+    if (err == cudaErrorInvalidDevice) {
+      for (size_t i = 0; i < bytes; i += 4096) {
+        ptr[i] = 0;
+      }
     }
+
     if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
       state.SkipWithError(NAME " failed to synchronize");
       return;
     }
     state.ResumeTiming();
 
-    // auto start = std::chrono::high_resolution_clock::now();
-    cpu_write(ptr, bytes, 4096);
-    // auto end   = std::chrono::high_resolution_clock::now();
+    gpu_write<<<256,256>>>(ptr, bytes, 4096);
+    cudaDeviceSynchronize();
 
-    // auto elapsed_seconds =
-    //   std::chrono::duration_cast<std::chrono::duration<double>>(
-    //     end - start);
-    // state.SetIterationTime(elapsed_seconds.count());
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 
-  // reset to run on any node
-  if (0 != numa_run_on_node(-1)) {
-    LOG(critical, NAME " couldn't allow bindings to all nodes");
-    exit(-1);
-  }
 }
 
-// BENCHMARK(NUMAUM_Direct_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1)->UseManualTime();
-BENCHMARK(NUMAUM_Direct_GPUToHost)->Apply(ArgsCountNumaGpu)->UseRealTime();
+BENCHMARK(NUMAUM_Direct_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime();
