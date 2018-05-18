@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-
+#define ENABLE_CUTLASS
 #ifdef ENABLE_CUTLASS
 
 #include <iostream>
