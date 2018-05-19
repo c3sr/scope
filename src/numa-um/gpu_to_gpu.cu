@@ -92,11 +92,13 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
   }
   defer(cudaEventDestroy(start));
 
-  cudaEventCreate(&stop);
+  if (PRINT_IF_ERROR(cudaEventCreate(&stop))) {
+    state.SkipWithError(NAME " failed to create event");
+    return;
+  }
   defer(cudaEventDestroy(stop));
 
   for (auto _ : state) {
-    // state.PauseTiming();
     cudaMemPrefetchAsync(ptr, bytes, src_gpu);
     cudaSetDevice(src_gpu);
     cudaDeviceSynchronize();
@@ -106,7 +108,6 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
       state.SkipWithError(NAME " failed to prep iteration");
       return;
     }
-    // state.ResumeTiming();
 
 
     cudaEventRecord(start);
@@ -120,7 +121,6 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-    // cudaDeviceSynchronize();
 
   }
 

@@ -83,9 +83,21 @@ static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
     return;
   }
 
+  cudaEvent_t start, stop;
+  if (PRINT_IF_ERROR(cudaEventCreate(&start))) {
+    state.SkipWithError(NAME " failed to create start event");
+    return;
+  }
+  defer(cudaEventDestroy(start));
+
+  if (PRINT_IF_ERROR(cudaEventCreate(&stop))) {
+    state.SkipWithError(NAME " failed to create end event");
+    return;
+  }
+  defer(cudaEventDestroy(stop));
+
 
   for (auto _ : state) {
-    state.PauseTiming();
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId);
     if (err == cudaErrorInvalidDevice) {
       for (size_t i = 0; i < bytes; i += pageSize) {
@@ -97,10 +109,18 @@ static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
       state.SkipWithError(NAME " failed to synchronize");
       return;
     }
-    state.ResumeTiming();
 
+    cudaEventRecord(start);
     gpu_write<<<256,256>>>(ptr, bytes, pageSize);
-    cudaDeviceSynchronize();
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+
+    float millis = 0;
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&millis, start, stop))) {
+      state.SkipWithError("CUDA/MEMCPY/HostToGPU failed to get elapsed time");
+      break;
+    }
+    state.SetIterationTime(millis / 1000);
 
   }
 
@@ -109,4 +129,4 @@ static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Direct_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime();
+BENCHMARK(NUMAUM_Direct_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();
