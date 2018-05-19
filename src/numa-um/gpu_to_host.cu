@@ -90,7 +90,6 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
 
   for (auto _ : state) {
     state.PauseTiming();
-    cudaDeviceSynchronize();
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cuda_id);
     if (cudaErrorInvalidDevice == err) {
       gpu_write<<<256,256>>>(ptr, bytes, pageSize);
@@ -102,7 +101,6 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
     state.ResumeTiming();
 
     cpu_write(ptr, bytes, pageSize);
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
@@ -115,5 +113,4 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
   }
 }
 
-// BENCHMARK(NUMAUM_Direct_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1)->UseManualTime();
-BENCHMARK(NUMAUM_Direct_GPUToHost)->Apply(ArgsCountNumaGpu)->UseRealTime();
+BENCHMARK(NUMAUM_Direct_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1);
