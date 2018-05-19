@@ -56,11 +56,11 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
     return;
   }
 
-  const int numa_id = state.range(1);
-  const int cuda_id = state.range(2);
+  const size_t pageSize = page_size();
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-
+  const int numa_id = state.range(1);
+  const int cuda_id = state.range(2);
 
   if (0 != numa_run_on_node(numa_id)) {
     state.SkipWithError(NAME " couldn't bind to NUMA node");
@@ -93,7 +93,7 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
     cudaDeviceSynchronize();
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cuda_id);
     if (cudaErrorInvalidDevice == err) {
-      gpu_write<<<256,256>>>(ptr, bytes, 4096);
+      gpu_write<<<256,256>>>(ptr, bytes, pageSize);
     }
     if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
       state.SkipWithError(NAME " failed to synchronize");
@@ -101,14 +101,8 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
     }
     state.ResumeTiming();
 
-    // auto start = std::chrono::high_resolution_clock::now();
-    cpu_write(ptr, bytes, 4096);
-    // auto end   = std::chrono::high_resolution_clock::now();
+    cpu_write(ptr, bytes, pageSize);
 
-    // auto elapsed_seconds =
-    //   std::chrono::duration_cast<std::chrono::duration<double>>(
-    //     end - start);
-    // state.SetIterationTime(elapsed_seconds.count());
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));

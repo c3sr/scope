@@ -50,6 +50,8 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
     return;
   }
 
+  const size_t pageSize = page_size();
+
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int src_gpu = state.range(1);
   const int dst_gpu = state.range(2);
@@ -83,9 +85,18 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
     return;
   }
 
+  cudaEvent_t start, stop;
+  if (PRINT_IF_ERROR(cudaEventCreate(&start))) {
+    state.SkipWithError(NAME " failed to create event");
+    return;
+  }
+  defer(cudaEventDestroy(start));
+
+  cudaEventCreate(&stop);
+  defer(cudaEventDestroy(stop));
 
   for (auto _ : state) {
-    state.PauseTiming();
+    // state.PauseTiming();
     cudaMemPrefetchAsync(ptr, bytes, src_gpu);
     cudaSetDevice(src_gpu);
     cudaDeviceSynchronize();
@@ -95,10 +106,21 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
       state.SkipWithError(NAME " failed to prep iteration");
       return;
     }
-    state.ResumeTiming();
+    // state.ResumeTiming();
 
-    gpu_write<<<256,256>>>(ptr, bytes, 4096);
-    cudaDeviceSynchronize();
+
+    cudaEventRecord(start);
+    gpu_write<<<256,256>>>(ptr, bytes, pageSize);
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+
+    float millis = 0;
+    if (PRINT_IF_ERROR(cudaEventElapsedTime(&millis, start, stop))) {
+      state.SkipWithError("CUDA/MEMCPY/HostToGPU failed to get elapsed time");
+      break;
+    }
+    state.SetIterationTime(millis / 1000);
+    // cudaDeviceSynchronize();
 
   }
 
@@ -107,4 +129,4 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Direct_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime();
+BENCHMARK(NUMAUM_Direct_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();

@@ -50,6 +50,8 @@ static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
     return;
   }
 
+  const size_t pageSize = page_size();
+
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int src_numa = state.range(1);
   const int dst_gpu = state.range(2);
@@ -86,7 +88,7 @@ static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
     state.PauseTiming();
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId);
     if (err == cudaErrorInvalidDevice) {
-      for (size_t i = 0; i < bytes; i += 4096) {
+      for (size_t i = 0; i < bytes; i += pageSize) {
         ptr[i] = 0;
       }
     }
@@ -97,7 +99,7 @@ static void NUMAUM_Direct_HostToGPU(benchmark::State &state) {
     }
     state.ResumeTiming();
 
-    gpu_write<<<256,256>>>(ptr, bytes, 4096);
+    gpu_write<<<256,256>>>(ptr, bytes, pageSize);
     cudaDeviceSynchronize();
 
   }

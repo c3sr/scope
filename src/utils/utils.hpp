@@ -17,4 +17,5 @@
 #include "nocopy.hpp"
 #include "numa.hpp"
 #include "nvptx.hpp"
+#include "page.hpp"
 #include "timer.hpp"
