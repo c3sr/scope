@@ -36,6 +36,7 @@ sugar_files(
     error.hpp
     cudnn.hpp
     cublas.hpp
+    page.hpp
 )
 
 sugar_files(
