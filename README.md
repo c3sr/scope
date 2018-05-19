@@ -121,6 +121,12 @@ sudo cpupower frequency-set --governor performance
 sudo cpupower frequency-set --governor powersave
 ```
 
+## Hunter Toolchain File
+
+If some of the third-party code compiled by hunter needs a different compiler, you can create a cmake toolchain file to set various cmake variables that will be globally used when building that code. You can then pass this file into cmake
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake ...
+
 ## Resources
 
 * https://github.com/google/benchmark
