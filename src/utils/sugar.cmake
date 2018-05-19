@@ -19,6 +19,7 @@ sugar_files(
     BENCHMARK_HEADERS
     numa.hpp
     cuda.hpp
+    page.hpp
     timer.hpp
     compat.hpp
     memory.hpp
@@ -36,7 +37,6 @@ sugar_files(
     error.hpp
     cudnn.hpp
     cublas.hpp
-    page.hpp
 )
 
 sugar_files(
