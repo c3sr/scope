@@ -9,7 +9,7 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "numa-um/args.hpp"
+#include "numaum-prefetch/args.hpp"
 
 #define NAME "NUMAUM/Prefetch/HostToGPU"
 

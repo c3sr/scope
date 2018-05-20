@@ -9,9 +9,9 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "numa-um/args.hpp"
+#include "numaum-coherence/args.hpp"
 
-#define NAME "NUMAUM/Coherence/GpuToHost"
+#define NAME "NUMAUM/Coherence/GPUToHost"
 
 static void cpu_write(char *ptr, const size_t n, const size_t stride) {
   for (size_t i = 0; i < n; i += stride) {
@@ -44,7 +44,7 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   }
 }
 
-static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
+static void NUMAUM_Coherence_GPUToHost(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -113,4 +113,4 @@ static void NUMAUM_Direct_GPUToHost(benchmark::State &state) {
   }
 }
 
-BENCHMARK(NUMAUM_Direct_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1);
+BENCHMARK(NUMAUM_Coherence_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1);

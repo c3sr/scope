@@ -9,11 +9,11 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "cuda-numa/args.hpp"
+#include "numamemcpy/args.hpp"
 
-#define NAME "CUDANUMA/Memcpy/GPUToPinned"
+#define NAME "NUMA/Memcpy/GPUToPinned"
 
-static void CUDANUMA_Memcpy_GPUToPinned(benchmark::State &state) {
+static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -65,39 +65,31 @@ static void CUDANUMA_Memcpy_GPUToPinned(benchmark::State &state) {
     return;
   }
 
-#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
-#endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
-#endif // USE_CUDA_EVENTS
 
     const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToHost);
 
-#ifdef USE_CUDA_EVENTS
+
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
-#endif // USE_CUDA_EVENTS
-
-    state.PauseTiming();
 
     if (PRINT_IF_ERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError(NAME " failed to perform memcpy");
       break;
     }
-#ifdef USE_CUDA_EVENTS
+
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError(NAME " failed to get elapsed time");
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-#endif // USE_CUDA_EVENTS
-    state.ResumeTiming();
+
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
@@ -109,8 +101,4 @@ static void CUDANUMA_Memcpy_GPUToPinned(benchmark::State &state) {
   }
 }
 
-#ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();
-#else  // USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu);
-#endif // USE_CUDA_EVENTS
+BENCHMARK(NUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();

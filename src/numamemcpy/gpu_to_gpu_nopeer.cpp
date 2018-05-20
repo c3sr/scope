@@ -8,11 +8,11 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "cuda-numa/args.hpp"
+#include "numamemcpy/args.hpp"
 
-#define NAME "NUMAUM/Coherence/GPUToGPU"
+#define NAME "NUMA/Memcpy/GPUToGPU"
 
-static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
+static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -23,8 +23,6 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " no NUMA control available");
     return;
   }
-
-
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
@@ -121,4 +119,4 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(CUDA_Memcpy_GPUToGPU)->Apply(ArgsCountNumaGpuGpuNoSelf)->UseManualTime();
+BENCHMARK(NUMA_Memcpy_GPUToGPU)->Apply(ArgsCountNumaGpuGpuNoSelf)->UseManualTime();

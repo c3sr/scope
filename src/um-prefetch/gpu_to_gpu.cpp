@@ -14,7 +14,7 @@
 #define NAME "UM/Prefetch/GPUToGPU"
 
 
-static void NUMAUM_Prefetch_GPUToGPU(benchmark::State &state) {
+static void UM_Prefetch_GPUToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -100,4 +100,4 @@ static void NUMAUM_Prefetch_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Prefetch_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();
+BENCHMARK(UM_Prefetch_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();

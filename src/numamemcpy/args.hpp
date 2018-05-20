@@ -9,7 +9,7 @@ static void ArgsCountNumaGpu(benchmark::internal::Benchmark* b) {
 
   for (auto numa_id : numa_nodes()) {
     for (int gpu_id = 0; gpu_id < n; ++gpu_id) {
-      for (int j = 8; j <= 31; ++j) {
+      for (int j = 8; j <= 33; ++j) {
         b->Args({j, numa_id, gpu_id});
       }
     }
@@ -17,7 +17,7 @@ static void ArgsCountNumaGpu(benchmark::internal::Benchmark* b) {
 }
 
 inline
-static void ArgsCountGpuGpuNoSelf(benchmark::internal::Benchmark* b) {
+static void ArgsCountNumaGpuGpuNoSelf(benchmark::internal::Benchmark* b) {
 
   int n;
   cudaError_t err = cudaGetDeviceCount(&n);
@@ -25,11 +25,13 @@ static void ArgsCountGpuGpuNoSelf(benchmark::internal::Benchmark* b) {
     exit(1);
   }
 
-  for (int gpu0 = 0; gpu0 < n; ++gpu0) {
-    for (int gpu1 = 0; gpu1 < n; ++gpu1) {
-      if (gpu0 != gpu1) {
-        for (int j = 8; j <= 31; ++j) {
-          b->Args({j, gpu0, gpu1});
+  for (auto numa_id : numa_nodes()) {
+    for (int gpu0 = 0; gpu0 < n; ++gpu0) {
+      for (int gpu1 = 0; gpu1 < n; ++gpu1) {
+        if (gpu0 != gpu1) {
+          for (int j = 8; j <= 33; ++j) {
+            b->Args({j, numa_id, gpu0, gpu1});
+          }
         }
       }
     }
