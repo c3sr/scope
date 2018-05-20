@@ -52,6 +52,12 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
+  cudaError_t err = cudaDeviceDisablePeerAccess(dst_gpu);
+  if (cudaSuccess != err && cudaErrorPeerAccessNotEnabled != err) {
+    state.SkipWithError(NAME " failed to disable peer access");
+    return;
+  }
+
 
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
     state.SkipWithError(NAME " failed to set dst device");
@@ -64,6 +70,11 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
   defer(cudaFree(dst));
   if (PRINT_IF_ERROR(cudaMemset(dst, 0, bytes))) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
+  err = cudaDeviceDisablePeerAccess(src_gpu);
+  if (cudaSuccess != err && cudaErrorPeerAccessNotEnabled != err) {
+    state.SkipWithError(NAME " failed to disable peer access");
     return;
   }
 
@@ -91,6 +102,23 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
+
+  // re-enable NUMA scheduling
+  if (0 != numa_run_on_node(-1)) {
+    state.SkipWithError(NAME " couldn't allow bindings to all nodes");
+    return;
+  }
+
+  // re-enable peer access
+  err = cudaSetDevice(src_gpu);
+  err = cudaDeviceEnablePeerAccess(dst_gpu, 0);
+  err = cudaSetDevice(dst_gpu);
+  err = cudaDeviceEnablePeerAccess(src_gpu, 0);
+  if (cudaSuccess != err && cudaSuccess != cudaErrorInvalidDevice) {
+    state.SkipWithError(NAME "coulnd't re-enable peer access");
+  }
+
+
 }
 
 BENCHMARK(CUDA_Memcpy_GPUToGPU)->Apply(ArgsCountNumaGpuGpuNoSelf)->UseManualTime();
