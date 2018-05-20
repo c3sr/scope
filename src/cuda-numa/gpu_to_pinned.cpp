@@ -110,7 +110,7 @@ static void CUDANUMA_Memcpy_GPUToPinned(benchmark::State &state) {
 }
 
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(CustomArguments)->UseManualTime();
+BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();
 #else  // USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(CustomArguments);
+BENCHMARK(CUDANUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu);
 #endif // USE_CUDA_EVENTS

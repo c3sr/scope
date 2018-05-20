@@ -9,9 +9,9 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "numa-um/args.hpp"
+#include "um-coherence/args.hpp"
 
-#define NAME "NUMAUM/Coherence/GPUToGPU"
+#define NAME "UM/Coherence/GPUToGPU"
 
 template <bool NOOP = false>
 __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
@@ -38,15 +38,10 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   }
 }
 
-static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
+static void UM_Coherence_GPUToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
-    return;
-  }
-
-  if (!has_numa) {
-    state.SkipWithError(NAME " NUMA not available");
     return;
   }
 
@@ -129,4 +124,4 @@ static void NUMAUM_Direct_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Direct_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();
+BENCHMARK(UM_Coherence_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();

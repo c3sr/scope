@@ -13,8 +13,8 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    shape.hpp
     details.hpp
     tensor.hpp
+    shape.hpp
 )
 

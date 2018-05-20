@@ -8,7 +8,7 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "memcpy/args.hpp"
+#include "cuda-numa/args.hpp"
 
 #define NAME "NUMAUM/Coherence/GPUToGPU"
 
@@ -19,9 +19,23 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
     return;
   }
 
+  if (!has_numa) {
+    state.SkipWithError(NAME " no NUMA control available");
+    return;
+  }
+
+
+
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  const int src_gpu = state.range(1);
-  const int dst_gpu = state.range(2);
+  const int numa_id = state.range(1);
+  const int src_gpu = state.range(2);
+  const int dst_gpu = state.range(3);
+
+  if (0 != numa_run_on_node(numa_id)) {
+    state.SkipWithError(NAME " couldn't bind to NUMA node");
+    return;
+  }
+
   char *src        = nullptr;
   char *dst        = nullptr;
 
@@ -79,4 +93,4 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 }
 
-BENCHMARK(CUDA_Memcpy_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
+BENCHMARK(CUDA_Memcpy_GPUToGPU)->Apply(ArgsCountNumaGpuGpuNoSelf)->UseManualTime();

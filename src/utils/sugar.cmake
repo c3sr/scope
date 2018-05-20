@@ -12,31 +12,31 @@ endif()
 include(sugar_files)
 include(sugar_include)
 
-sugar_include(io)
 sugar_include(tensor)
+sugar_include(io)
 
 sugar_files(
     BENCHMARK_HEADERS
-    numa.hpp
-    cuda.hpp
-    page.hpp
-    timer.hpp
-    compat.hpp
-    memory.hpp
-    hostname.hpp
-    marker.hpp
-    transwarp.h
-    defer.hpp
-    nocopy.hpp
-    nccl.hpp
-    utils.hpp
-    commandlineflags.hpp
-    nvptx.hpp
-    benchmark.hpp
-    mpl.hpp
     error.hpp
+    utils.hpp
+    mpl.hpp
     cudnn.hpp
     cublas.hpp
+    nocopy.hpp
+    timer.hpp
+    transwarp.h
+    page.hpp
+    numa.hpp
+    hostname.hpp
+    defer.hpp
+    commandlineflags.hpp
+    marker.hpp
+    benchmark.hpp
+    memory.hpp
+    compat.hpp
+    nvptx.hpp
+    cuda.hpp
+    nccl.hpp
 )
 
 sugar_files(

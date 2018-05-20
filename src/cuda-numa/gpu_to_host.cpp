@@ -106,8 +106,8 @@ static void CUDANUMA_Memcpy_GPUToHost(benchmark::State &state) {
 }
 
 #ifdef USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(CustomArguments)->UseManualTime();
+BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(ArgsCountNumaGpu)->UseManualTime();
 // BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->ALL_ARGS()->UseManualTime();
 #else  // USE_CUDA_EVENTS
-BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(CustomArguments);
+BENCHMARK(CUDANUMA_Memcpy_GPUToHost)->Apply(ArgsCountNumaGpu);
 #endif // USE_CUDA_EVENTS
