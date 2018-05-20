@@ -38,6 +38,11 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
+  cudaError_t err = cudaDeviceEnablePeerAccess(dst_gpu, 0);
+  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
+    state.SkipWithError(NAME " failed to ensure peer access");
+    return;
+  }
 
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
     state.SkipWithError(NAME " failed to set dst device");
@@ -50,6 +55,11 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
   defer(cudaFree(dst));
   if (PRINT_IF_ERROR(cudaMemset(dst, 0, bytes))) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
+  err = cudaDeviceEnablePeerAccess(src_gpu, 0);
+  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
+    state.SkipWithError(NAME " failed to ensure peer access");
     return;
   }
 
