@@ -29,10 +29,7 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
   const int src_numa = state.range(1);
   const int dst_gpu = state.range(2);
 
-  if (0 != numa_run_on_node(src_numa)) {
-    state.SkipWithError(NAME " couldn't bind to NUMA node");
-    return;
-  }
+  numa_bind_node(src_numa);
 
 
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
@@ -100,6 +97,7 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 
+  numa_bind_node(-1);
 }
 
 BENCHMARK(NUMAUM_Prefetch_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();

@@ -43,11 +43,7 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
   }
   defer(cudaFreeHost(dst));
 
-  if (0 != numa_run_on_node(numa_id)) {
-    state.SkipWithError(NAME " couldn't bind to NUMA node");
-    return;
-  }
-
+  numa_bind_node(numa_id);
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
@@ -95,10 +91,7 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 
   // reset to run on any node
-  if (0 != numa_run_on_node(-1)) {
-    state.SkipWithError(NAME " couldn't allow bindings to all nodes");
-    return;
-  }
+  numa_bind_node(-1);
 }
 
 BENCHMARK(NUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();

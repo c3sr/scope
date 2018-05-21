@@ -29,10 +29,7 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
   const int src_gpu = state.range(2);
   const int dst_gpu = state.range(3);
 
-  if (0 != numa_run_on_node(numa_id)) {
-    state.SkipWithError(NAME " couldn't bind to NUMA node");
-    return;
-  }
+  numa_bind_node(numa_id);
 
   char *src        = nullptr;
   char *dst        = nullptr;
@@ -102,10 +99,7 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 
   // re-enable NUMA scheduling
-  if (0 != numa_run_on_node(-1)) {
-    state.SkipWithError(NAME " couldn't allow bindings to all nodes");
-    return;
-  }
+  numa_bind_node(-1);
 
   // re-enable peer access
   err = cudaSetDevice(src_gpu);
