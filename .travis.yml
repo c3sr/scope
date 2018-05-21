@@ -34,7 +34,8 @@ addons:
       - libnccl2
       - cuda-cudart-9-2
       - cuda-libraries-9-2
-      - cuda-command-line-tools-9-2
+      - cuda-command-line-tools-9-2\
+      - cuda-cublas-9-2
 env:
   global:
     - CXX_COMPILER=g++-7
