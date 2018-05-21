@@ -29,6 +29,7 @@ addons:
       - cmake
       - libmicrohttpd-dev
       - libssl-dev
+      - libpci-dev
       - libhwloc-dev
       - libnccl2
       - cuda-cudart-9-2
