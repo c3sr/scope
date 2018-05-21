@@ -69,23 +69,23 @@ NUMAUM_Prefetch_GPUToHost
 NUMAUM_Prefetch_HostToGPU
 )
 
-for b in "${numa_gpu_bmarks[@]}"; do
-    for n in ${!numas}; do
-        for g in ${!gpus}; do
-            ./bench --benchmark_filter="$b.*/$n/$g/" --benchmark_out=`hostname`-$b-$n-$g.json;
-        done
-    done
-done
-
-for b in "${gpu_gpu_bmarks[@]}"; do
-    for g1 in ${!gpus}; do
-        for g2 in ${!gpus}; do
-                if [ "$g2" != "$g1" ]; then
-                    ./bench --benchmark_filter="$b.*/$g1/$g2/" --benchmark_out=`hostname`-$b-$g1-$g2.json;
-                fi
-        done
-    done
-done
+#for b in "${numa_gpu_bmarks[@]}"; do
+#    for n in ${!numas}; do
+#        for g in ${!gpus}; do
+#            ./bench --benchmark_filter="$b.*/$n/$g/" --benchmark_out=`hostname`-$b-$n-$g.json --benchmark_repetitions=5;
+#        done
+#    done
+#done
+#
+#for b in "${gpu_gpu_bmarks[@]}"; do
+#    for g1 in ${!gpus}; do
+#        for g2 in ${!gpus}; do
+#                if [ "$g2" != "$g1" ]; then
+#                    ./bench --benchmark_filter="$b.*/$g1/$g2/" --benchmark_out=`hostname`-$b-$g1-$g2.json --benchmark_repetitions=5;
+#                fi
+#        done
+#    done
+#done
 
 
 
@@ -94,7 +94,7 @@ for b in "${numa_gpu_gpu_bmarks[@]}"; do
         for g1 in ${!gpus}; do
             for g2 in ${!gpus}; do
                 if [ "$g2" != "$g1" ]; then
-                    ./bench --benchmark_filter="$b.*/$n/$g1/$g2/" --benchmark_out=`hostname`-$b-$n-$g1-$g2.json;
+                    ./bench --benchmark_filter="$b.*/$n/$g1/$g2/" --benchmark_out=`hostname`-$b-$n-$g1-$g2.json --benchmark_repetitions=5;
                 fi
             done
         done
