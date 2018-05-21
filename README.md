@@ -123,17 +123,13 @@ sudo cpupower frequency-set --governor powersave
 
 ## Run with Docker
 
-There is not a public docker image yet. Install CUDA and then
-
-    docker build -t microbench/amd64 -f Dockerfile.amd64.cuda90 .
-
 Install `nvidia-docker`, then
 
-    docker run --runtime=nvidia microbench/amd64 bench --benchmark_list_tests=true
+    docker run --runtime=nvidia raiproject/microbench:amd64 bench --benchmark_list_tests=true
 
 or perhaps
 
-    docker run --runtime=nvidia microbench/amd64 -v data:/data bench --benchmark_out=/data/`hostname`.json
+    docker run --runtime=nvidia microbench/amd64-latest -v data:/data bench --benchmark_out=/data/`hostname`.json
 
 ## Hunter Toolchain File
 
