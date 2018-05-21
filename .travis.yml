@@ -55,8 +55,6 @@ env:
 before_install:
 - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
 - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-- ls -l /usr/local/cuda-9.2/bin
-- ls -l /usr/local/cuda-9.2/lib64
 - echo "Installing CMAKE"
 - export CMAKE_VERSION=3.11.1
 - mkdir -p $HOME/.cmake
@@ -67,6 +65,9 @@ before_install:
 - export PATH=$HOME/.cmake/bin:$PATH
 - which cmake
 - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
+- wget https://storage.googleapis.com/cwpearson-cudnn/libcudnn7-dev_7.1.4.18-1%2Bcuda9.2_ubuntu14.04_amd64.deb
+- sudo dpkg -i libcudnn7-dev_7.1.4.18-1+cuda9.2_ubuntu14.04_amd64.deb
+
 script:
 - cd $TRAVIS_BUILD_DIR
 - cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CUDA_COMPILER=${CMAKE_CUDA_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
