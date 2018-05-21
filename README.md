@@ -121,6 +121,20 @@ sudo cpupower frequency-set --governor performance
 sudo cpupower frequency-set --governor powersave
 ```
 
+## Run with Docker
+
+There is not a public docker image yet. Install CUDA and then
+
+    docker build -t microbench/amd64 -f Dockerfile.amd64.cuda90 .
+
+Install `nvidia-docker`, then
+
+    docker run --runtime=nvidia microbench/amd64 bench --benchmark_list_tests=true
+
+or perhaps
+
+    docker run --runtime=nvidia microbench/amd64 -v data:/data bench --benchmark_out=/data/`hostname`.json
+
 ## Hunter Toolchain File
 
 If some of the third-party code compiled by hunter needs a different compiler, you can create a cmake toolchain file to set various cmake variables that will be globally used when building that code. You can then pass this file into cmake
