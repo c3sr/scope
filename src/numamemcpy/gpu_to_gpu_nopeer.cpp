@@ -110,10 +110,17 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
   // re-enable peer access
   err = cudaSetDevice(src_gpu);
   err = cudaDeviceEnablePeerAccess(dst_gpu, 0);
+  // docs say should return cudaErrorInvalidDevice, actually returns cudaErrorPeerAccessUnsupported?
+  if (cudaErrorInvalidDevice != err && cudaErrorPeerAccessUnsupported != err) {
+    PRINT_IF_ERROR(err);
+    std::cerr << err << "\n";
+    state.SkipWithError(NAME " couldn't re-enable peer access");
+  }
   err = cudaSetDevice(dst_gpu);
   err = cudaDeviceEnablePeerAccess(src_gpu, 0);
-  if (cudaSuccess != err && cudaSuccess != cudaErrorInvalidDevice) {
-    state.SkipWithError(NAME "coulnd't re-enable peer access");
+  if (cudaErrorInvalidDevice != err && cudaErrorPeerAccessUnsupported != err) {
+    PRINT_IF_ERROR(err);
+    state.SkipWithError(NAME " couldn't re-enable peer access");
   }
 
 
