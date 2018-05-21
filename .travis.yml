@@ -1,74 +1,82 @@
 language: cpp
-
 dist: trusty
 sudo: true
-
+services:
+- docker
 cache:
   apt: true
   directories:
-    - $HOME/.cache/cuda
-    - $HOME/.hunter
-    - $HOME/.cmake
-
+  - "$HOME/.cache/cuda"
+  - "$HOME/.hunter"
+  - "$HOME/.cmake"
 addons:
   apt:
     sources:
-    - sourceline: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /
+    - sourceline: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64
+        /
       key_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
-    - sourceline: deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /
+    - sourceline: deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64
+        /
     - ubuntu-toolchain-r-test
     packages:
-      - gcc-7
-      - g++-7
-      - libopenblas-dev
-      - libgsl0-dev
-      - liblapacke-dev
-      - google-perftools
-      - libgoogle-perftools-dev
-      - graphviz
-      - cmake
-      - libmicrohttpd-dev
-      - libssl-dev
-      - libpci-dev
-      - libhwloc-dev
-      - libnccl2
-      - cuda-cudart-9-2
-      - cuda-libraries-9-2
-      - cuda-command-line-tools-9-2\
-      - cuda-cublas-9-2
+    - gcc-7
+    - g++-7
+    - libopenblas-dev
+    - libgsl0-dev
+    - liblapacke-dev
+    - google-perftools
+    - libgoogle-perftools-dev
+    - graphviz
+    - cmake
+    - libmicrohttpd-dev
+    - libssl-dev
+    - libpci-dev
+    - libhwloc-dev
+    - libnccl2
+    - cuda-cudart-9-2
+    - cuda-libraries-9-2
+    - cuda-command-line-tools-9-2
+    - cuda-cublas-9-2
 env:
   global:
-    - CXX_COMPILER=g++-7
-    - CMAKE_CXX_COMPILER=g++-7
-    - CC=gcc-7
-    - CMAKE_C_COMPILER=gcc-7
-    - CMAKE_CUDA_HOST_COMPILER=g++7
-    - CMAKE_CUDA_COMPILER=/usr/local/cuda-9.2/bin/nvcc
-    - CUDACXX=/usr/local/cuda-9.2/bin/nvcc
-    - LD_LIBRARY_PATH=/usr/local/nvidia/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-    - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-    - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-    - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
+  - CXX_COMPILER=g++-7
+  - CMAKE_CXX_COMPILER=g++-7
+  - CC=gcc-7
+  - CMAKE_C_COMPILER=gcc-7
+  - CMAKE_CUDA_HOST_COMPILER=g++7
+  - CMAKE_CUDA_COMPILER=/usr/local/cuda-9.2/bin/nvcc
+  - CUDACXX=/usr/local/cuda-9.2/bin/nvcc
+  - LD_LIBRARY_PATH=/usr/local/nvidia/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+  - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+  - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+  - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
+  - secure: LX3PsV+BtUyn06tJFCyKFdPjhnq93nea0z9oVPJhSrDZCrVdZgqLuzwicW7RX7kcY60pitT2ObT6FWX4cPNn7yeKn+Kd7DZhY6s/ynbwqa8KP3e9y3rFQzSPdBMvoEd1bv2R31kDWE4bFatfp/6+0mQrFUgLH+sueK2fXmlD1hh6o30Pap4mE0yGdpU4kBjOs1f53E4oHXqHPWtccc0YJrLqXEWlx3OAy+eS6+gRVr/UEdGMryDocCMxYmXZMuEWNe3DDhuY0vmo/bGAEaSGf1p4YvPK8M+qmdB37hjWOZli8dIBVyx8SfAjzYPyEz01iELhRBkTZx25HundkflZ1R+Mqa1re+/PUVsQueR+oLfLWOvb3aAmk5eN26vMC7EbfLPmVQHtWZXBe81VpaH49j3RCJss1oakQtoYO99yU8lGLnaOqiQTPcSTPmCCTS50yBXdLjjBYomIuuW2jbxspZRj/hlEL1upzwCZoPA692lf4xJL4uV57lcXFvEhii6EvFvtyuetMNjUaKKLwDZONPkxxMd8Mig46Z1PWi7liGXp0fwZaepgnLxnrDmMOgEXR5FoOr4cPpvsJVRqiOEQaojC8TjZI4jo79K6sM9hyqdc4bM4fuRvG7pU4tDktHdQ12xlkx3RqGmOMda8Maec/TbyGCgKXn16pqJ9NDXJL5E=
+  - secure: oXQl7PX1FylJ9zi8Pt1ZusiO6JVCagkENVX2EJgWGfzZYvQz4DKWQNNQYmdlDFQl/wLpRVG0udtYeJq9/fik60ni6XO84DQX5atftzS/Nw4RhkPpHZN+iud0/P8W2VHsc17dIsFzL46OWcQRaBONCvdXt2ajcNLgYuF3eYyofquFbVS3YKkpqKLKAjrwnQo9yu9tH2QIVdRCMM2ugDb7Vjtiztdkj9oT0iUEZgB5EaJBrUgbdPd/JHMadM4Qj91AazCPeI84hHNwQ42L5c1O8vKIiv0na92ATYNTvd+Sa4P592ZmkOxH5ZuaH8uJSfRuXeqLuDIx0jnSilAcqQZSEpSiBqmnoaIEsKwdwOWxNoZbESZ5WcAE50MkrkwKuUZeacePfmeVuAfm+ZfOz6KLpyGY+XD3VDgYppF1j5QCTMw6W6pj8UX8zPGE5IkSNy8V8R1UeNFUBsk4EMOq9t9R/YGAY8iTbhlhm9kbg95/7LlGgN4Osj6tavV6eHYpYoF/G4LLZB92bYHG0jo38PxUyOk67lqnbL4zz/1s5/NYN36FIJeHWdLeD9vUJCEYCLCe5FT5DPHWcboGPiOHXfyxhETQsojdB/zyX5ew09BBgFPkqed87FRpwibVVj1LIu6Ru5mKVl2rIPfg1g/t3PJGybslVM+rbFujq7KjgIB9DrU=
 before_install:
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
-    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-
-    - ls -l /usr/local/cuda-9.2/bin
-    - ls -l /usr/local/cuda-9.2/lib64
-
-    - echo "Installing CMAKE"
-    - export CMAKE_VERSION=3.11.1
-    - mkdir -p $HOME/.cmake
-    - cd $HOME/.cmake
-    - wget https://cmake.org/files/v3.11/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
-    - sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=$HOME/.cmake --exclude-subdir
-    - ls -l $HOME/.cmake
-    - export PATH=$HOME/.cmake/bin:$PATH
-    - which cmake
-    
-    - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
+- sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
+- sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
+- ls -l /usr/local/cuda-9.2/bin
+- ls -l /usr/local/cuda-9.2/lib64
+- echo "Installing CMAKE"
+- export CMAKE_VERSION=3.11.1
+- mkdir -p $HOME/.cmake
+- cd $HOME/.cmake
+- wget https://cmake.org/files/v3.11/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+- sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=$HOME/.cmake --exclude-subdir
+- ls -l $HOME/.cmake
+- export PATH=$HOME/.cmake/bin:$PATH
+- which cmake
+- sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
 script:
-  - cd $TRAVIS_BUILD_DIR
-  - cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CUDA_COMPILER=${CMAKE_CUDA_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} .
-  - make
-
+- cd $TRAVIS_BUILD_DIR
+- cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CUDA_COMPILER=${CMAKE_CUDA_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} .
+- make
+- export REPO=raiproject/microbench
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+- export ARCH=amd64
+- docker build -f Dockerfile.amd64.cuda90 -t $REPO:$COMMIT
+- docker tag $REPO:$COMMIT $REPO:$ARCH-$TAG
+after_success:
+- docker login -u $DOCKER_USER -p $DOCKER_PASS
+- docker push
