@@ -19,9 +19,17 @@ std::vector<int> numa_nodes() {
 }
 
 static inline void
-numa_bind_node(int node) {
-  struct bitmask *nodemask = numa_allocate_nodemask();
-  nodemask = numa_bitmask_setbit(nodemask, node);
-  numa_bind(nodemask);
-  numa_free_nodemask(nodemask);
+numa_bind_node(const int node) {
+
+  if (-1 == node) {
+    numa_bind(numa_all_nodes_ptr);
+  } else if (node >= 0) {
+    struct bitmask *nodemask = numa_allocate_nodemask();
+    nodemask = numa_bitmask_setbit(nodemask, node);
+    numa_bind(nodemask);
+    numa_free_nodemask(nodemask);
+  } else {
+    LOG(critical, "expected node >= -1");
+    exit(1);
+  }
 }

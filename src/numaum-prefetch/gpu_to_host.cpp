@@ -29,10 +29,7 @@ static void NUMAUM_Prefetch_GPUToHost(benchmark::State &state) {
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
-  if (0 != numa_run_on_node(numa_id)) {
-    state.SkipWithError(NAME " couldn't bind to NUMA node");
-    return;
-  }
+  numa_bind_node(numa_id);
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
@@ -98,10 +95,7 @@ static void NUMAUM_Prefetch_GPUToHost(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 
   // reset to run on any node
-  if (0 != numa_run_on_node(-1)) {
-    LOG(critical, NAME " couldn't allow bindings to all nodes");
-    exit(-1);
-  }
+  numa_bind_node(-1);
 }
 
 BENCHMARK(NUMAUM_Prefetch_GPUToHost)->Apply(ArgsCountNumaGpu)->UseManualTime();
