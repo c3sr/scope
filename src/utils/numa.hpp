@@ -17,3 +17,11 @@ std::vector<int> numa_nodes() {
     }
     return nodes2;
 }
+
+static inline void
+numa_bind_node(int node) {
+  struct bitmask *nodemask = numa_allocate_nodemask();
+  nodemask = numa_bitmask_setbit(nodemask, node);
+  numa_bind(nodemask);
+  numa_free_nodemask(nodemask);
+}
