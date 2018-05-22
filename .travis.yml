@@ -83,5 +83,5 @@ script:
 - docker build -f Dockerfile.amd64.cuda90 -t $REPO:$TRAVIS_COMMIT .
 - docker tag $REPO:$TRAVIS_COMMIT $REPO:$ARCH-$TAG
 after_success:
-- echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER"
+- echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 - docker push
