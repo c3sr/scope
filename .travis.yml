@@ -84,4 +84,4 @@ script:
 - docker tag $REPO:$TRAVIS_COMMIT $REPO:$ARCH-$TAG
 after_success:
 - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-- docker push
+- docker push $REPO
