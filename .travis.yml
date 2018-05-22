@@ -60,7 +60,7 @@ before_install:
 - export CMAKE_VERSION=3.11.1
 - mkdir -p $HOME/.cmake
 - cd $HOME/.cmake
-- wget https://cmake.org/files/v3.11/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+- wget -q https://cmake.org/files/v3.11/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
 - sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=$HOME/.cmake --exclude-subdir
 - ls -l $HOME/.cmake
 - export PATH=$HOME/.cmake/bin:$PATH
