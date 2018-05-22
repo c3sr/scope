@@ -80,8 +80,8 @@ script:
 - export REPO=raiproject/microbench
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
 - export ARCH=amd64
-- docker build -f Dockerfile.amd64.cuda90 -t $REPO:$COMMIT
-- docker tag $REPO:$COMMIT $REPO:$ARCH-$TAG
+- docker build -f Dockerfile.amd64.cuda90 -t $REPO:TRAVIS_COMMIT
+- docker tag $REPO:TRAVIS_COMMIT $REPO:$ARCH-$TAG
 after_success:
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
 - docker push
