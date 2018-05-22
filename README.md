@@ -1,5 +1,9 @@
 # Microbenchmark
 
+|master|
+|--|
+| [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
+
 ## Installing latest cmake
 
 cmake version >=3.8 is required.
@@ -120,6 +124,21 @@ sudo cpupower frequency-set --governor performance
 ./mybench
 sudo cpupower frequency-set --governor powersave
 ```
+
+## Run with Docker
+
+Install `nvidia-docker`, then, list the available benchmarks.
+
+    nvidia-docker run  --rm raiproject/microbench:amd64-latest bench --benchmark_list_tests
+
+You can run benchmarks in the following way (probably with the `--benchmark_filter` flag).
+
+    nvidia-docker run --privileged --rm -v `readlink -f .`:/data raiproject/microbench:amd64-latest bench --benchmark_out=/data/`hostname`.json
+
+
+`--privileged` is needed to set the NUMA policy for NUMA benchmarks.
+`-v ...` maps the current directory into the container as `/data`.
+`` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write out to `/data`, which is mapped to the current directory.
 
 ## Hunter Toolchain File
 
