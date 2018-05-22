@@ -32,6 +32,7 @@ addons:
     - libssl-dev
     - libpci-dev
     - libhwloc-dev
+    - libnuma-dev
     - libnccl2
     - cuda-cudart-dev-9-2
     - cuda-libraries-dev-9-2
