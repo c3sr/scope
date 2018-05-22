@@ -1,4 +1,4 @@
-#! env bash
+#! /bin/bash
 
 # Run all NUMA benchmarks in their own process
 
