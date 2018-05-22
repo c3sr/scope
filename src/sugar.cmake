@@ -30,6 +30,7 @@ sugar_include(conv)
 sugar_include(gemm)
 sugar_include(atomic)
 sugar_include(launch)
+sugar_include(numaum-latency)
 
 sugar_files(
     BENCHMARK_HEADERS

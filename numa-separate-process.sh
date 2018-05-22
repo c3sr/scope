@@ -48,6 +48,8 @@ NUMA_Memcpy_HostToGPU
 NUMA_Memcpy_PinnedToGPU
 NUMAUM_Coherence_GPUToHost
 NUMAUM_Coherence_HostToGPU
+NUMAUM_Latency_GPUToHost
+NUMAUM_Latency_HostToGPU
 NUMAUM_Prefetch_GPUToHost
 NUMAUM_Prefetch_HostToGPU
 noop
