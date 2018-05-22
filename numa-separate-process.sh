@@ -9,6 +9,13 @@ machine=$1
 # Path to bench executable
 BENCH=$2
 
+if [ -z ${3+x} ]; then
+    OUT_DIR="."
+else
+    OUT_DIR="$3"
+fi
+
+
 s822lc_gpus=( 0 1 2 3 )
 s822lc_numas=( 0 1 )
  
@@ -46,12 +53,13 @@ NUMAUM_Prefetch_HostToGPU
 noop
 )
 
+mkdir -p "$OUT_DIR"
 
 for b in "${numa_gpu_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
         for n in ${!numas}; do
             for g in ${!gpus}; do
-                "$BENCH" --benchmark_filter="$b.*/$n/$g/" --benchmark_out=`hostname`-$b-$n-$g.json --benchmark_repetitions=5;
+                "$BENCH" --benchmark_filter="$b.*/$n/$g/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n-$g.json" --benchmark_repetitions=5;
             done
         done
     fi
@@ -62,7 +70,7 @@ for b in "${gpu_gpu_bmarks[@]}"; do
         for g1 in ${!gpus}; do
             for g2 in ${!gpus}; do
                     if [ "$g2" != "$g1" ]; then
-                        "$BENCH" --benchmark_filter="$b.*/$g1/$g2/" --benchmark_out=`hostname`-$b-$g1-$g2.json --benchmark_repetitions=5;
+                        "$BENCH" --benchmark_filter="$b.*/$g1/$g2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$g1-$g2.json" --benchmark_repetitions=5;
                     fi
             done
         done
@@ -77,7 +85,7 @@ for b in "${numa_gpu_gpu_bmarks[@]}"; do
             for g1 in ${!gpus}; do
                 for g2 in ${!gpus}; do
                     if [ "$g2" != "$g1" ]; then
-                        "$BENCH" --benchmark_filter="$b.*/$n/$g1/$g2/" --benchmark_out=`hostname`-$b-$n-$g1-$g2.json --benchmark_repetitions=5;
+                        "$BENCH" --benchmark_filter="$b.*/$n/$g1/$g2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n-$g1-$g2.json" --benchmark_repetitions=5;
                     fi
                 done
             done
