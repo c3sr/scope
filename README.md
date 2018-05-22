@@ -1,5 +1,9 @@
 # Microbenchmark
 
+|master|
+|--|
+| [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
+
 ## Installing latest cmake
 
 cmake version >=3.8 is required.
