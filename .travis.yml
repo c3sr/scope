@@ -53,8 +53,8 @@ env:
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
-  - secure: LX3PsV+BtUyn06tJFCyKFdPjhnq93nea0z9oVPJhSrDZCrVdZgqLuzwicW7RX7kcY60pitT2ObT6FWX4cPNn7yeKn+Kd7DZhY6s/ynbwqa8KP3e9y3rFQzSPdBMvoEd1bv2R31kDWE4bFatfp/6+0mQrFUgLH+sueK2fXmlD1hh6o30Pap4mE0yGdpU4kBjOs1f53E4oHXqHPWtccc0YJrLqXEWlx3OAy+eS6+gRVr/UEdGMryDocCMxYmXZMuEWNe3DDhuY0vmo/bGAEaSGf1p4YvPK8M+qmdB37hjWOZli8dIBVyx8SfAjzYPyEz01iELhRBkTZx25HundkflZ1R+Mqa1re+/PUVsQueR+oLfLWOvb3aAmk5eN26vMC7EbfLPmVQHtWZXBe81VpaH49j3RCJss1oakQtoYO99yU8lGLnaOqiQTPcSTPmCCTS50yBXdLjjBYomIuuW2jbxspZRj/hlEL1upzwCZoPA692lf4xJL4uV57lcXFvEhii6EvFvtyuetMNjUaKKLwDZONPkxxMd8Mig46Z1PWi7liGXp0fwZaepgnLxnrDmMOgEXR5FoOr4cPpvsJVRqiOEQaojC8TjZI4jo79K6sM9hyqdc4bM4fuRvG7pU4tDktHdQ12xlkx3RqGmOMda8Maec/TbyGCgKXn16pqJ9NDXJL5E=
-  - secure: oXQl7PX1FylJ9zi8Pt1ZusiO6JVCagkENVX2EJgWGfzZYvQz4DKWQNNQYmdlDFQl/wLpRVG0udtYeJq9/fik60ni6XO84DQX5atftzS/Nw4RhkPpHZN+iud0/P8W2VHsc17dIsFzL46OWcQRaBONCvdXt2ajcNLgYuF3eYyofquFbVS3YKkpqKLKAjrwnQo9yu9tH2QIVdRCMM2ugDb7Vjtiztdkj9oT0iUEZgB5EaJBrUgbdPd/JHMadM4Qj91AazCPeI84hHNwQ42L5c1O8vKIiv0na92ATYNTvd+Sa4P592ZmkOxH5ZuaH8uJSfRuXeqLuDIx0jnSilAcqQZSEpSiBqmnoaIEsKwdwOWxNoZbESZ5WcAE50MkrkwKuUZeacePfmeVuAfm+ZfOz6KLpyGY+XD3VDgYppF1j5QCTMw6W6pj8UX8zPGE5IkSNy8V8R1UeNFUBsk4EMOq9t9R/YGAY8iTbhlhm9kbg95/7LlGgN4Osj6tavV6eHYpYoF/G4LLZB92bYHG0jo38PxUyOk67lqnbL4zz/1s5/NYN36FIJeHWdLeD9vUJCEYCLCe5FT5DPHWcboGPiOHXfyxhETQsojdB/zyX5ew09BBgFPkqed87FRpwibVVj1LIu6Ru5mKVl2rIPfg1g/t3PJGybslVM+rbFujq7KjgIB9DrU=
+  - secure: jzVGBEeuuy453e1D+xAeK9t3hh/xfA/1uffbw4oJx21tkPECh8cQEG1G0ph5WUyc1TTHHBmkBk7UhwJaJObl95FColPf2pIMsUivdhrricg36OVxxI1ed6UgNss6iyxt0dfj2dblTBQKskCweJABW1BYecPyYwEAiVomjPoh+HUkNkJwjzqH1Z5IQ4EKEbO4PT1LX8BPDjX0snmUPC+erTlMaGVxLTgNk12T3ifoz3FcqW/MFPAR7BldVlRAzKbMPu78MdCIpV3OZcH4kKDhqWMUoVKCCwPreC8vhOqQKqb9mxfT1H54pQ5FsmNig1oGu+CRwVBB+UDfCpNJoFLS3GV8L8nQxSmiXME3X6Ujsj8+GrXqBemqtLinEePBdMCOEj+zbEPYSIlOVwlz7TdM3bW9zJc/05mMhDQeXnYq24PCivOt0BeU7rdY5nKbb05IPl5rHQ3wKf+zlsVYAjDduwyyDpHF82E8FZPsKRIde94MYwpqeXlN5u6N14YyCTXbnzOtMt3ifCabzCUwDEW7HoibSoW/bTYY8QG5c5bSEYD8v2uI478MTd7mW2QWC2PzRf4HtuPxETcDXzQk6ECkie3UrymvfoiPKe13XWAK1FjkVZWaH5pv1Cs0i6bG6BaW7+HDZElaiOsw1UTecy4TPf81evMg9mOlnAjGqpJD0d4=
+  - secure: y9ONx3A6I8yt1id+uENqn/wUQKds7wx9eYH2NA19f/+MXFyt0TZr+inoD1WzQZAr7UICfa6FrARvUCeBqITW8yga/NlPCXeUMpkrwumlTjC8TTLcqrzDhs7Hb9zW0drbS/WoL9TZk/VLS4IoYL0XXtmADHALkmH7wtg4Xj6yt3bKKHBevuwWTbNhJ6Bz72ALpf1EFR323UnxPlpRsXVKDdk5Bz1nlhXGSRxnQxzX7qcH0NFsjappvfnNL2DFJMwe/HMe1lzoVOayzGMpl1m5NkA+4jtkxbRpGdKIMWKw3yEEhz1fPhy5rDrch+zut6qiBPhU+2w+VU/lkwpy87obeP4gCXpj2Dxt8ljE2Hk1OzW85JzIKcbp4vpulAzTbkYegNRwA+j7dmOq1nC4qLhMtOocZ9VYD/ClpYbYZbVslDCes+XtAYr2EKg2d/CokBL+S5VcM4pIUUlNhcHaCKQT67L2+oO1cB8+Obx90fRhXeRIR7PJgcY6uYWZYdF4vBIwsiuj9q/7ua9J54wIxnkG7rdZ4uY7TNIudKwcza88QVKUSc9TQYsw23zWhJVNrVKpfctiWwmf0xrTPMUookVz3/O1QHr2rO1SOyH1ip0L5/NBhb1cTZp83uX0WCDTer+pRrXfjPufxAyqs8QPuDIiv8Gss6T65tSGXcC+je97i8Y=
 before_install:
 - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
 - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
@@ -68,20 +68,19 @@ before_install:
 - export PATH=$HOME/.cmake/bin:$PATH
 - which cmake
 - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
-# - wget https://storage.googleapis.com/cwpearson-cudnn/libcudnn7-dev_7.1.4.18-1%2Bcuda9.2_ubuntu14.04_amd64.deb
-# - sudo dpkg -i libcudnn7-dev_7.1.4.18-1+cuda9.2_ubuntu14.04_amd64.deb
-
 script:
 - cd $TRAVIS_BUILD_DIR
 - mkdir -p build && cd build
-- cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} ..
+- cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+  ..
 - make
 - cd $TRAVIS_BUILD_DIR
 - export REPO=raiproject/microbench
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
 - export ARCH=amd64
 - docker build -f Dockerfile.amd64.cuda90 -t $REPO:$TRAVIS_COMMIT .
 - docker tag $REPO:$TRAVIS_COMMIT $REPO:$ARCH-$TAG
 after_success:
-- echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker push $REPO
