@@ -77,8 +77,8 @@ script:
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
   ; fi`
 - export ARCH=amd64
-- docker build -f Dockerfile.amd64.cuda90 -t $REPO:$TRAVIS_COMMIT .
-- docker tag $REPO:$TRAVIS_COMMIT $REPO:$ARCH-$TAG
+- docker build -f Dockerfile.amd64.cuda90 -t $REPO:$ARCH-$TRAVIS_COMMIT .
+- docker tag $REPO:$ARCH-$TRAVIS_COMMIT $REPO:$ARCH-$TAG
 after_success:
 - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 - docker push $REPO

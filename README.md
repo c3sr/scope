@@ -123,13 +123,18 @@ sudo cpupower frequency-set --governor powersave
 
 ## Run with Docker
 
-Install `nvidia-docker`, then
+Install `nvidia-docker`, then, list the available benchmarks.
 
-    docker run --runtime=nvidia raiproject/microbench:amd64 bench --benchmark_list_tests=true
+    nvidia-docker run  --rm raiproject/microbench:amd64-latest bench --benchmark_list_tests
 
-or perhaps
+You can run benchmarks in the following way (probably with the `--benchmark_filter` flag).
 
-    docker run --runtime=nvidia microbench/amd64-latest -v data:/data bench --benchmark_out=/data/`hostname`.json
+    nvidia-docker run --privileged --rm -v `readlink -f .`:/data raiproject/microbench:amd64-latest bench --benchmark_out=/data/`hostname`.json
+
+
+`--privileged` is needed to set the NUMA policy for NUMA benchmarks.
+`-v ...` maps the current directory into the container as `/data`.
+`` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write out to `/data`, which is mapped to the current directory.
 
 ## Hunter Toolchain File
 
