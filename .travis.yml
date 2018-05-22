@@ -53,8 +53,6 @@ env:
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
-  - secure: jzVGBEeuuy453e1D+xAeK9t3hh/xfA/1uffbw4oJx21tkPECh8cQEG1G0ph5WUyc1TTHHBmkBk7UhwJaJObl95FColPf2pIMsUivdhrricg36OVxxI1ed6UgNss6iyxt0dfj2dblTBQKskCweJABW1BYecPyYwEAiVomjPoh+HUkNkJwjzqH1Z5IQ4EKEbO4PT1LX8BPDjX0snmUPC+erTlMaGVxLTgNk12T3ifoz3FcqW/MFPAR7BldVlRAzKbMPu78MdCIpV3OZcH4kKDhqWMUoVKCCwPreC8vhOqQKqb9mxfT1H54pQ5FsmNig1oGu+CRwVBB+UDfCpNJoFLS3GV8L8nQxSmiXME3X6Ujsj8+GrXqBemqtLinEePBdMCOEj+zbEPYSIlOVwlz7TdM3bW9zJc/05mMhDQeXnYq24PCivOt0BeU7rdY5nKbb05IPl5rHQ3wKf+zlsVYAjDduwyyDpHF82E8FZPsKRIde94MYwpqeXlN5u6N14YyCTXbnzOtMt3ifCabzCUwDEW7HoibSoW/bTYY8QG5c5bSEYD8v2uI478MTd7mW2QWC2PzRf4HtuPxETcDXzQk6ECkie3UrymvfoiPKe13XWAK1FjkVZWaH5pv1Cs0i6bG6BaW7+HDZElaiOsw1UTecy4TPf81evMg9mOlnAjGqpJD0d4=
-  - secure: y9ONx3A6I8yt1id+uENqn/wUQKds7wx9eYH2NA19f/+MXFyt0TZr+inoD1WzQZAr7UICfa6FrARvUCeBqITW8yga/NlPCXeUMpkrwumlTjC8TTLcqrzDhs7Hb9zW0drbS/WoL9TZk/VLS4IoYL0XXtmADHALkmH7wtg4Xj6yt3bKKHBevuwWTbNhJ6Bz72ALpf1EFR323UnxPlpRsXVKDdk5Bz1nlhXGSRxnQxzX7qcH0NFsjappvfnNL2DFJMwe/HMe1lzoVOayzGMpl1m5NkA+4jtkxbRpGdKIMWKw3yEEhz1fPhy5rDrch+zut6qiBPhU+2w+VU/lkwpy87obeP4gCXpj2Dxt8ljE2Hk1OzW85JzIKcbp4vpulAzTbkYegNRwA+j7dmOq1nC4qLhMtOocZ9VYD/ClpYbYZbVslDCes+XtAYr2EKg2d/CokBL+S5VcM4pIUUlNhcHaCKQT67L2+oO1cB8+Obx90fRhXeRIR7PJgcY6uYWZYdF4vBIwsiuj9q/7ua9J54wIxnkG7rdZ4uY7TNIudKwcza88QVKUSc9TQYsw23zWhJVNrVKpfctiWwmf0xrTPMUookVz3/O1QHr2rO1SOyH1ip0L5/NBhb1cTZp83uX0WCDTer+pRrXfjPufxAyqs8QPuDIiv8Gss6T65tSGXcC+je97i8Y=
 before_install:
 - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
 - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
@@ -82,6 +80,5 @@ script:
 - docker build -f Dockerfile.amd64.cuda90 -t $REPO:$TRAVIS_COMMIT .
 - docker tag $REPO:$TRAVIS_COMMIT $REPO:$ARCH-$TAG
 after_success:
-- echo "$DOCKER_USERNAME"
 - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 - docker push $REPO
