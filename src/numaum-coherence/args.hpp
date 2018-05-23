@@ -25,7 +25,7 @@ static void ArgsThreadsNumaGpu(benchmark::internal::Benchmark* b) {
     exit(1);
   }
 
-  for (int j = 0; j <= 9; ++j) {
+  for (int j = 0; j <= 11; ++j) {
     for (auto numa_id : numa_nodes()) {
       for (int gpu_id = 0; gpu_id < n; ++gpu_id) {
         b->Args({j, numa_id, gpu_id});
