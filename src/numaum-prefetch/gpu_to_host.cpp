@@ -31,12 +31,13 @@ static void NUMAUM_Prefetch_GPUToHost(benchmark::State &state) {
 
   numa_bind_node(numa_id);
 
-  if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
-    state.SkipWithError(NAME " failed to set CUDA device");
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
+    state.SkipWithError(NAME " failed to reset device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
+
+  if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
+    state.SkipWithError(NAME " failed to set CUDA device");
     return;
   }
 

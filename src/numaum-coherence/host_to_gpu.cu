@@ -58,14 +58,16 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
 
   numa_bind_node(src_numa);
 
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(dst_gpu))) {
+    state.SkipWithError(NAME " failed to reset device");
+    return;
+  }
+
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
     state.SkipWithError(NAME " failed to set CUDA src device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
-    return;
-  }
+
 
   char *ptr = nullptr;
   if (PRINT_IF_ERROR(cudaMallocManaged(&ptr, bytes))) {

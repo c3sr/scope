@@ -51,20 +51,19 @@ static void UM_Coherence_GPUToGPU(benchmark::State &state) {
   const int src_gpu = state.range(1);
   const int dst_gpu = state.range(2);
 
-  if (PRINT_IF_ERROR(cudaSetDevice(src_gpu))) {
-    state.SkipWithError(NAME " failed to set CUDA src device");
+
+
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(src_gpu))) {
+    state.SkipWithError(NAME " failed to reset CUDA src device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(dst_gpu))) {
+    state.SkipWithError(NAME " failed to reset CUDA src device");
     return;
   }
+
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
     state.SkipWithError(NAME " failed to set CUDA dst device");
-    return;
-  }
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
     return;
   }
 

@@ -22,6 +22,16 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int src_gpu = state.range(1);
   const int dst_gpu = state.range(2);
+
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(src_gpu))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(dst_gpu))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
+
   char *src        = nullptr;
   char *dst        = nullptr;
 
