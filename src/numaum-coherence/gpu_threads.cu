@@ -11,7 +11,7 @@
 
 #include "numaum-coherence/args.hpp"
 
-#define NAME "NUMAUM/Coherence/HostToGPU"
+#define NAME "NUMAUM/Coherence/GPUThreads"
 
 template <bool NOOP = false>
 __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
@@ -38,7 +38,7 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   }
 }
 
-static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
+static void NUMAUM_Coherence_GPUThreads(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -52,9 +52,11 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
 
   const size_t pageSize = page_size();
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto warps = 1ULL << static_cast<size_t>(state.range(0));
+  const size_t threads = warps * 32;
   const int src_numa = state.range(1);
   const int dst_gpu = state.range(2);
+  const size_t bytes = 1ULL << 28;
 
   numa_bind_node(src_numa);
 
@@ -95,7 +97,11 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
   defer(cudaEventDestroy(stop));
 
 
+  dim3 blockDim(min(threads, size_t(128)));
+  dim3 gridDim((threads + blockDim.x - 1) / blockDim.x);
+
   for (auto _ : state) {
+    state.PauseTiming();
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId);
     if (err == cudaErrorInvalidDevice) {
       for (size_t i = 0; i < bytes; i += pageSize) {
@@ -108,10 +114,12 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
       return;
     }
 
+    state.ResumeTiming();
     cudaEventRecord(start);
-    gpu_write<<<256,256>>>(ptr, bytes, pageSize);
+    gpu_write<<<gridDim,blockDim>>>(ptr, bytes, pageSize);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
+
 
     float millis = 0;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&millis, start, stop))) {
@@ -129,4 +137,4 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Coherence_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMAUM_Coherence_GPUThreads)->Apply(ArgsThreadsNumaGpu)->UseRealTime()->UseManualTime();
