@@ -51,8 +51,8 @@ include(${SUGAR_ROOT}/cmake/Sugar)
 hunter_add_package(benchmark)
 find_package(benchmark CONFIG REQUIRED)
 
-hunter_add_package(nlohmann_json)
-find_package(nlohmann_json CONFIG REQUIRED)
+# hunter_add_package(nlohmann_json)
+# find_package(nlohmann_json CONFIG REQUIRED)
 
 hunter_add_package(fmt)
 find_package(fmt CONFIG REQUIRED)
@@ -200,7 +200,7 @@ set_target_properties(bench PROPERTIES
 )
 
 target_link_libraries(bench benchmark::benchmark)
-target_link_libraries(bench nlohmann_json)
+# target_link_libraries(bench nlohmann_json)
 target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
 target_link_libraries(bench cub::cub)
