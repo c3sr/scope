@@ -37,8 +37,8 @@ include(CTest)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 
@@ -66,8 +66,8 @@ find_package(spdlog CONFIG REQUIRED)
 hunter_add_package(cub)
 find_package(cub CONFIG REQUIRED)
 
-hunter_add_package(debug_assert)
-find_package(debug_assert CONFIG REQUIRED)
+#hunter_add_package(debug_assert)
+#find_package(debug_assert CONFIG REQUIRED)
 
 # hunter_add_package(range-v3)
 # find_package(range-v3 CONFIG REQUIRED)
@@ -208,7 +208,7 @@ target_link_libraries(bench cub::cub)
 # target_link_libraries(bench type_safe)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
 # target_link_libraries(bench ${PROTOBUF_LIBRARY} )
-target_link_libraries(bench debug_assert)
+#target_link_libraries(bench debug_assert)
 target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
