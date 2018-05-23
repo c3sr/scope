@@ -34,6 +34,15 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
   char *src        = nullptr;
   char *dst        = nullptr;
 
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(src_gpu))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(dst_gpu))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
+
   if (PRINT_IF_ERROR(cudaSetDevice(src_gpu))) {
     state.SkipWithError(NAME " failed to set src device");
     return;

@@ -20,11 +20,6 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
     return;
   }
 
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
-    return;
-  }
-
   if (!has_numa) {
     state.SkipWithError(NAME " NUMA not available");
     return;
@@ -40,7 +35,10 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
   defer(delete[] dst);
 
   numa_bind_node(numa_id);
-
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");

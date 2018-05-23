@@ -20,31 +20,30 @@ static void NUMA_Memcpy_HostToGPU(benchmark::State &state) {
     return;
   }
 
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
-    return;
-  }
-
   if (!has_numa) {
     state.SkipWithError(NAME " NUMA not available");
     return;
   }
 
+  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  numa_bind_node(numa_id);
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
+
   char *src        = new char[bytes];
   defer(delete[] src);
-
-  numa_bind_node(numa_id);
+  char *dst        = nullptr;
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
     return;
   }
 
-  char *dst        = nullptr;
   if (PRINT_IF_ERROR(cudaMalloc(&dst, bytes))) {
     state.SkipWithError(NAME " failed to perform cudaMalloc");
     return;

@@ -171,5 +171,17 @@ namespace detail {
     return err == CUDA_SUCCESS;
   }
 
+
+
+
 } // namespace detail
+
+  ALWAYS_INLINE cudaError_t cuda_reset_device(const int &id) {
+    cudaError_t err = cudaSetDevice(id);
+    if (err != cudaSuccess) {
+      return err;
+    }
+    return cudaDeviceReset();
+  }
+
 } // namespace utils

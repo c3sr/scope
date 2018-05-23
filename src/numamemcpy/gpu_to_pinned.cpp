@@ -20,22 +20,22 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
     return;
   }
 
-  if (PRINT_IF_ERROR(cudaDeviceReset())) {
-    state.SkipWithError(NAME " failed to reset device");
-    return;
-  }
-
   if (!has_numa) {
     state.SkipWithError(NAME " NUMA not available");
     return;
   }
 
+  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  char *src        = nullptr;
+  numa_bind_node(numa_id);
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
 
+  char *src        = nullptr;
   char *dst = nullptr;
   if (PRINT_IF_ERROR(cudaHostAlloc(&dst, bytes, cudaHostAllocDefault))) {
     state.SkipWithError(NAME " failed to perform pinned cudaHostAlloc");
@@ -43,7 +43,6 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
   }
   defer(cudaFreeHost(dst));
 
-  numa_bind_node(numa_id);
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
