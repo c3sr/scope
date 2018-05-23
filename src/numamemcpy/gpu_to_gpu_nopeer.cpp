@@ -125,6 +125,7 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " couldn't re-enable peer access");
   }
 
+  numa_bind_node(-1);
 
 }
 
