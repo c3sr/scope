@@ -20,7 +20,7 @@ static void cpu_read_8(double *__restrict__ ptr, const size_t count, const size_
     const size_t elemsPerStride = stride / sizeof(double);
 
     double acc = 0;
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static) private(acc)
     for (size_t i = 0; i < numElems; i += elemsPerStride)
     {
         benchmark::DoNotOptimize(acc += ptr[i]);
@@ -47,7 +47,8 @@ static void NUMAOMP_RD_CpuToCpu(benchmark::State &state) {
   const int dst_numa = state.range(3);
 
   omp_set_num_threads(num_threads);
-  if (omp_get_num_threads() != num_threads) {
+  if (omp_get_max_threads() != num_threads) {
+      std::cerr <<  num_threads << " " <<  omp_get_num_threads();
       state.SkipWithError(NAME " failed to set OMP threads");
       return;
   }
@@ -76,8 +77,8 @@ static void NUMAOMP_RD_CpuToCpu(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 
   // reset to run on any node
-  numa_bind_node(-1);
+  omp_numa_bind_node(-1);
 }
 
 
-BENCHMARK(NUMAOMP_RD_CpuToCpu)->Apply(ArgsCountThreadsNumaNuma);
+BENCHMARK(NUMAOMP_RD_CpuToCpu)->Apply(ArgsCountThreadsNumaNuma)->UseRealTime();

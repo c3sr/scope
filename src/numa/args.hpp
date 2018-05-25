@@ -7,7 +7,7 @@ static void ArgsCountThreadsNumaNuma(benchmark::internal::Benchmark* b) {
     exit(1);
   }
 
-  for (int j = 8; j <= 20; ++j) { // log2(bytes)
+  for (int j = 12; j <= 30; ++j) { // log2(bytes)
     for (int k = 1; k <= 8; k *= 2) { // threads
       for (auto src_numa : numa_nodes()) {
         for (auto dst_numa : numa_nodes()) {
