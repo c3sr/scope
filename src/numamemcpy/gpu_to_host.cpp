@@ -25,16 +25,16 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
     return;
   }
 
+  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  numa_bind_node(numa_id);
+  
   char *src        = nullptr;
   char *dst        = new char[bytes];
-
   defer(delete[] dst);
 
-  numa_bind_node(numa_id);
   if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
     state.SkipWithError(NAME " failed to reset CUDA device");
     return;
