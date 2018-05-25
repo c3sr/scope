@@ -11,7 +11,7 @@
 
 #include "numa/args.hpp"
 
-#define NAME "NUMA/OMP/CpuToCpu"
+#define NAME "NUMAOMP/RD/CpuToCpu"
 
 static void cpu_read_8(double *__restrict__ ptr, const size_t count, const size_t stride)
 {
@@ -81,4 +81,4 @@ static void NUMAOMP_RD_CpuToCpu(benchmark::State &state) {
 }
 
 
-BENCHMARK(NUMAOMP_RD_CpuToCpu)->Apply(ArgsCountThreadsNumaNuma)->UseRealTime();
+BENCHMARK(NUMAOMP_RD_CpuToCpu)->Apply(ArgsCountThreadsNumaNuma)->MinTime(0.01)->UseRealTime();
