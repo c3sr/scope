@@ -48,8 +48,10 @@ noop
 numa_gpu_bmarks=(
 #NUMA_Memcpy_GPUToHost
 #NUMA_Memcpy_GPUToPinned
+NUMA_Memcpy_GPUToWC
 #NUMA_Memcpy_HostToGPU
 #NUMA_Memcpy_PinnedToGPU
+NUMA_Memcpy_WCToGPU
 #NUMAUM_Coherence_GPUToHost
 #NUMAUM_Coherence_HostToGPU
 #NUMAUM_Latency_GPUToHost

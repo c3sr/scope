@@ -42,7 +42,7 @@ static void NUMAOMP_RD_CpuToCpu(benchmark::State &state) {
   const long pageSize = sysconf(_SC_PAGESIZE);
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  const size_t num_threads = state.range(1);
+  const int num_threads = state.range(1);
   const int src_numa = state.range(2);
   const int dst_numa = state.range(3);
 
