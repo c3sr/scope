@@ -13,9 +13,9 @@
 
 #include "ops.hpp"
 
-#define NAME "THREADS"
+#define NAME "NUMA/RD"
 
-static void THREADS(benchmark::State &state) {
+static void NUMA_RD(benchmark::State &state) {
 
     if (!has_numa) {
         state.SkipWithError(NAME " NUMA not available");
@@ -31,6 +31,7 @@ static void THREADS(benchmark::State &state) {
     const long pageSize = sysconf(_SC_PAGESIZE);
     numa_bind_node(src_numa);
     char *ptr = static_cast<char *>(aligned_alloc(pageSize, bytes));
+
     std::memset(ptr, 0, bytes);
     benchmark::DoNotOptimize(ptr);
 
@@ -63,4 +64,4 @@ static void THREADS(benchmark::State &state) {
 }
 
 
-BENCHMARK(THREADS)->ThreadRange(1,8)->Apply(ArgsCountNumaNuma)->MinTime(0.1)->UseRealTime();
+BENCHMARK(NUMA_RD)->ThreadRange(1,8)->Apply(ArgsCountNumaNuma)->MinTime(0.1)->UseRealTime();

@@ -1,0 +1,63 @@
+#include <assert.h>
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+
+#include <omp.h>
+#include <numa.h>
+
+#include "init/init.hpp"
+#include "utils/utils.hpp"
+
+#include "numa/args.hpp"
+
+#include "ops.hpp"
+
+#define NAME "NUMA/WR"
+
+static void NUMA_WR(benchmark::State &state) {
+
+    if (!has_numa) {
+        state.SkipWithError(NAME " NUMA not available");
+        return;
+    }
+
+
+    const auto bytes = (1ULL << static_cast<size_t>(state.range(0))) / state.threads;
+    const int src_numa = state.range(1);
+    const int dst_numa = state.range(2);
+
+  // Setup
+    const long pageSize = sysconf(_SC_PAGESIZE);
+    numa_bind_node(dst_numa);
+    char *ptr = static_cast<char *>(aligned_alloc(pageSize, bytes));
+    std::memset(ptr, 0, bytes);
+    benchmark::DoNotOptimize(ptr);
+
+  for (auto _ : state) {
+    state.PauseTiming();
+
+    numa_bind_node(dst_numa);
+
+    benchmark::ClobberMemory();
+    std::memset(ptr, 0, bytes);
+    benchmark::ClobberMemory();
+
+    numa_bind_node(src_numa);
+    state.ResumeTiming();
+
+    wr_8(ptr, bytes, 8);
+
+  }
+
+  numa_bind_node(-1);
+
+    state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
+    state.counters.insert({{"bytes", bytes}});
+
+    free(ptr);
+
+}
+
+
+BENCHMARK(NUMA_WR)->ThreadRange(1,8)->Apply(ArgsCountNumaNuma)->MinTime(0.1)->UseRealTime();
