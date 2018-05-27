@@ -14,5 +14,6 @@ include(sugar_files)
 sugar_files(
     BENCHMARK_SOURCES
     numa_to_numa.cpp
+    threads.cpp
 )
 
