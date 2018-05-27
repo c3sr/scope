@@ -25,5 +25,6 @@ sugar_files(
     gpu_to_wc.cpp
     host_to_gpu.cpp
     wc_to_gpu.cpp
+    host_to_pinned.cpp
 )
 

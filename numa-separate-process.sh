@@ -29,6 +29,7 @@ numas=$machine\_numas[@]
 gpus=$machine\_gpus[@]
 
 shared_bmarks=(
+NUMA_Memcpy_HostToPinned
 NUMAOMP_RD_CpuToCpu
 noop
 )
