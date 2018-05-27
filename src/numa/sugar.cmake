@@ -12,8 +12,14 @@ endif()
 include(sugar_files)
 
 sugar_files(
+    BENCHMARK_HEADERS
+    args.hpp
+)
+
+sugar_files(
     BENCHMARK_SOURCES
     numa_to_numa.cpp
     threads.cpp
+    ops.cpp
 )
 
