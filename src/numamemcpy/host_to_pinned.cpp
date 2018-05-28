@@ -33,17 +33,14 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
   defer(delete[] src);
   std::memset(src, 0, bytes);
 
-  char *dst = nullptr;
-  if (PRINT_IF_ERROR(cudaHostAlloc(&dst, bytes, cudaHostAllocDefault))) {
-    state.SkipWithError(NAME " failed to perform pinned cudaHostAlloc");
+  char *dst = new char[bytes];
+  std::memset(dst, 0, bytes);
+  if (PRINT_IF_ERROR(cudaHostRegister(dst, bytes, cudaHostRegisterPortable))) {
+    state.SkipWithError(NAME " failed to register allocations");
     return;
   }
-  defer(cudaFreeHost(dst));
-
-  if (PRINT_IF_ERROR(cudaMemset(dst, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMemset");
-    return;
-  }
+  defer(cudaHostUnregister(dst));
+  defer(delete[] dst);
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));

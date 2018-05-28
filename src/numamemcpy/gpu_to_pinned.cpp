@@ -36,12 +36,14 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
   }
 
   char *src        = nullptr;
-  char *dst = nullptr;
-  if (PRINT_IF_ERROR(cudaHostAlloc(&dst, bytes, cudaHostAllocDefault))) {
-    state.SkipWithError(NAME " failed to perform pinned cudaHostAlloc");
+  char *dst = new char[bytes];
+  std::memset(dst, 0, bytes);
+  if (PRINT_IF_ERROR(cudaHostRegister(dst, bytes, cudaHostRegisterPortable))) {
+    state.SkipWithError(NAME " failed to register allocations");
     return;
   }
-  defer(cudaFreeHost(dst));
+  defer(cudaHostUnregister(dst));
+  defer(delete[] dst);
 
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
@@ -54,11 +56,6 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
     return;
   }
   defer(cudaFree(src));
-
-  if (PRINT_IF_ERROR(cudaMemset(src, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMemset");
-    return;
-  }
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
