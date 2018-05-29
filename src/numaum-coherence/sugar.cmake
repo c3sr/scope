@@ -19,6 +19,7 @@ sugar_files(
 sugar_files(
     BENCHMARK_CUDA_SOURCES
     gpu_to_host.cu
+    gpu_to_host_threads.cu
     host_to_gpu.cu
     gpu_threads.cu
 )

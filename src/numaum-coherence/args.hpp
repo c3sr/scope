@@ -35,6 +35,26 @@ static void ArgsThreadsNumaGpu(benchmark::internal::Benchmark* b) {
 }
 
 inline
+static void ArgsThreadsCountNumaGpu(benchmark::internal::Benchmark* b) {
+
+  int n;
+  cudaError_t err = cudaGetDeviceCount(&n);
+  if (PRINT_IF_ERROR(cudaGetDeviceCount(&n))) {
+    exit(1);
+  }
+
+  for (int t = 1; t <= 8; t *= 2) {
+    for (int j = 8; j <= 31; ++j) {
+      for (auto numa_id : numa_nodes()) {
+        for (int gpu_id = 0; gpu_id < n; ++gpu_id) {
+          b->Args({t, j, numa_id, gpu_id});
+        }
+      }
+    }
+  }
+}
+
+inline
 static void ArgsCountGpuGpuNoSelf(benchmark::internal::Benchmark* b) {
 
   int n;
