@@ -117,6 +117,13 @@ if (OpenMP_FOUND)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
+  foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
+  LIST(APPEND CMAKE_CUDA_FLAGS
+    -Xcompiler
+    ${flag}
+  )
+  endforeach(flag)
+
 endif()
 
 
@@ -173,6 +180,7 @@ MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 
+MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
 			   " archs: ${CUDA_ARCH_FLAGS_readable})")
