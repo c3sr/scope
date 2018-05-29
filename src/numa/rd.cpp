@@ -23,10 +23,16 @@ static void NUMA_RD(benchmark::State &state) {
     }
 
 
-    const size_t threads = state.range(0);
+    const int threads = state.range(0);
     const auto bytes = 1ULL << static_cast<size_t>(state.range(1));
     const int src_numa = state.range(2);
     const int dst_numa = state.range(3);
+
+    omp_set_num_threads(threads);
+    if (threads != omp_get_max_threads()) {
+      state.SkipWithError(NAME " unable to set OpenMP threads");
+      return;
+    }
 
   // Setup
     const long pageSize = sysconf(_SC_PAGESIZE);
@@ -40,11 +46,8 @@ static void NUMA_RD(benchmark::State &state) {
     state.PauseTiming();
     // invalidate data in dst cache
     omp_numa_bind_node(src_numa);
-    //for (size_t i = 0; i < bytes; ++i) {
-    //   ptr[i] = rand();
-    //}
-    benchmark::ClobberMemory();
     std::memset(ptr, 0, bytes);
+    benchmark::DoNotOptimize(ptr);
     benchmark::ClobberMemory();
 
     // Access from Device and Time
