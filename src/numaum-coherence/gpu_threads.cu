@@ -38,6 +38,35 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   }
 }
 
+template <bool NOOP = false>
+__global__ void gpu_write2(char *ptr, const size_t count, const size_t stride)
+{
+  if (NOOP)
+  {
+    return;
+  }
+
+  // global ID
+  const size_t gx = blockIdx.x * blockDim.x + threadIdx.x;
+  // lane ID 0-31
+  const size_t lx = gx & 31;
+  // warp ID
+  const size_t wx = gx / 32;
+  const size_t numWarps = (gridDim.x * blockDim.x + 32 - 1) / 32;
+
+  // split bytes into numWarps chunks
+  const size_t bi = wx * (count / numWarps);
+  const size_t ei = (wx + 1) * (count / numWarps);
+
+  if (0 == lx)
+  {
+    for (size_t i = bi; i < ei && i < count; i += stride)
+    {
+      ptr[i] = 0;
+    }
+  }
+}
+
 static void NUMAUM_Coherence_GPUThreads(benchmark::State &state) {
 
   if (!has_cuda) {
@@ -51,6 +80,7 @@ static void NUMAUM_Coherence_GPUThreads(benchmark::State &state) {
   }
 
   const size_t pageSize = page_size();
+  const size_t stride = pageSize;
 
   const auto warps = 1ULL << static_cast<size_t>(state.range(0));
   const size_t threads = warps * 32;
@@ -102,6 +132,11 @@ static void NUMAUM_Coherence_GPUThreads(benchmark::State &state) {
 
   for (auto _ : state) {
     state.PauseTiming();
+
+    // if (threads * stride > bytes) {
+    //   state.SkipWithError("ah");
+    // }
+
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId);
     if (err == cudaErrorInvalidDevice) {
       for (size_t i = 0; i < bytes; i += pageSize) {
@@ -116,7 +151,7 @@ static void NUMAUM_Coherence_GPUThreads(benchmark::State &state) {
 
     state.ResumeTiming();
     cudaEventRecord(start);
-    gpu_write<<<gridDim,blockDim>>>(ptr, bytes, pageSize);
+    gpu_write2<<<gridDim,blockDim>>>(ptr, bytes, stride);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
 
