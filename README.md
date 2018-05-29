@@ -133,12 +133,13 @@ Install `nvidia-docker`, then, list the available benchmarks.
 
 You can run benchmarks in the following way (probably with the `--benchmark_filter` flag).
 
-    nvidia-docker run --privileged --rm -v `readlink -f .`:/data raiproject/microbench:amd64-latest bench --benchmark_out=/data/`hostname`.json
+    nvidia-docker run --privileged --rm -v `readlink -f .`:/data -u `id -u`:`id -g` raiproject/microbench:amd64-latest ./numa-separate-process.sh dgx bench /data/sync2
 
 
-`--privileged` is needed to set the NUMA policy for NUMA benchmarks.
-`-v ...` maps the current directory into the container as `/data`.
-`` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write out to `/data`, which is mapped to the current directory.
+* `--privileged` is needed to set the NUMA policy for NUMA benchmarks.
+* `` -v `readlink -f .`:/data `` maps the current directory into the container as `/data`.
+* `` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write out to `/data`, which is mapped to the current directory.
+* `` -u `id -u`:`id -g` `` tells docker to run as user `id -u` and group `id -g`, which is the current user and group. This means that files that docker produces will be modifiable from the host system without root permission.
 
 ## Hunter Toolchain File
 

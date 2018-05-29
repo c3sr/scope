@@ -28,34 +28,65 @@ dgx_numas=( 0 1 )
 numas=$machine\_numas[@]
 gpus=$machine\_gpus[@]
 
+shared_bmarks=(
+#NUMA_Memcpy_HostToPinned
+noop
+)
+
+numa_numa_bmarks=(
+NUMA_WR
+NUMA_RD
+noop
+)
 
 numa_gpu_gpu_bmarks=(
-NUMA_Memcpy_GPUToGPU
+#NUMA_Memcpy_GPUToGPU
 noop
 )
 
 gpu_gpu_bmarks=(
-CUDA_Memcpy_GPUToGPU
-UM_Coherence_GPUToGPU
-UM_Prefetch_GPUToGPU
+#CUDA_Memcpy_GPUToGPU
+#UM_Coherence_GPUToGPU
+#UM_Prefetch_GPUToGPU
 noop
 )
 
 numa_gpu_bmarks=(
-NUMA_Memcpy_GPUToHost
-NUMA_Memcpy_GPUToPinned
-NUMA_Memcpy_HostToGPU
-NUMA_Memcpy_PinnedToGPU
-NUMAUM_Coherence_GPUToHost
-NUMAUM_Coherence_HostToGPU
-NUMAUM_Latency_GPUToHost
-NUMAUM_Latency_HostToGPU
-NUMAUM_Prefetch_GPUToHost
-NUMAUM_Prefetch_HostToGPU
+#NUMA_Memcpy_GPUToHost
+#NUMA_Memcpy_GPUToPinned
+#NUMA_Memcpy_GPUToWC
+#NUMA_Memcpy_HostToGPU
+#NUMA_Memcpy_PinnedToGPU
+#NUMA_Memcpy_WCToGPU
+#NUMAUM_Coherence_GPUToHost
+#NUMAUM_Coherence_HostToGPU
+#NUMAUM_Latency_GPUToHost
+#NUMAUM_Latency_HostToGPU
+#NUMAUM_Prefetch_GPUToHost
+#NUMAUM_Prefetch_HostToGPU
 noop
 )
 
 mkdir -p "$OUT_DIR"
+
+
+regex="a^"
+for b in "${shared_bmarks[@]}"; do
+    if [ "$b" != "noop" ]; then
+	regex=`echo -n "$b|$regex"`
+    fi
+done
+"$BENCH" --benchmark_filter="$regex" --benchmark_out="$OUT_DIR/`hostname`-shared.json" --benchmark_repetitions=5;
+
+for b in "${numa_numa_bmarks[@]}"; do
+    if [ "$b" != "noop" ]; then
+        for n1 in ${!numas}; do
+            for n2 in ${!numas}; do
+                "$BENCH" --benchmark_filter="$b.*/$n1/$n2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n1-$n2.json" --benchmark_repetitions=5;
+            done
+        done
+    fi
+done
 
 for b in "${numa_gpu_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then

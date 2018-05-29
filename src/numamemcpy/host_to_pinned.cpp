@@ -11,9 +11,9 @@
 
 #include "numamemcpy/args.hpp"
 
-#define NAME "NUMA/Memcpy/GPUToHost"
+#define NAME "NUMA/Memcpy/HostToPinned"
 
-static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
+static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -26,50 +26,33 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
   }
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  const int numa_id = state.range(1);
-  const int cuda_id = state.range(2);
 
-  numa_bind_node(numa_id);
-  
-  char *src        = nullptr;
-  char *dst        = new char[bytes];
+  numa_bind_node(0);
+
+  char *src = new char[bytes];
+  defer(delete[] src);
+  std::memset(src, 0, bytes);
+
+  char *dst = new char[bytes];
+  std::memset(dst, 0, bytes);
+  if (PRINT_IF_ERROR(cudaHostRegister(dst, bytes, cudaHostRegisterPortable))) {
+    state.SkipWithError(NAME " failed to register allocations");
+    return;
+  }
+  defer(cudaHostUnregister(dst));
   defer(delete[] dst);
-
-  if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
-    state.SkipWithError(NAME " failed to reset CUDA device");
-    return;
-  }
-
-  if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
-    state.SkipWithError(NAME " failed to set CUDA device");
-    return;
-  }
-
-  if (PRINT_IF_ERROR(cudaMalloc(&src, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMalloc");
-    return;
-  }
-  defer(cudaFree(src));
-
-  if (PRINT_IF_ERROR(cudaMemset(src, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMemset");
-    return;
-  }
-
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
 
-
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToHost);
+    const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToHost);
 
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
-
 
     if (PRINT_IF_ERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError(NAME " failed to perform memcpy");
@@ -89,5 +72,4 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
   numa_bind_node(-1);
 }
 
-
-BENCHMARK(NUMA_Memcpy_GPUToHost)->Apply(ArgsCountNumaGpu)->UseManualTime();
+BENCHMARK(NUMA_Memcpy_HostToPinned)->SMALL_ARGS()->UseManualTime();

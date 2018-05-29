@@ -11,9 +11,9 @@
 
 #include "numamemcpy/args.hpp"
 
-#define NAME "NUMA/Memcpy/GPUToHost"
+#define NAME "NUMA/Memcpy/GPUToWC"
 
-static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
+static void NUMA_Memcpy_GPUToWC(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -30,15 +30,19 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
   const int cuda_id = state.range(2);
 
   numa_bind_node(numa_id);
-  
-  char *src        = nullptr;
-  char *dst        = new char[bytes];
-  defer(delete[] dst);
-
   if (PRINT_IF_ERROR(utils::cuda_reset_device(cuda_id))) {
     state.SkipWithError(NAME " failed to reset CUDA device");
     return;
   }
+
+  char *src        = nullptr;
+  char *dst = nullptr;
+  if (PRINT_IF_ERROR(cudaHostAlloc(&dst, bytes, cudaHostAllocWriteCombined))) {
+    state.SkipWithError(NAME " failed to perform pinned cudaHostAlloc");
+    return;
+  }
+  defer(cudaFreeHost(dst));
+
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
@@ -56,31 +60,31 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
     return;
   }
 
-
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
-
 
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
     const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToHost);
 
+
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
-
 
     if (PRINT_IF_ERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError(NAME " failed to perform memcpy");
       break;
     }
+
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError(NAME " failed to get elapsed time");
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
+
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
@@ -89,5 +93,4 @@ static void NUMA_Memcpy_GPUToHost(benchmark::State &state) {
   numa_bind_node(-1);
 }
 
-
-BENCHMARK(NUMA_Memcpy_GPUToHost)->Apply(ArgsCountNumaGpu)->UseManualTime();
+BENCHMARK(NUMA_Memcpy_GPUToWC)->Apply(ArgsCountNumaGpu)->UseManualTime();

@@ -32,6 +32,7 @@ sugar_files(
     commandlineflags.hpp
     marker.hpp
     benchmark.hpp
+    omp.hpp
     memory.hpp
     compat.hpp
     nvptx.hpp

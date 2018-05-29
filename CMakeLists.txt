@@ -87,6 +87,7 @@ endif (CONFIG_USE_HUNTER)
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
 find_package(OpenBLAS REQUIRED)
+find_package(OpenMP REQUIRED)
 #find_package(Protobuf REQUIRED)
 
 
@@ -97,15 +98,34 @@ include(sugar_include)
 # i.e. don't choose gnu++17 over c++17
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
-  CACHE STRING "Toolchain C++ compiler flags." FORCE)
+  set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
+    CACHE STRING "Toolchain C++ compiler flags." FORCE)
 
-
-set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
-  CACHE STRING "Toolchain C++ linker flags." FORCE)
+  set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
+    CACHE STRING "Toolchain C++ linker flags." FORCE)
 endif()
+
+
+if (OpenMP_FOUND)
+  if (OpenMP_C_FLAGS)
+    string(REPLACE ";" " " OpenMP_C_FLAGS ${OpenMP_C_FLAGS})
+  endif()
+  if (OpenMP_CXX_FLAGS)
+    string(REPLACE ";" " " OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS})
+  endif()
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
+  foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
+  LIST(APPEND CMAKE_CUDA_FLAGS
+    -Xcompiler
+    ${flag}
+  )
+  endforeach(flag)
+
+endif()
+
 
 if (UNIX AND NOT APPLE)
   execute_process(COMMAND ${CMAKE_CXX_COMPILER}
@@ -133,7 +153,7 @@ if(MSVC)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
 	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
-  list(APPEND CMAKE_CXX_FLAGS "-fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
 endif()
 
 if (APPLE)
@@ -155,8 +175,12 @@ LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
 					         -lineinfo
 					         --expt-extended-lambda
 )
+
+MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+
 string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 
+MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
 			   " archs: ${CUDA_ARCH_FLAGS_readable})")
@@ -213,6 +237,7 @@ target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 target_link_libraries(bench numa)
+target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
 
 
 # Request that bench be built with -std=c++11
