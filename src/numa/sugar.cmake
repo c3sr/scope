@@ -13,13 +13,14 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
+    ops.hpp
     args.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
-    rd.cpp
-    wr.cpp
     ops.cpp
+    wr.cpp
+    rd.cpp
 )
 

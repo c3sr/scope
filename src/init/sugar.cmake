@@ -13,23 +13,23 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    cudnn.hpp
-    cublas.hpp
+    init.hpp
     logger.hpp
     numa.hpp
-    flags.hpp
-    init.hpp
     cuda.hpp
+    cublas.hpp
+    cudnn.hpp
+    flags.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
-    cuda.cpp
-    logger.cpp
+    flags.cpp
+    cublas.cpp
     cudnn.cpp
     numa.cpp
+    cuda.cpp
+    logger.cpp
     init.cpp
-    cublas.cpp
-    flags.cpp
 )
 
