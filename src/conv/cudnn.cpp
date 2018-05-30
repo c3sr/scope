@@ -320,7 +320,7 @@ static void CUDNN_Impl(benchmark::State& state,
   // const int output_width = calc_out_dim(width, filter_width, pad_width, stride_width);
   // const int output_height = calc_out_dim(height, filter_height.fh, pad_height, stride_height);
 
-  const auto flops = 2.0 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size;
+  const auto flops = 2.0 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size * state.iterations();
 
   state.counters.insert({{"input_height", height},
                          {"input_width", width},
