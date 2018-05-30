@@ -82,9 +82,7 @@ for b in "${numa_numa_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
         for n1 in ${!numas}; do
             for n2 in ${!numas}; do
-                if [ "$n2" != "$n1" ]; then
-                    "$BENCH" --benchmark_filter="$b.*/$n1/$n2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n1-$n2.json" --benchmark_repetitions=10;
-                fi
+                "$BENCH" --benchmark_filter="$b.*/$n1/$n2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n1-$n2.json" --benchmark_repetitions=10;
             done
         done
     fi
