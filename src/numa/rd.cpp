@@ -34,24 +34,32 @@ static void NUMA_RD(benchmark::State &state) {
       return;
     }
 
-  // Setup
-    const long pageSize = sysconf(_SC_PAGESIZE);
-    omp_numa_bind_node(src_numa);
-    char *ptr = static_cast<char *>(aligned_alloc(pageSize, bytes));
+  // Allocate ptr on src_numa
+  const long pageSize = sysconf(_SC_PAGESIZE);
+  omp_numa_bind_node(src_numa);
+  char *ptr = static_cast<char *>(aligned_alloc(pageSize, bytes));
 
-    std::memset(ptr, 0, bytes);
-    benchmark::DoNotOptimize(ptr);
+  // Make sure pages are allocated  
+  std::memset(ptr, 0, bytes);
+  benchmark::DoNotOptimize(ptr);
+  benchmark::ClobberMemory();
 
+  // allocate some scratch space
+  char *scratch = new char[64 * 1024 * 1024];
+  defer(delete[] scratch);
+  std::memset(ptr, 0, bytes);
+
+  omp_numa_bind_node(dst_numa);
   for (auto _ : state) {
     state.PauseTiming();
-    // invalidate data in dst cache
+    // invalidate dst cache
     omp_numa_bind_node(src_numa);
     std::memset(ptr, 0, bytes);
     benchmark::DoNotOptimize(ptr);
     benchmark::ClobberMemory();
 
     // Access from Device and Time
-    omp_numa_bind_node(dst_numa);
+    //omp_numa_bind_node(dst_numa);
     state.ResumeTiming();
 
     rd_8(ptr, bytes, 8);
