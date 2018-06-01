@@ -49,10 +49,13 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
   PRINT_IF_ERROR(cudaEventCreate(&stop));
 
   for (auto _ : state) {
+    // Invalidate dst cache (if different from src)
+    numa_bind_node(src_numa);
+    std::memset(dst, 0, bytes);
+
+    numa_bind_node(dst_numa);
     cudaEventRecord(start, NULL);
-
     const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyHostToHost);
-
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
 
