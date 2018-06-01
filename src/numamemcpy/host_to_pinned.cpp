@@ -52,6 +52,8 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
     // Invalidate dst cache (if different from src)
     numa_bind_node(src_numa);
     std::memset(dst, 0, bytes);
+    benchmark::DoNotOptimize(dst);
+    benchmark::ClobberMemory();
 
     numa_bind_node(dst_numa);
     cudaEventRecord(start, NULL);
