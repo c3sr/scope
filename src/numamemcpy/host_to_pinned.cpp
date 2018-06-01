@@ -26,13 +26,15 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
   }
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const int src_numa = state.range(1);
+  const int dst_numa = state.range(2);
 
-  numa_bind_node(0);
-
+  numa_bind_node(src_numa);
   char *src = new char[bytes];
   defer(delete[] src);
   std::memset(src, 0, bytes);
 
+  numa_bind_node(dst_numa);
   char *dst = new char[bytes];
   std::memset(dst, 0, bytes);
   if (PRINT_IF_ERROR(cudaHostRegister(dst, bytes, cudaHostRegisterPortable))) {
@@ -72,4 +74,4 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
   numa_bind_node(-1);
 }
 
-BENCHMARK(NUMA_Memcpy_HostToPinned)->SMALL_ARGS()->UseManualTime();
+BENCHMARK(NUMA_Memcpy_HostToPinned)->Apply(ArgsCountNumaNuma)->UseRealTime()->UseManualTime();

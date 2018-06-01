@@ -41,8 +41,6 @@ include(CMakePackageConfigHelpers)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-
-
 if (CONFIG_USE_HUNTER)
 
 hunter_add_package(Sugar)

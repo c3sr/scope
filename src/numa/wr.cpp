@@ -22,42 +22,46 @@ static void NUMA_WR(benchmark::State &state) {
         return;
     }
 
+    const int threads = state.range(0);
+    const auto bytes = 1ULL << static_cast<size_t>(state.range(1));
+    const int src_numa = state.range(2);
+    const int dst_numa = state.range(3);
 
-    const auto bytes = (1ULL << static_cast<size_t>(state.range(0))) / state.threads;
-    const int src_numa = state.range(1);
-    const int dst_numa = state.range(2);
+    omp_set_num_threads(threads);
+    if (threads != omp_get_max_threads()) {
+      state.SkipWithError(NAME " unable to set OpenMP threads");
+      return;
+    }
 
   // Setup
     const long pageSize = sysconf(_SC_PAGESIZE);
-    numa_bind_node(dst_numa);
+    omp_numa_bind_node(dst_numa);
     char *ptr = static_cast<char *>(aligned_alloc(pageSize, bytes));
     std::memset(ptr, 0, bytes);
-    benchmark::DoNotOptimize(ptr);
 
   for (auto _ : state) {
     state.PauseTiming();
 
-    numa_bind_node(dst_numa);
+    omp_numa_bind_node(dst_numa);
 
-    benchmark::ClobberMemory();
     std::memset(ptr, 0, bytes);
+    benchmark::DoNotOptimize(ptr);
     benchmark::ClobberMemory();
 
-    numa_bind_node(src_numa);
+    omp_numa_bind_node(src_numa);
     state.ResumeTiming();
 
     wr_8(ptr, bytes, 8);
-
   }
 
-  numa_bind_node(-1);
+  omp_numa_bind_node(-1);
 
-    state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
-    state.counters.insert({{"bytes", bytes}});
+  state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
+  state.counters.insert({{"bytes", bytes}});
 
-    free(ptr);
+  free(ptr);
 
 }
 
 
-BENCHMARK(NUMA_WR)->ThreadRange(1,8)->Apply(ArgsCountNumaNuma)->MinTime(0.1)->UseRealTime();
+BENCHMARK(NUMA_WR)->Apply(ArgsThreadCountNumaNuma)->MinTime(0.1)->UseRealTime();

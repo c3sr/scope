@@ -29,13 +29,13 @@ numas=$machine\_numas[@]
 gpus=$machine\_gpus[@]
 
 shared_bmarks=(
-#NUMA_Memcpy_HostToPinned
 noop
 )
 
 numa_numa_bmarks=(
-NUMA_WR
-NUMA_RD
+NUMA_Memcpy_HostToPinned
+#NUMA_WR
+#NUMA_RD
 noop
 )
 
@@ -82,7 +82,7 @@ for b in "${numa_numa_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
         for n1 in ${!numas}; do
             for n2 in ${!numas}; do
-                "$BENCH" --benchmark_filter="$b.*/$n1/$n2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n1-$n2.json" --benchmark_repetitions=5;
+                "$BENCH" --benchmark_filter="$b/.*/$n1/$n2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n1-$n2.json" --benchmark_repetitions=5;
             done
         done
     fi
