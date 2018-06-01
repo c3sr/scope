@@ -1,6 +1,18 @@
 #define SMALL_ARGS() DenseRange(8, 31, 1)->ArgName("log2(N)")
 
 inline
+static void ArgsCountNumaNuma(benchmark::internal::Benchmark* b) {
+
+  for (auto src_numa : numa_nodes()) {
+    for (auto dst_numa : numa_nodes()) {
+      for (int j = 8; j <= 33; ++j) {
+        b->Args({j, src_numa, dst_numa});
+      }
+    }
+  }
+}
+
+inline
 static void ArgsCountNumaGpu(benchmark::internal::Benchmark* b) {
 
   int n;
