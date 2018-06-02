@@ -6,18 +6,19 @@ set -eou pipefail -x
 
 # default out dir is current directory
 OUT_DIR=`readlink -f .`
+DOCKER=true
 
 # Look for nvidia-docker, otherwise use docker run --runtime=nvidia
 if ! [ -x "$(command -v nvidia-docker)" ]; then
   echo 'Error: nvidia-docker is not installed.' >&2
   DOCKER_RUN="docker run --runtime=nvidia"
 else
-  DOCKER_RUN="nvidia-docker run --runtime=nvidia"
+  DOCKER_RUN="nvidia-docker run"
 fi
 
 
 # default bench command is through docker
-BENCH="$DOCKER_RUN --privileged --rm -v "$OUT_DIR":/data -u `id -u`:`id -g` raiproject/microbench:amd64-latest bench"
+BENCH="$DOCKER_RUN --privileged --rm -v "$OUT_DIR":/data -u `id -u`:`id -g` raiproject/microbench:amd64-develop bench"
 
 while getopts "h?o:b:" opt; do
     case "$opt" in
@@ -27,10 +28,17 @@ while getopts "h?o:b:" opt; do
         ;;
     o)  OUT_DIR=`readlink -f $OPTARG`
         ;;
-    b)  BENCH="$OPTARG"
+    b)  BENCH="$OPTARG";
+        DOCKER=false;
         ;;
     esac
 done
+
+if [ $DOCKER ]; then
+  BENCHMARK_OUT="--benchmark_out=/data"
+else
+  BENCHMARK_OUT="--benchmark_out=$OUT_DIR"
+fi
 
 shift $((OPTIND-1))
 
@@ -104,13 +112,13 @@ for b in "${shared_bmarks[@]}"; do
 	regex=`echo -n "$b|$regex"`
     fi
 done
-eval "$BENCH" --benchmark_filter="$regex" --benchmark_out="$OUT_DIR/`hostname`-shared.json" --benchmark_repetitions=5;
+eval "$BENCH" --benchmark_filter="$regex" "$BENCHMARK_OUT"/`hostname`-shared.json --benchmark_repetitions=5;
 
 for b in "${numa_numa_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
         for n1 in ${!numas}; do
             for n2 in ${!numas}; do
-                "$BENCH" --benchmark_filter="$b/.*/$n1/$n2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n1-$n2.json" --benchmark_repetitions=5;
+                eval "$BENCH" --benchmark_filter="$b/.*/$n1/$n2/" "$BENCHMARK_OUT"/`hostname`-$b-$n1-$n2.json --benchmark_repetitions=5;
             done
         done
     fi
@@ -120,7 +128,7 @@ for b in "${numa_gpu_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
         for n in ${!numas}; do
             for g in ${!gpus}; do
-                "$BENCH" --benchmark_filter="$b.*/$n/$g/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n-$g.json" --benchmark_repetitions=5;
+                eval "$BENCH" --benchmark_filter="$b/.*/$n/$g/" "$BENCHMARK_OUT"/`hostname`-$b-$n-$g.json --benchmark_repetitions=5;
             done
         done
     fi
@@ -130,9 +138,9 @@ for b in "${gpu_gpu_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
         for g1 in ${!gpus}; do
             for g2 in ${!gpus}; do
-                    if [ "$g2" != "$g1" ]; then
-                        "$BENCH" --benchmark_filter="$b.*/$g1/$g2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$g1-$g2.json" --benchmark_repetitions=5;
-                    fi
+                if [ "$g2" != "$g1" ]; then
+                    eval "$BENCH" --benchmark_filter="$b/.*/$g1/$g2/" "$BENCHMARK_OUT"/`hostname`-$b-$g1-$g2.json --benchmark_repetitions=5;
+                fi
             done
         done
     fi
@@ -144,7 +152,7 @@ for b in "${numa_gpu_gpu_bmarks[@]}"; do
             for g1 in ${!gpus}; do
                 for g2 in ${!gpus}; do
                     if [ "$g2" != "$g1" ]; then
-                        "$BENCH" --benchmark_filter="$b.*/$n/$g1/$g2/" --benchmark_out="$OUT_DIR/`hostname`-$b-$n-$g1-$g2.json" --benchmark_repetitions=5;
+                        eval "$BENCH" --benchmark_filter="$b/.*/$n/$g1/$g2/" "$BENCHMARK_OUT"/`hostname`-$b-$n-$g1-$g2.json --benchmark_repetitions=5;
                     fi
                 done
             done
