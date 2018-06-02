@@ -4,16 +4,42 @@
 
 set -eou pipefail -x
 
+# default out dir is current directory
+OUT_DIR=`readlink -f .`
+
+# Look for nvidia-docker, otherwise use docker run --runtime=nvidia
+if ! [ -x "$(command -v nvidia-docker)" ]; then
+  echo 'Error: nvidia-docker is not installed.' >&2
+  DOCKER_RUN="docker run --runtime=nvidia"
+else
+  DOCKER_RUN="nvidia-docker run --runtime=nvidia"
+fi
+
+
+# default bench command is through docker
+BENCH="$DOCKER_RUN --privileged --rm -v "$OUT_DIR":/data -u `id -u`:`id -g` raiproject/microbench:amd64-latest bench"
+
+while getopts "h?o:b:" opt; do
+    case "$opt" in
+    h|\?)
+        show_help
+        exit 0
+        ;;
+    o)  OUT_DIR=`readlink -f $OPTARG`
+        ;;
+    b)  BENCH="$OPTARG"
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "${1:-}" = "--" ] && shift
+
+# echo "Leftovers: $@"
+
 # Which machine to use (s822lc, ac922, or dgx)
 machine=$1
-# Path to bench executable
-BENCH=$2
-
-if [ -z ${3+x} ]; then
-    OUT_DIR="."
-else
-    OUT_DIR="$3"
-fi
 
 
 s822lc_gpus=( 0 1 2 3 )
@@ -67,7 +93,9 @@ numa_gpu_bmarks=(
 noop
 )
 
+
 mkdir -p "$OUT_DIR"
+
 
 
 regex="a^"
@@ -76,7 +104,7 @@ for b in "${shared_bmarks[@]}"; do
 	regex=`echo -n "$b|$regex"`
     fi
 done
-"$BENCH" --benchmark_filter="$regex" --benchmark_out="$OUT_DIR/`hostname`-shared.json" --benchmark_repetitions=5;
+eval "$BENCH" --benchmark_filter="$regex" --benchmark_out="$OUT_DIR/`hostname`-shared.json" --benchmark_repetitions=5;
 
 for b in "${numa_numa_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
@@ -109,8 +137,6 @@ for b in "${gpu_gpu_bmarks[@]}"; do
         done
     fi
 done
-
-
 
 for b in "${numa_gpu_gpu_bmarks[@]}"; do
     if [ "$b" != "noop" ]; then
