@@ -8,7 +8,7 @@
 
 #include "init/init.hpp"
 #include "utils/utils.hpp"
-
+/*
 #define NAME "NUMA/WR"
 
 static void NUMA_WR(benchmark::State &state) {
@@ -61,3 +61,21 @@ static void NUMA_WR(benchmark::State &state) {
 
 
 BENCHMARK(NUMA_WR)->Apply(ArgsThreadCountNumaNuma)->MinTime(0.1)->UseRealTime();
+*/
+
+static void BM_StringCreation(benchmark::State& state) {
+  for (auto _ : state)
+    std::string empty_string;
+}
+// Register the function as a benchmark
+BENCHMARK(BM_StringCreation);
+
+// Define another benchmark
+static void BM_StringCopy(benchmark::State& state) {
+  std::string x = "hello";
+  for (auto _ : state)
+    std::string copy(x);
+}
+BENCHMARK(BM_StringCopy);
+
+//BENCHMARK_MAIN();
