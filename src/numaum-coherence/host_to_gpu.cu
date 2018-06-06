@@ -129,4 +129,4 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Coherence_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMAUM_Coherence_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();

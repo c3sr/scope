@@ -98,4 +98,4 @@ static void UM_Prefetch_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(UM_Prefetch_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();
+BENCHMARK(UM_Prefetch_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseManualTime();

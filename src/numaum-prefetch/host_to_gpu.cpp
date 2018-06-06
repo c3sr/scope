@@ -100,4 +100,4 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
   numa_bind_node(-1);
 }
 
-BENCHMARK(NUMAUM_Prefetch_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMAUM_Prefetch_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();

@@ -172,4 +172,4 @@ static void NUMAUM_Coherence_GPUThreads(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Coherence_GPUThreads)->Apply(ArgsThreadsNumaGpu)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMAUM_Coherence_GPUThreads)->Apply(ArgsThreadsNumaGpu)->UseManualTime();
