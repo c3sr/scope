@@ -20,71 +20,56 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   }
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
-  const int src_gpu = state.range(1);
-  const int dst_gpu = state.range(2);
+  const int gpu0 = state.range(1);
+  const int gpu1 = state.range(2);
 
-  if (PRINT_IF_ERROR(utils::cuda_reset_device(src_gpu))) {
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(gpu0))) {
     state.SkipWithError(NAME " failed to reset CUDA device");
     return;
   }
-  if (PRINT_IF_ERROR(utils::cuda_reset_device(dst_gpu))) {
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(gpu1))) {
     state.SkipWithError(NAME " failed to reset CUDA device");
     return;
   }
 
-  // One stream per copy
+  // There are two copies, one gpu0 -> gpu1, one gpu1 -> gpu0
+
+  // Create One stream per copy
   std::vector<cudaStream_t> streams;
+  // cudaStreamCreate(...)
 
   // Start and stop events for each copy
   std::vector<cudaEvent_t> starts;
   std::vector<cudaEvent_t> stops;
+  // cudaEventCreate(...)
 
   // Source and destination for each copy
   std::vector<char *> srcs;
   std::vector<char *> dsts;
 
-
-  if (PRINT_IF_ERROR(cudaSetDevice(src_gpu))) {
+  // create a source and destination allocation on each gpu
+  for (auto gpu : {gpu0, gpu1} ) {
+  // Set to the 
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set src device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaMalloc(&src, bytes))) {
+  // create a src allocation on gpup0
+  char *ptr;
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
     state.SkipWithError(NAME " failed to perform cudaMalloc");
     return;
   }
-  defer(cudaFree(src));
-  if (PRINT_IF_ERROR(cudaMemset(src, 0, bytes))) {
+  defer(cudaFree(ptr));
+  srcs.push_back(ptr);
+  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
-  cudaError_t err = cudaDeviceEnablePeerAccess(dst_gpu, 0);
-  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
-    state.SkipWithError(NAME " failed to ensure peer access");
-    return;
+  // create a destination allocation on gpu
+  // ...
   }
 
-  if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
-    state.SkipWithError(NAME " failed to set dst device");
-    return;
-  }
-  if (PRINT_IF_ERROR(cudaMalloc(&dst, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMalloc");
-    return;
-  }
-  defer(cudaFree(dst));
-  if (PRINT_IF_ERROR(cudaMemset(dst, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform dst cudaMemset");
-    return;
-  }
-  err = cudaDeviceEnablePeerAccess(src_gpu, 0);
-  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
-    state.SkipWithError(NAME " failed to ensure peer access");
-    return;
-  }
-
-  cudaEvent_t start, stop;
-  PRINT_IF_ERROR(cudaEventCreate(&start));
-  PRINT_IF_ERROR(cudaEventCreate(&stop));
 
   assert(starts.size() == stops.size());
   assert(streams.size() == starts.size());
@@ -98,13 +83,15 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
       auto start = starts[i];
       auto stop = stops[i];
       auto stream = streams[i];
+      auto src = srcs[i];
+      auto dst = dsts[i];
       cudaEventRecord(start, stream);
       cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream);
       cudaEventRecord(stop, stream);
     }
 
     // Wait for all copies to finish
-    for (size_t s : stops) {
+    for (auto s : stops) {
       if (PRINT_IF_ERROR(cudaEventSynchronize(s))) {
         state.SkipWithError(NAME " failed to synchronize");
         return;
@@ -128,4 +115,4 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 }
 
-BENCHMARK(DUPLEX_Memcpy_GPUGPU)->Apply(ArgsCountGpuGpuPeerNoSelf)->UseManualTime();
+BENCHMARK(DUPLEX_Memcpy_GPUGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
