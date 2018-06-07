@@ -8,11 +8,11 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "memcpy/args.hpp"
+#include "memcpy-duplex/args.hpp"
 
-#define NAME "CUDA/Memcpy/GPUToGPU"
+#define NAME "DUPLEX/Memcpy/GPUGPU"
 
-static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
+static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -32,8 +32,17 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
     return;
   }
 
-  char *src        = nullptr;
-  char *dst        = nullptr;
+  // One stream per copy
+  std::vector<cudaStream_t> streams;
+
+  // Start and stop events for each copy
+  std::vector<cudaEvent_t> starts;
+  std::vector<cudaEvent_t> stops;
+
+  // Source and destination for each copy
+  std::vector<char *> srcs;
+  std::vector<char *> dsts;
+
 
   if (PRINT_IF_ERROR(cudaSetDevice(src_gpu))) {
     state.SkipWithError(NAME " failed to set src device");
@@ -77,26 +86,46 @@ static void CUDA_Memcpy_GPUToGPU(benchmark::State &state) {
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
 
+  assert(starts.size() == stops.size());
+  assert(streams.size() == starts.size());
+  assert(srcs.size() == dsts.size());
+  assert(streams.size() == srcs.size());
+
   for (auto _ : state) {
 
-    cudaEventRecord(start, NULL);
-    const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToDevice);
-    cudaEventRecord(stop, NULL);
-    cudaEventSynchronize(stop);
+    // Start all copies
+    for (size_t i = 0; i < streams.size(); ++i) {
+      auto start = starts[i];
+      auto stop = stops[i];
+      auto stream = streams[i];
+      cudaEventRecord(start, stream);
+      cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream);
+      cudaEventRecord(stop, stream);
+    }
 
-    if (PRINT_IF_ERROR(cuda_err) != cudaSuccess) {
-      state.SkipWithError(NAME " failed to perform memcpy");
-      break;
+    // Wait for all copies to finish
+    for (size_t s : stops) {
+      if (PRINT_IF_ERROR(cudaEventSynchronize(s))) {
+        state.SkipWithError(NAME " failed to synchronize");
+        return;
+      }
     }
-    float msecTotal = 0.0f;
-    if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
-      state.SkipWithError(NAME " failed to get elapsed time");
-      break;
+
+    // Find the longest time between any start and stop
+    float maxMillis = 0;
+    for (const auto start : starts) {
+      for (const auto stop : stops) {
+        float millis;
+        cudaEventElapsedTime(&millis, start, stop);
+        maxMillis = std::max(millis, maxMillis);
+      }
     }
-    state.SetIterationTime(msecTotal / 1000);
+
+
+    state.SetIterationTime(maxMillis / 1000);
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 }
 
-BENCHMARK(CUDA_Memcpy_GPUToGPU)->Apply(ArgsCountGpuGpuPeerNoSelf)->UseManualTime();
+BENCHMARK(DUPLEX_Memcpy_GPUGPU)->Apply(ArgsCountGpuGpuPeerNoSelf)->UseManualTime();
