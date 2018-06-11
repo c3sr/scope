@@ -79,12 +79,19 @@ static void NUMAUM_Latency_GPUToGPU(benchmark::State &state) {
   {
     ptr[i * stride] = (i + 1) * stride;
   }
+  if (PRINT_IF_ERROR(cudaSetDevice(src_id))) {
+    state.SkipWithError(NAME " failed to set CUDA src device");
+    return;
+  }
   if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
     state.SkipWithError(NAME " failed to synchronize");
     return;
   }
 
-
+  if (PRINT_IF_ERROR(cudaSetDevice(dst_id))) {
+    state.SkipWithError(NAME " failed to set CUDA dst device");
+    return;
+  }
   cudaEvent_t start, stop;
   if (PRINT_IF_ERROR(cudaEventCreate(&start))) {
     state.SkipWithError(NAME " failed to create start event");
@@ -105,14 +112,23 @@ static void NUMAUM_Latency_GPUToGPU(benchmark::State &state) {
       state.SkipWithError(NAME " failed to prefetch to src");
       return;
     }
+    if (PRINT_IF_ERROR(cudaSetDevice(src_id))) {
+      state.SkipWithError(NAME " failed to set CUDA src device");
+      return;
+    }
     if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
       state.SkipWithError(NAME " failed to synchronize");
       return;
     }
     if (PRINT_IF_ERROR(cudaSetDevice(dst_id))) {
-      state.SkipWithError(NAME " failed to set device");
+      state.SkipWithError(NAME " failed to set dst device");
       return;
     }
+    if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
+      state.SkipWithError(NAME " failed to synchronize");
+      return;
+    }
+
     cudaEventRecord(start);
     gpu_traverse<<<1, 1>>>(ptr, steps);
     cudaEventRecord(stop);
