@@ -129,4 +129,4 @@ static void NUMAUM_Latency_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Latency_GPUToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMAUM_Latency_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
