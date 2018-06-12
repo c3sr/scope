@@ -35,13 +35,20 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   // There are two copies, one gpu0 -> gpu1, one gpu1 -> gpu0
 
   // Create One stream per copy
-  std::vector<cudaStream_t> streams;
-  // cudaStreamCreate(...)
+  cudaStream_t stream1, stream2;
+  std::vector<cudaStream_t> streams = {stream1, stream2};
+  cudaStreamCreate(&streams[0]);
+  cudaStreamCreate(&streams[1]);
+
 
   // Start and stop events for each copy
-  std::vector<cudaEvent_t> starts;
-  std::vector<cudaEvent_t> stops;
-  // cudaEventCreate(...)
+  cudaStream_t start1, start2, stop1, stop2;
+  std::vector<cudaEvent_t> starts = {start1, start2};
+  std::vector<cudaEvent_t> stops = {stop1, stop2};
+  cudaEventCreate(&starts[0]);
+  cudaEventCreate(&starts[1]);
+  cudaEventCreate(&stops[0]);
+  cudaEventCreate(&stops[1]);
 
   // Source and destination for each copy
   std::vector<char *> srcs;
@@ -68,6 +75,22 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   }
   // create a destination allocation on gpu
   // ...
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu))){
+     state.SkipWithError(NAME " failed to set dst device");
+     return;
+  }
+  char *ptr2; //I think i have to replace this
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr2, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  defer(cudaFree(ptr2));
+  dsts.push_back(ptr2);
+  
+  if(PRINT_IF_ERROR(cudaMemset(ptr2,0, bytes))){
+    state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
   }
 
 

@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SRC_UTILS_SUGAR_CMAKE_)
+if(DEFINED UTILS_SUGAR_CMAKE_)
   return()
 else()
-  set(SRC_UTILS_SUGAR_CMAKE_ 1)
+  set(UTILS_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
@@ -17,27 +17,27 @@ sugar_include(tensor)
 
 sugar_files(
     BENCHMARK_HEADERS
-    numa.hpp
-    cuda.hpp
-    page.hpp
-    timer.hpp
-    compat.hpp
-    memory.hpp
-    hostname.hpp
-    omp.hpp
+    error.hpp
+    mpl.hpp
     marker.hpp
+    memory.hpp
+    omp.hpp
+    benchmark.hpp
     transwarp.h
-    defer.hpp
     nocopy.hpp
+    cublas.hpp
+    nvptx.hpp
     nccl.hpp
+    timer.hpp
     utils.hpp
     commandlineflags.hpp
-    nvptx.hpp
-    benchmark.hpp
-    mpl.hpp
-    error.hpp
+    page.hpp
+    hostname.hpp
+    compat.hpp
+    numa.hpp
+    defer.hpp
     cudnn.hpp
-    cublas.hpp
+    cuda.hpp
 )
 
 sugar_files(
