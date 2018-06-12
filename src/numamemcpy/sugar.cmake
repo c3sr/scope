@@ -19,12 +19,12 @@ sugar_files(
 sugar_files(
     BENCHMARK_SOURCES
     pinned_to_gpu.cpp
-    gpu_to_gpu_nopeer.cpp
-    gpu_to_host.cpp
-    gpu_to_pinned.cpp
-    gpu_to_wc.cpp
-    host_to_gpu.cpp
-    wc_to_gpu.cpp
     host_to_pinned.cpp
+    gpu_to_gpu_nopeer.cpp
+    wc_to_gpu.cpp
+    gpu_to_host.cpp
+    gpu_to_wc.cpp
+    gpu_to_pinned.cpp
+    host_to_gpu.cpp
 )
 

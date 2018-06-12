@@ -9,9 +9,9 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "numaum-latency/args.hpp"
+#include "um-latency/args.hpp"
 
-#define NAME "NUMAUM/Latency/GPUToGPU"
+#define NAME "UM/Latency/GPUToGPU"
 
 template <bool NOOP = false>
 __global__ void gpu_traverse(size_t *ptr, const size_t steps)
@@ -29,7 +29,7 @@ __global__ void gpu_traverse(size_t *ptr, const size_t steps)
   ptr[next] = 1;
 }
 
-static void NUMAUM_Latency_GPUToGPU(benchmark::State &state) {
+static void UM_Latency_GPUToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
@@ -145,4 +145,4 @@ static void NUMAUM_Latency_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Latency_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
+BENCHMARK(UM_Latency_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
