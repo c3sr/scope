@@ -10,7 +10,6 @@ DOCKER=true
 
 # Look for nvidia-docker, otherwise use docker run --runtime=nvidia
 if ! [ -x "$(command -v nvidia-docker)" ]; then
-  echo 'Error: nvidia-docker is not installed.' >&2
   DOCKER_RUN="docker run --runtime=nvidia"
 else
   DOCKER_RUN="nvidia-docker run"
@@ -34,7 +33,7 @@ while getopts "h?o:b:" opt; do
     esac
 done
 
-if [ $DOCKER ]; then
+if $DOCKER; then
   BENCHMARK_OUT="--benchmark_out=/data"
 else
   BENCHMARK_OUT="--benchmark_out=$OUT_DIR"
@@ -67,7 +66,7 @@ noop
 )
 
 numa_numa_bmarks=(
-NUMA_Memcpy_HostToPinned
+#NUMA_Memcpy_HostToPinned
 #NUMA_WR
 #NUMA_RD
 noop
@@ -82,6 +81,7 @@ gpu_gpu_bmarks=(
 #CUDA_Memcpy_GPUToGPU
 #UM_Coherence_GPUToGPU
 #UM_Prefetch_GPUToGPU
+UM_Latency_GPUToGPU
 noop
 )
 
@@ -94,10 +94,10 @@ numa_gpu_bmarks=(
 #NUMA_Memcpy_WCToGPU
 #NUMAUM_Coherence_GPUToHost
 #NUMAUM_Coherence_HostToGPU
-#NUMAUM_Latency_GPUToHost
-#NUMAUM_Latency_HostToGPU
 #NUMAUM_Prefetch_GPUToHost
 #NUMAUM_Prefetch_HostToGPU
+NUMAUM_Latency_GPUToHost
+NUMAUM_Latency_HostToGPU
 noop
 )
 
