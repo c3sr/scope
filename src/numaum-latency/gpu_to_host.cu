@@ -98,7 +98,8 @@ static void NUMAUM_Latency_GPUToHost(benchmark::State &state) {
 
     cpu_traverse(ptr, steps);
   }
-
+  state.counters["strides"] = steps;
+  
   // reset to run on any node
   numa_bind_node(-1);
 }

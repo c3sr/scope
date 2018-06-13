@@ -117,8 +117,8 @@ static void NUMAUM_Latency_HostToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
   }
+  state.counters["strides"] = steps;
 
   numa_bind_node(-1);
 

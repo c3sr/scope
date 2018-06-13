@@ -140,7 +140,7 @@ static void UM_Latency_GPUToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
+    state.counters["strides"] = steps;
   }
 
 }
