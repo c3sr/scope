@@ -147,6 +147,16 @@ If some of the third-party code compiled by hunter needs a different compiler, y
 
     cmake -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake ...
 
+## Adding a new benchmark
+
+You may start by duplicating `src/example`.
+
+    cp src/example src/newbenchmark
+
+To build the benchmark, you will need to inform the build system about the new benchmark. Run
+
+    tools/genenerate_sugar_files.py
+
 ## Resources
 
 * https://github.com/google/benchmark

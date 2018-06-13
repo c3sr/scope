@@ -66,36 +66,36 @@ noop
 )
 
 numa_numa_bmarks=(
-#NUMA_Memcpy_HostToPinned
-#NUMA_WR
-#NUMA_RD
+NUMA_Memcpy_HostToPinned
+NUMA_WR
+NUMA_RD
 noop
 )
 
 numa_gpu_gpu_bmarks=(
-#NUMA_Memcpy_GPUToGPU
+NUMA_Memcpy_GPUToGPU
 noop
 )
 
 gpu_gpu_bmarks=(
-#CUDA_Memcpy_GPUToGPU
-#UM_Coherence_GPUToGPU
-#UM_Prefetch_GPUToGPU
+CUDA_Memcpy_GPUToGPU
+UM_Coherence_GPUToGPU
+UM_Prefetch_GPUToGPU
 UM_Latency_GPUToGPU
 noop
 )
 
 numa_gpu_bmarks=(
-#NUMA_Memcpy_GPUToHost
-#NUMA_Memcpy_GPUToPinned
-#NUMA_Memcpy_GPUToWC
-#NUMA_Memcpy_HostToGPU
-#NUMA_Memcpy_PinnedToGPU
-#NUMA_Memcpy_WCToGPU
-#NUMAUM_Coherence_GPUToHost
-#NUMAUM_Coherence_HostToGPU
-#NUMAUM_Prefetch_GPUToHost
-#NUMAUM_Prefetch_HostToGPU
+NUMA_Memcpy_GPUToHost
+NUMA_Memcpy_GPUToPinned
+NUMA_Memcpy_GPUToWC
+NUMA_Memcpy_HostToGPU
+NUMA_Memcpy_PinnedToGPU
+NUMA_Memcpy_WCToGPU
+NUMAUM_Coherence_GPUToHost
+NUMAUM_Coherence_HostToGPU
+NUMAUM_Prefetch_GPUToHost
+NUMAUM_Prefetch_HostToGPU
 NUMAUM_Latency_GPUToHost
 NUMAUM_Latency_HostToGPU
 noop

@@ -79,4 +79,4 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
   numa_bind_node(-1);
 }
 
-BENCHMARK(NUMA_Memcpy_HostToPinned)->Apply(ArgsCountNumaNuma)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMA_Memcpy_HostToPinned)->Apply(ArgsCountNumaNuma)->UseManualTime();

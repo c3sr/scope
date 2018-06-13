@@ -3,17 +3,16 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SRC_FRAMEWORK_SUGAR_CMAKE_)
+if(DEFINED EXAMPLE_SUGAR_CMAKE_)
   return()
 else()
-  set(SRC_FRAMEWORK_SUGAR_CMAKE_ 1)
+  set(EXAMPLE_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
 
 sugar_files(
-    BENCHMARK_HEADERS
-    framework.hpp
-    mxnet.hpp
+    BENCHMARK_SOURCES
+    example.cpp
 )
 

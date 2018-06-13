@@ -124,4 +124,4 @@ static void NUMAUM_Latency_HostToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(NUMAUM_Latency_HostToGPU)->Apply(ArgsCountNumaGpu)->UseRealTime()->UseManualTime();
+BENCHMARK(NUMAUM_Latency_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();

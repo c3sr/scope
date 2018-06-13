@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SRC_MEMCPY_SUGAR_CMAKE_)
+if(DEFINED MEMCPY_SUGAR_CMAKE_)
   return()
 else()
-  set(SRC_MEMCPY_SUGAR_CMAKE_ 1)
+  set(MEMCPY_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
@@ -18,10 +18,10 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    pinned_to_gpu.cpp
-    gpu_to_gpu_peer.cpp
-    gpu_to_host.cpp
-    gpu_to_pinned.cpp
     host_to_gpu.cpp
+    gpu_to_pinned.cpp
+    gpu_to_host.cpp
+    gpu_to_gpu_peer.cpp
+    pinned_to_gpu.cpp
 )
 

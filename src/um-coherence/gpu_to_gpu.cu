@@ -123,4 +123,4 @@ static void UM_Coherence_GPUToGPU(benchmark::State &state) {
 
 }
 
-BENCHMARK(UM_Coherence_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseRealTime()->UseManualTime();
+BENCHMARK(UM_Coherence_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseManualTime();

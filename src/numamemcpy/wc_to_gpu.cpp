@@ -72,8 +72,6 @@ static void NUMA_Memcpy_WCToGPU(benchmark::State &state) {
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
 
-    state.PauseTiming();
-
     if (PRINT_IF_ERROR(cuda_err) != cudaSuccess) {
       state.SkipWithError(NAME " failed to perform memcpy");
       break;
