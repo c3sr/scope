@@ -128,7 +128,7 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
 
     state.SetIterationTime(maxMillis / 1000);
   }
-  state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
+  state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
 }
 
