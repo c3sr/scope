@@ -216,6 +216,8 @@ class Generator:
         source_variable = args.var
         tests_variable = args.test
         for rootdir, dirlist, filelist in os.walk(args.top):
+            filelist.sort()
+            dirlist.sort()
             for x in exclude_filenames:
                 try:
                     filelist.remove(x)

@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED CONV_SUGAR_CMAKE_)
+if(DEFINED SRC_CONV_SUGAR_CMAKE_)
   return()
 else()
-  set(CONV_SUGAR_CMAKE_ 1)
+  set(SRC_CONV_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
@@ -24,8 +24,8 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
+    cuda.cu
     cuda_conv_activation_lrn_pool_basic.cu
     cuda_conv_activation_lrn_pool_fused.cu
-    cuda.cu
 )
 
