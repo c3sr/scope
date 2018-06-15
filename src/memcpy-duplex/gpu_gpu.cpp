@@ -103,7 +103,10 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
       auto src = srcs[i];
       auto dst = dsts[i];
       cudaEventRecord(start, stream);
-      cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream);
+      if(PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream))) {
+        state.SkipWithError(NAME " failed to perform dst cudaMemset");
+        return;
+      }
       cudaEventRecord(stop, stream);
     }
 
@@ -120,7 +123,12 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     for (const auto start : starts) {
       for (const auto stop : stops) {
         float millis;
-        cudaEventElapsedTime(&millis, start, stop);
+
+        if (PRINT_IF_ERROR(cudaEventElapsedTime(&millis, start, stop))) {
+          state.SkipWithError(NAME " failed to synchronize");
+          return;
+        }
+
         maxMillis = std::max(millis, maxMillis);
       }
     }
