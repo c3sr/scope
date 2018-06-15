@@ -102,12 +102,18 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
       auto stream = streams[i];
       auto src = srcs[i];
       auto dst = dsts[i];
-      cudaEventRecord(start, stream);
-      if(PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream))) {
-        state.SkipWithError(NAME " failed to perform dst cudaMemset");
+      if(PRINT_IF_ERROR(cudaEventRecord(start, stream))) {
+        state.SkipWithError(NAME " failed to record start event");
         return;
       }
-      cudaEventRecord(stop, stream);
+      if(PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream))) {
+        state.SkipWithError(NAME " failed to start cudaMemcpyAsync");
+        return;
+      }
+      if(PRINT_IF_ERROR(cudaEventRecord(stop, stream))) {
+        state.SkipWithError(NAME " failed to record stop event");
+        return;
+      }
     }
 
     // Wait for all copies to finish
