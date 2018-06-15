@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-devel
+FROM nvidia/cuda:8.0-cudnn7-devel
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -22,7 +22,7 @@ WORKDIR microbench
 RUN mkdir -p build \
     && cd build \
     && cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON \
-    && make -j`nproc`
+    && make VERBOSE=1
 
 RUN mv build/bench /bin/.
 
