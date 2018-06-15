@@ -54,64 +54,61 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   std::vector<char *> srcs;
   std::vector<char *> dsts;
 
-  // create a source and destination allocation on each gpu
-    if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
-      state.SkipWithError(NAME " failed to set device");
-      return;
-    }
-    // create a src allocation on gpu0
-    char *ptr;
-    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
-      state.SkipWithError(NAME " failed to perform cudaMalloc");
-      return;
-    }
-    srcs.push_back(ptr);
-    if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
-      state.SkipWithError(NAME " failed to perform src cudaMemset");
-      return;
-    }
-    // create a destination allocation on gpu1
-    if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
-      state.SkipWithError(NAME " failed to set device");
-      return;
-    }
-    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
-      state.SkipWithError(NAME " failed to perform cudaMalloc");
-      return;
-    }
-    dsts.push_back(ptr);
-    if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
-      state.SkipWithError(NAME " failed to perform dst cudaMemset");
-      return;
-    }
-    if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
-      state.SkipWithError(NAME " failed to set device");
-      return;
-    }
-    // create a src allocation on gpu1
-    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
-      state.SkipWithError(NAME " failed to perform cudaMalloc");
-      return;
-    }
-    srcs.push_back(ptr);
-    if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
-      state.SkipWithError(NAME " failed to perform src cudaMemset");
-      return;
-    }
-    // create a destination allocation on gpu0
-    if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
-      state.SkipWithError(NAME " failed to set device");
-      return;
-    }
-    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
-      state.SkipWithError(NAME " failed to perform cudaMalloc");
-      return;
-    }
-    dsts.push_back(ptr);
-    if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
-      state.SkipWithError(NAME " failed to perform dst cudaMemset");
-      return;
-    }
+  // create a source and destination allocation for first copy
+  char *ptr;
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  srcs.push_back(ptr);
+  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+    state.SkipWithError(NAME " failed to perform src cudaMemset");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  dsts.push_back(ptr);
+  if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
+    state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
+  // create a source and destination for second copy
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  srcs.push_back(ptr);
+  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+    state.SkipWithError(NAME " failed to perform src cudaMemset");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  dsts.push_back(ptr);
+  if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
+    state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
 
 
   assert(starts.size() == stops.size());
