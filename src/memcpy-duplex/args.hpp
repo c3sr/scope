@@ -27,6 +27,7 @@ inline static void ArgsCountGpuGpuNoSelf(benchmark::internal::Benchmark* b) {
 
 }
 
+/*
 inline static void ArgsMultiGPU(benchmark::internal::Benchmark* b) {
 
   int n;
@@ -67,3 +68,4 @@ inline static void ArgsMultiGPU(benchmark::internal::Benchmark* b) {
     }
   }
 }
+*/

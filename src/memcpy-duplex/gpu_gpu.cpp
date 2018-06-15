@@ -42,7 +42,7 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
 
 
   // Start and stop events for each copy
-  cudaStream_t start1, start2, stop1, stop2;
+  cudaEvent_t start1, start2, stop1, stop2;
   std::vector<cudaEvent_t> starts = {start1, start2};
   std::vector<cudaEvent_t> stops = {stop1, stop2};
   cudaEventCreate(&starts[0]);
