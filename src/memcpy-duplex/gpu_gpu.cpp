@@ -56,41 +56,35 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
 
   // create a source and destination allocation on each gpu
   for (auto gpu : {gpu0, gpu1} ) {
-  // Set to the 
-  if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
-    state.SkipWithError(NAME " failed to set src device");
-    return;
-  }
-  // create a src allocation on gpup0
-  char *ptr;
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMalloc");
-    return;
-  }
-  defer(cudaFree(ptr));
-  srcs.push_back(ptr);
-  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform src cudaMemset");
-    return;
-  }
-  // create a destination allocation on gpu
-  // ...
-  if (PRINT_IF_ERROR(cudaSetDevice(gpu))){
-     state.SkipWithError(NAME " failed to set dst device");
-     return;
-  }
-  char *ptr2; //I think i have to replace this
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr2, bytes))){
-    state.SkipWithError(NAME " failed to perform cudaMalloc");
-    return;
-  }
-  defer(cudaFree(ptr2));
-  dsts.push_back(ptr2);
-  
-  if(PRINT_IF_ERROR(cudaMemset(ptr2,0, bytes))){
-    state.SkipWithError(NAME " failed to perform dst cudaMemset");
-    return;
-  }
+    if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
+      state.SkipWithError(NAME " failed to set src device");
+      return;
+    }
+    // create a src allocation on gpup0
+    char *ptr;
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+      state.SkipWithError(NAME " failed to perform cudaMalloc");
+      return;
+    }
+    defer(cudaFree(ptr));
+    srcs.push_back(ptr);
+    if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+      state.SkipWithError(NAME " failed to perform src cudaMemset");
+      return;
+    }
+    // create a destination allocation on gpu
+    char *ptr2; //I think i have to replace this
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr2, bytes))){
+      state.SkipWithError(NAME " failed to perform cudaMalloc");
+      return;
+    }
+    defer(cudaFree(ptr2));
+    dsts.push_back(ptr2);
+    
+    if(PRINT_IF_ERROR(cudaMemset(ptr2, 0, bytes))){
+      state.SkipWithError(NAME " failed to perform dst cudaMemset");
+      return;
+    }
   }
 
 
