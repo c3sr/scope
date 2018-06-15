@@ -55,37 +55,63 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   std::vector<char *> dsts;
 
   // create a source and destination allocation on each gpu
-  for (auto gpu : {gpu0, gpu1} ) {
-    if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
-      state.SkipWithError(NAME " failed to set src device");
+    if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
+      state.SkipWithError(NAME " failed to set device");
       return;
     }
-    // create a src allocation on gpup0
+    // create a src allocation on gpu0
     char *ptr;
     if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
       state.SkipWithError(NAME " failed to perform cudaMalloc");
       return;
     }
-    defer(cudaFree(ptr));
     srcs.push_back(ptr);
     if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
       state.SkipWithError(NAME " failed to perform src cudaMemset");
       return;
     }
-    // create a destination allocation on gpu
-    char *ptr2; //I think i have to replace this
-    if (PRINT_IF_ERROR(cudaMalloc(&ptr2, bytes))){
+    // create a destination allocation on gpu1
+    if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
+      state.SkipWithError(NAME " failed to set device");
+      return;
+    }
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
       state.SkipWithError(NAME " failed to perform cudaMalloc");
       return;
     }
-    defer(cudaFree(ptr2));
-    dsts.push_back(ptr2);
-    
-    if(PRINT_IF_ERROR(cudaMemset(ptr2, 0, bytes))){
+    dsts.push_back(ptr);
+    if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
       state.SkipWithError(NAME " failed to perform dst cudaMemset");
       return;
     }
-  }
+    if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
+      state.SkipWithError(NAME " failed to set device");
+      return;
+    }
+    // create a src allocation on gpu1
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+      state.SkipWithError(NAME " failed to perform cudaMalloc");
+      return;
+    }
+    srcs.push_back(ptr);
+    if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+      state.SkipWithError(NAME " failed to perform src cudaMemset");
+      return;
+    }
+    // create a destination allocation on gpu0
+    if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
+      state.SkipWithError(NAME " failed to set device");
+      return;
+    }
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
+      state.SkipWithError(NAME " failed to perform cudaMalloc");
+      return;
+    }
+    dsts.push_back(ptr);
+    if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
+      state.SkipWithError(NAME " failed to perform dst cudaMemset");
+      return;
+    }
 
 
   assert(starts.size() == stops.size());
@@ -144,6 +170,13 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
+
+  for (auto src : srcs) {
+    cudaFree(src);
+  }
+  for (auto dst : dsts) {
+    cudaFree(dst);
+  }
 }
 
 BENCHMARK(DUPLEX_Memcpy_GPUGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
