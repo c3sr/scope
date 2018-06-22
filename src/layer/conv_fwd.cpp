@@ -278,13 +278,16 @@ static void CUDNN_Impl(benchmark::State& state,
                          {"advised_convolution_algorithm", (int) advised_convolution_algorithm},
                          {"math_type", (int) math_type}});
 
-  const double predicted_flops = compute_flops(convolution_algorithm) * state.iterations();
-  state.counters.insert({{"predicted_flops", {predicted_flops, benchmark::Counter::kAvgThreadsRate}}});
+  const double predicted_flops = compute_flops(convolution_algorithm);
+  state.counters.insert(
+      {{"predicted_flops_count", predicted_flops},
+       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
   if (advised_convolution_algorithm != -1) {
-    const double predicted_advised_flops = compute_flops(advised_convolution_algorithm) * state.iterations();
-    state.counters.insert(
-        {{"predicted_advised_flops", {predicted_advised_flops, benchmark::Counter::kAvgThreadsRate}}});
+    const double predicted_advised_flops = compute_flops(advised_convolution_algorithm);
+    state.counters.insert({{"predicted_advised_flops_count", predicted_advised_flops},
+                           {"predicted_advised_flops",
+                            {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
   }
 
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
