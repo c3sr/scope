@@ -257,34 +257,36 @@ static void CUDNN_Impl(benchmark::State& state,
     }
   };
 
-  const double predicted_flops = compute_flops(convolution_algorithm);
-  const double predicted_advised_flops =
-      advised_convolution_algorithm == -1 ? -1.0f : compute_flops(advised_convolution_algorithm);
+  state.counters.insert({{"input_size", batch_size * channels * height * width},
+                         {"input_height", height},
+                         {"input_width", width},
+                         {"input_channels", channels},
+                         {"input_batch_size", batch_size},
+                         {"output_height", out_h},
+                         {"output_width", out_w},
+                         {"output_channels", out_c},
+                         {"output_batch_size", out_n},
+                         {"filter_height", filter_height},
+                         {"filter_width", filter_width},
+                         {"pad_height", pad_height},
+                         {"pad_width", pad_width},
+                         {"stride_height", stride_height},
+                         {"stride_width", stride_width},
+                         {"workspace_bytes", workspace_bytes},
+                         {"workspace_megabytes", workspace_bytes / 1048576.0},
+                         {"convolution_algorithm", (int) convolution_algorithm},
+                         {"advised_convolution_algorithm", (int) advised_convolution_algorithm},
+                         {"math_type", (int) math_type}});
 
-  state.counters.insert(
-      {{"input_size", batch_size * channels * height * width},
-       {"input_height", height},
-       {"input_width", width},
-       {"input_channels", channels},
-       {"input_batch_size", batch_size},
-       {"output_height", out_h},
-       {"output_width", out_w},
-       {"output_channels", out_c},
-       {"output_batch_size", out_n},
-       {"filter_height", filter_height},
-       {"filter_width", filter_width},
-       {"pad_height", pad_height},
-       {"pad_width", pad_width},
-       {"stride_height", stride_height},
-       {"stride_width", stride_width},
-       {"workspace_bytes", workspace_bytes},
-       {"workspace_megabytes", workspace_bytes / 1048576.0},
-       {"convolution_algorithm", (int) convolution_algorithm},
-       {"advised_convolution_algorithm", (int) advised_convolution_algorithm},
-       {"math_type", (int) math_type},
-       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}},
-       {"predicted_advised_flops",
-        {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
+  const double predicted_flops = compute_flops(convolution_algorithm) * state.iterations();
+  state.counters.insert({{"predicted_flops", {predicted_flops, benchmark::Counter::kAvgThreadsRate}}});
+
+  if (advised_convolution_algorithm != -1) {
+    const double predicted_advised_flops = compute_flops(advised_convolution_algorithm) * state.iterations();
+    state.counters.insert(
+        {{"predicted_advised_flops", {predicted_advised_flops, benchmark::Counter::kAvgThreadsRate}}});
+  }
+
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
