@@ -14,8 +14,7 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "layer/conv/args.hpp"
-#include "layer/conv/utils.hpp"
+#include "layer/args.hpp"
 #include "layer/utils.hpp"
 
 // Calculates convolution output dimension using the definition from Caffe
@@ -33,8 +32,8 @@ static void CUDNN_Impl(benchmark::State& state,
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
   }
-  if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(cuda_device_id)) {
-    state.SkipWithError(BENCHMARK_NAME " no Tensorcore support on current device");
+  if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(FLAG(cuda_device_id))) {
+    state.SkipWithError(BENCHMARK_NAME "no Tensorcore support on current device");
     return;
   }
 
@@ -72,45 +71,23 @@ static void CUDNN_Impl(benchmark::State& state,
   std::fill(input_image.begin(), input_image.end(), detail::one<T>());
   std::fill(kernel.begin(), kernel.end(), detail::one<T>());
 
-  cudnnTensorDescriptor_t input_descriptor;
-  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
+  auto input_tensor = Tensor<T>(state, {/*batch_size=*/batch_size,
+                                        /*channels=*/channels,
+                                        /*image_height=*/height,
+                                        /*image_width=*/width});
+  if (!input_tensor.is_valid) {
     return;
   }
-  if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(input_descriptor,
-                                                /*format=*/format,
-                                                /*dataType=*/valueDataType<T>::type,
-                                                /*batch_size=*/batch_size,
-                                                /*channels=*/channels,
-                                                /*image_height=*/height,
-                                                /*image_width=*/width))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetTensor4dDescriptor");
-    return;
-  }
-  defer(cudnnDestroyTensorDescriptor(input_descriptor));
+  cudnnTensorDescriptor_t input_descriptor = input_tensor.get();
 
-  cudnnFilterDescriptor_t kernel_descriptor;
-  if (PRINT_IF_ERROR(cudnnCreateFilterDescriptor(&kernel_descriptor))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateFilterDescriptor");
+  const auto kernel_filter = Filter<T>(state, {/*out_channels=*/kernel_size,
+                                               /*in_channels=*/channels,
+                                               /*kernel_height=*/filter_height,
+                                               /*kernel_width=*/filter_width});
+  if (!kernel_filter.is_valid) {
     return;
   }
-  if (PRINT_IF_ERROR(cudnnSetFilter4dDescriptor(kernel_descriptor,
-                                                /*dataType=*/valueDataType<T>::type,
-                                                /*format=*/format,
-                                                /*out_channels=*/kernel_size,
-                                                /*in_channels=*/channels,
-                                                /*kernel_height=*/filter_height,
-                                                /*kernel_width=*/filter_width))) {
-    const auto err_msg = fmt::format(BENCHMARK_NAME " failed to cudnnSetFilter4dDescriptor with out_channels = {}, "
-                                     "in_channels = {}, filter_height = {}, filter_width = {}",
-                                     kernel_size,
-                                     channels,
-                                     filter_height,
-                                     filter_width);
-    state.SkipWithError(err_msg.c_str());
-    return;
-  }
-  defer(cudnnDestroyFilterDescriptor(kernel_descriptor));
+  cudnnFilterDescriptor_t kernel_descriptor = kernel_filter.get();
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -131,7 +108,7 @@ static void CUDNN_Impl(benchmark::State& state,
   }
   defer(cudnnDestroyConvolutionDescriptor(convolution_descriptor));
 
-  cudnnSetConvolutionMathType(math_type);
+  cudnnSetConvolutionMathType(convolution_descriptor, math_type);
 
   int out_h, out_w, out_c, out_n;
 
@@ -141,33 +118,24 @@ static void CUDNN_Impl(benchmark::State& state,
     return;
   }
 
-  cudnnTensorDescriptor_t output_descriptor;
-  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&output_descriptor))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
+  auto output_tensor = Tensor<T>(state, {/*batch_size=*/out_n,
+                                         /*channels=*/out_c,
+                                         /*image_height=*/out_h,
+                                         /*image_width=*/out_w});
+  if (!output_tensor.is_valid) {
     return;
   }
-  if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(output_descriptor,
-                                                /*format=*/format,
-                                                /*dataType=*/valueDataType<T>::type,
-                                                /*batch_size=*/out_n,
-                                                /*channels=*/out_c,
-                                                /*image_height=*/out_h,
-                                                /*image_width=*/out_w))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetTensor4dDescriptor");
-    return;
-  }
-  defer(cudnnDestroyTensorDescriptor(output_descriptor));
+  cudnnTensorDescriptor_t output_descriptor = output_tensor.get();
 
   const auto output_image_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
 
   size_t workspace_bytes = 0;
 
-  cudnnConvolutionFwdAlgo_t prefered_convolution_algorithm;
+  cudnnConvolutionFwdAlgo_t advised_convolution_algorithm;
   if (PRINT_IF_ERROR(cudnnGetConvolutionForwardAlgorithm(
           cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
-          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, &prefered_convolution_algorithm))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardAlgorithm");
-    return;
+          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
+    advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   }
 
   if (std::is_same<T, int8_t>::value) {
@@ -283,29 +251,29 @@ static void CUDNN_Impl(benchmark::State& state,
 
   const auto P = out_h, Q = out_w;
 
-  const auto compute_flops =
-      [&](cudnnConvolutionFwdAlgo_t alg) {
-        swich(alg) {
-          case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
-          case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
-          case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
-            // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
-            // state.iterations(); 2KCRSNPQ
-            return 2 * K * C * R * S * N * P * Q;
-          case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
-          case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
-            //(NCKHW + (NC +CK +NK)HW log(HW))
-            return (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W)));
-          case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
-          case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
-            return -1;
-          default:
-            return -1;
-        }
-      }
+  const auto compute_flops = [&](cudnnConvolutionFwdAlgo_t alg) {
+    switch (alg) {
+      case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
+      case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
+      case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
+        // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
+        // state.iterations(); 2KCRSNPQ
+        return static_cast<double>(2) * K * C * R * S * N * P * Q;
+      case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
+      case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
+        //(NCKHW + (NC +CK +NK)HW log(HW))
+        return static_cast<double>(N * C * K * H * W +
+                                   (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W)));
+      case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
+      case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
+        return static_cast<double>(-1); // todo ... implement
+      default:
+        return static_cast<double>(-1);
+    }
+  };
 
-  int64_t predicted_flops         = compute_flops(convolution_algorithm);
-  int64_t predicted_advised_flops = compute_flops(prefered_convolution_algorithm);
+  const double predicted_flops         = compute_flops(convolution_algorithm);
+  const double predicted_advised_flops = compute_flops(advised_convolution_algorithm);
 
   state.counters.insert(
       {{"input_height", height},
@@ -395,7 +363,7 @@ static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
