@@ -20,6 +20,45 @@
 #endif // BENCHMARK_NAME
 
 template <typename T>
+struct DeviceMemory {
+  using type = T;
+  T *ptr{nullptr};
+  bool is_valid{false};
+  size_t size;
+  DeviceMemory(benchmark::State &state, const size_t &size) : size(size) {
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr, size))) {
+      state.SkipWithError(BENCHMARK_NAME " device memory allocation failed");
+      return
+    }
+    if (PRINT_IF_ERROR(cudaMemset(ptr, 0, size))) {
+      state.SkipWithError(BENCHMARK_NAME " device memory set failed");
+      return
+    }
+    is_valid = true;
+  }
+  DeviceMemory(benchmark::State &state, const T *data, const size_t &size) : size(size) {
+    if (PRINT_IF_ERROR(cudaMalloc(&ptr, size))) {
+      state.SkipWithError(BENCHMARK_NAME " device memory allocation failed");
+      return
+    }
+    if (PRINT_IF_ERROR(cudaMemcpy(ptr, data, size, cudaMemcpyHostToDevice))) {
+      state.SkipWithError(BENCHMARK_NAME " device memory copy failed");
+      return
+    }
+    is_valid = true;
+  }
+  ~DeviceMemory() {
+    if (ptr == nullptr) {
+      return;
+    }
+    cudaFree(ptr);
+  }
+  T *get() {
+    return ptr;
+  }
+};
+
+template <typename T>
 struct Filter {
   using type                   = T;
   static const auto value_type = valueDataType<T>::type;

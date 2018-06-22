@@ -10,7 +10,9 @@
     "map": "cpp",
     "set": "cpp",
     "ios": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "array": "cpp",
+    "string_view": "cpp"
   },
   // Configure glob patterns for excluding files and folders.
   "files.exclude": {

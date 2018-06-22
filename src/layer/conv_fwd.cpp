@@ -168,47 +168,23 @@ static void CUDNN_Impl(benchmark::State& state,
   }
   defer(cudaFree(d_workspace));
 
-  T* d_input{nullptr};
-  if (PRINT_IF_ERROR(cudaMalloc(&d_input, input_image_bytes))) {
-    LOG(critical, BENCHMARK_NAME " device memory allocation failed for input");
-    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for output");
+  DeviceMemory input_memory<T>(state, input_image.data(), input_image_bytes);
+  if (!input.is_valid) {
     return;
   }
-  defer(cudaFree(d_input));
+  const auto d_input = input_memory.get();
 
-  if (PRINT_IF_ERROR(cudaMemcpy(d_input, input_image.data(), input_image_bytes, cudaMemcpyHostToDevice))) {
-    LOG(critical, BENCHMARK_NAME " failed to copy image vector to device");
-    state.SkipWithError(BENCHMARK_NAME " failed to copy image vector to device");
+  DeviceMemory output_memory<T>(state, output_image_bytes);
+  if (!input.is_valid) {
     return;
   }
+  const auto d_output = output_memory.get();
 
-  T* d_output{nullptr};
-  if (PRINT_IF_ERROR(cudaMalloc(&d_output, output_image_bytes))) {
-    LOG(critical, BENCHMARK_NAME " device memory allocation failed for input");
-    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for output");
+  DeviceMemory kernel_memory<T>(state, kernel.data(), kernel_bytes);
+  if (!input.is_valid) {
     return;
   }
-  defer(cudaFree(d_output));
-
-  if (PRINT_IF_ERROR(cudaMemset(d_output, 0, output_image_bytes))) {
-    LOG(critical, BENCHMARK_NAME " failed to initialize output to 0 on device");
-    state.SkipWithError(BENCHMARK_NAME " failed initialize output to 0 on device");
-    return;
-  }
-
-  T* d_kernel{nullptr};
-  if (PRINT_IF_ERROR(cudaMalloc(&d_kernel, kernel_bytes))) {
-    LOG(critical, BENCHMARK_NAME " device memory allocation failed for input");
-    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for output");
-    return;
-  }
-  defer(cudaFree(d_kernel));
-
-  if (PRINT_IF_ERROR(cudaMemcpy(d_kernel, kernel.data(), sizeof(kernel_bytes), cudaMemcpyHostToDevice))) {
-    LOG(critical, BENCHMARK_NAME " failed to copy kernel vector to device");
-    state.SkipWithError(BENCHMARK_NAME " failed to copy kernel vector to device");
-    return;
-  }
+  const auto d_kernel = kernel_memory.get();
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -280,7 +256,8 @@ static void CUDNN_Impl(benchmark::State& state,
   const double predicted_advised_flops = compute_flops(advised_convolution_algorithm);
 
   state.counters.insert(
-      {{"input_height", height},
+      {{"input_size", batch_size * channels * height * width},
+       {"input_height", height},
        {"input_width", width},
        {"input_channels", channels},
        {"input_batch_size", batch_size},
@@ -304,62 +281,6 @@ static void CUDNN_Impl(benchmark::State& state,
         {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
-
-// template <typename T>
-// static void CUDNN(benchmark::State& state) {
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_GEMM>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_GEMM",
-//       "This algorithm expresses the convolution as an explicit matrix product. A "
-//       "significant memory workspace is needed to store the matrix that holds the "
-//       "input tensor data.");
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM",
-//       "This algorithm expresses the convolution as a matrix product without actually explicitly form the matrix that
-//       " "holds the input tensor data, but still needs some memory workspace to precompute some indices in order to "
-//       "facilitate the implicit construction of the matrix that holds the input tensor data.");
-//   if (std::is_same<T, int8_t>::value) {
-//     return;
-//   }
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM",
-//       "This algorithm expresses the convolution as a matrix product "
-//       "without actually explicitly form the matrix that holds the input "
-//       "tensor data.");
-// #if 0
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_DIRECT",
-//       "This algorithm expresses the convolution as a direct convolution (e.g "
-//       "without implicitly or explicitly doing a matrix multiplication).");
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_FFT",
-//       "This algorithm uses the Fast-Fourier Transform approach to compute the "
-//       "convolution. A significant memory workspace is needed to store "
-//       "intermediate results.");
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING",
-//       "This algorithm uses the Fast-Fourier Transform approach but splits "
-//       "the inputs into tiles. A significant memory workspace is needed to "
-//       "store intermediate results but less than "
-//       "CUDNN_CONVOLUTION_FWD_ALGO_FFT for large size images.");
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD>(
-//       state,
-//       "CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD",
-//       "This algorithm uses the Winograd Transform approach to compute the "
-//       "convolution. A reasonably sized workspace is needed to store "
-//       "intermediate results.");
-//   CUDNN_Impl<T, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED>(state,
-//                                                               "CUDNN_CONVOLUTION_FWD_ALGO_​WINOGRAD_NONFUSED",
-//                                                               "This algorithm uses the Winograd Transform approach to
-//                                                               " "compute the convolution. Significant workspace may
-//                                                               be " "needed to store intermediate results.");
-// #endif
-// }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
