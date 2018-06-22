@@ -74,7 +74,7 @@ script:
 - make
 - cd $TRAVIS_BUILD_DIR
 - export REPO=raiproject/microbench
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "${TRAVIS_BRANCH//\//-}"
   ; fi`
 - export ARCH=amd64
 - docker build -f Dockerfile.amd64.cuda90 -t $REPO:$ARCH-$TRAVIS_COMMIT .
