@@ -165,8 +165,6 @@ struct Layer {
   virtual Tensor<float> backward(const Tensor<T> &dy, const Tensor<T> &y, const Tensor<T> &x,
                                  bool lastLayer = false) = 0;
 
-  virtual void learn(float lr) const = 0;
-
   virtual size_t predicted_flops() const         = 0;
   virtual size_t predicted_advised_flops() const = 0;
 };
@@ -184,3 +182,15 @@ struct Convolution : public Layer {
     return 0;
   }
 };
+
+// class Flatten : public Layer {
+
+// class Dropout : public Layer {
+
+// class Pooling : public Layer {
+
+// class LRN : public Layer {
+
+// class Activation : public Layer {
+
+// class Softmax : public Layer {
