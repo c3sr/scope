@@ -15,6 +15,7 @@
 #include "utils/utils.hpp"
 
 #include "layer/args.hpp"
+#include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
 // Calculates convolution output dimension using the definition from Caffe
@@ -71,19 +72,21 @@ static void CUDNN_Impl(benchmark::State& state,
   std::fill(input_image.begin(), input_image.end(), detail::one<T>());
   std::fill(kernel.begin(), kernel.end(), detail::one<T>());
 
-  auto input_tensor = Tensor<T>(state, {/*batch_size=*/batch_size,
-                                        /*channels=*/channels,
-                                        /*image_height=*/height,
-                                        /*image_width=*/width});
+  auto input_tensor = Tensor<T>(state,
+                                {/*batch_size=*/batch_size,
+                                 /*channels=*/channels,
+                                 /*image_height=*/height,
+                                 /*image_width=*/width});
   if (!input_tensor.is_valid) {
     return;
   }
   cudnnTensorDescriptor_t input_descriptor = input_tensor.get();
 
-  const auto kernel_filter = Filter<T>(state, {/*out_channels=*/kernel_size,
-                                               /*in_channels=*/channels,
-                                               /*kernel_height=*/filter_height,
-                                               /*kernel_width=*/filter_width});
+  const auto kernel_filter = Filter<T>(state,
+                                       {/*out_channels=*/kernel_size,
+                                        /*in_channels=*/channels,
+                                        /*kernel_height=*/filter_height,
+                                        /*kernel_width=*/filter_width});
   if (!kernel_filter.is_valid) {
     return;
   }
@@ -118,10 +121,11 @@ static void CUDNN_Impl(benchmark::State& state,
     return;
   }
 
-  auto output_tensor = Tensor<T>(state, {/*batch_size=*/out_n,
-                                         /*channels=*/out_c,
-                                         /*image_height=*/out_h,
-                                         /*image_width=*/out_w});
+  auto output_tensor = Tensor<T>(state,
+                                 {/*batch_size=*/out_n,
+                                  /*channels=*/out_c,
+                                  /*image_height=*/out_h,
+                                  /*image_width=*/out_w});
   if (!output_tensor.is_valid) {
     return;
   }

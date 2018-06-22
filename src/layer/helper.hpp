@@ -21,19 +21,20 @@
 
 template <typename T>
 struct Filter {
-  using type       = T;
-  using value_type = valueDataType<T>::type;
+  using type                   = T;
+  static const auto value_type = valueDataType<T>::type;
 
-  const auto layout = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
+  static const auto layout = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
+  std::vector<int> shape{};
 
   bool is_valid{false};
   cudnnFilterDescriptor_t descriptor{nullptr};
 
-  Filter(benchmark::State& state, const std::initializer_list<int>& shape) {
+  Filter(benchmark::State& state, const std::initializer_list<int>& shape0) : shape(shape0) {
 
     assert(shape.size() <= 4);
     int dims[4] = {1, 1, 1, 1};
-    for (int ii = 0; ii < shape.size(); ++ii) {
+    for (size_t ii = 0; ii < shape.size(); ++ii) {
       dims[ii] = shape[ii];
     }
     if (PRINT_IF_ERROR(cudnnCreateFilterDescriptor(&descriptor))) {
@@ -41,12 +42,12 @@ struct Filter {
       return;
     }
 
-    if (PRINT_IF_ERROR(cudnnSetFilter4dDescriptor(descriptor, value_type, layout,
-      dims[0], dims[1], dims[2], dims[3])) {
+    if (PRINT_IF_ERROR(
+            cudnnSetFilter4dDescriptor(descriptor, value_type, layout, dims[0], dims[1], dims[2], dims[3]))) {
       state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetFilter4dDescriptor");
       return;
-      }
-      is_valid = true;
+    }
+    is_valid = true;
   }
 
   ~Filter() {
@@ -66,18 +67,19 @@ struct Filter {
 
 template <typename T>
 struct Tensor {
-  using type        = T;
-  using value_type  = valueDataType<T>::type;
-  const auto layout = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
+  using type                   = T;
+  static const auto value_type = valueDataType<T>::type;
+  static const auto layout     = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
+  std::vector<int> shape{};
 
   bool is_valid{false};
   cudnnTensorDescriptor_t descriptor{nullptr};
 
-  Tensor(benchmark::State& state, const std::initializer_list<int>& shape) {
+  Tensor(benchmark::State& state, const std::initializer_list<int>& shape0) : shape(shape0) {
 
     assert(shape.size() <= 4);
     int dims[4] = {1, 1, 1, 1};
-    for (int ii = 0; ii < shape.size(); ++ii) {
+    for (size_t ii = 0; ii < shape.size(); ++ii) {
       dims[ii] = shape[ii];
     }
     if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&descriptor))) {
@@ -85,12 +87,12 @@ struct Tensor {
       return;
     }
 
-    if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(descriptor, layout, value_type,
-      dims[0], dims[1], dims[2], dims[3])) {
+    if (PRINT_IF_ERROR(
+            cudnnSetTensor4dDescriptor(descriptor, layout, value_type, dims[0], dims[1], dims[2], dims[3]))) {
       state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetTensor4dDescriptor");
       return;
-      }
-      is_valid = true;
+    }
+    is_valid = true;
   }
 
   ~Tensor() {
