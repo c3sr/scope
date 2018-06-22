@@ -229,6 +229,27 @@ static void CUDNN_Impl(benchmark::State& state,
     state.ResumeTiming();
   }
 
+  state.counters.insert({{"input_size", batch_size * channels * height * width},
+                         {"input_height", height},
+                         {"input_width", width},
+                         {"input_channels", channels},
+                         {"input_batch_size", batch_size},
+                         {"output_height", out_h},
+                         {"output_width", out_w},
+                         {"output_channels", out_c},
+                         {"output_batch_size", out_n},
+                         {"filter_height", filter_height},
+                         {"filter_width", filter_width},
+                         {"pad_height", pad_height},
+                         {"pad_width", pad_width},
+                         {"stride_height", stride_height},
+                         {"stride_width", stride_width},
+                         {"workspace_bytes", workspace_bytes},
+                         {"workspace_megabytes", workspace_bytes / 1048576.0},
+                         {"convolution_algorithm", (int) convolution_algorithm},
+                         {"advised_convolution_algorithm", (int) advised_convolution_algorithm},
+                         {"math_type", (int) math_type}});
+
   const auto P = out_h, Q = out_w;
 
   const auto compute_flops = [&](cudnnConvolutionFwdAlgo_t alg) {
@@ -256,27 +277,6 @@ static void CUDNN_Impl(benchmark::State& state,
         return static_cast<double>(-1);
     }
   };
-
-  state.counters.insert({{"input_size", batch_size * channels * height * width},
-                         {"input_height", height},
-                         {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
-                         {"output_height", out_h},
-                         {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
-                         {"filter_height", filter_height},
-                         {"filter_width", filter_width},
-                         {"pad_height", pad_height},
-                         {"pad_width", pad_width},
-                         {"stride_height", stride_height},
-                         {"stride_width", stride_width},
-                         {"workspace_bytes", workspace_bytes},
-                         {"workspace_megabytes", workspace_bytes / 1048576.0},
-                         {"convolution_algorithm", (int) convolution_algorithm},
-                         {"advised_convolution_algorithm", (int) advised_convolution_algorithm},
-                         {"math_type", (int) math_type}});
 
   const double predicted_flops = compute_flops(convolution_algorithm);
   state.counters.insert(
