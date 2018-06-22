@@ -289,12 +289,11 @@ static void CUDNN_Impl(benchmark::State& state,
           case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
             // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
             // state.iterations(); 2KCRSNPQ
-            return 2 * K * C * R * S * N * P * Q * state.iterations();
+            return 2 * K * C * R * S * N * P * Q;
           case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
           case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
             //(NCKHW + (NC +CK +NK)HW log(HW))
-            return (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W))) *
-                   state.iterations();
+            return (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W)));
           case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
           case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
             return -1;
@@ -306,27 +305,29 @@ static void CUDNN_Impl(benchmark::State& state,
   int64_t predicted_flops         = compute_flops(convolution_algorithm);
   int64_t predicted_advised_flops = compute_flops(prefered_convolution_algorithm);
 
-  state.counters.insert({{"input_height", height},
-                         {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
-                         {"output_height", out_h},
-                         {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
-                         {"filter_height", filter_height},
-                         {"filter_width", filter_width},
-                         {"pad_height", pad_height},
-                         {"pad_width", pad_width},
-                         {"stride_height", stride_height},
-                         {"stride_width", stride_width},
-                         {"workspace_bytes", workspace_bytes},
-                         {"workspace_megabytes", workspace_bytes / 1048576.0},
-                         {"convolution_algorithm", convolution_algorithm},
-                         {"advised_convolution_algorithm", advised_convolution_algorithm},
-                         {"math_type", (int) math_type},
-                         {"predicted_flops", {predicted_flops, benchmark::Counter::kAvgThreadsRate}},
-                         {"predicted_advised_flops", {predicted_advised_flops, benchmark::Counter::kAvgThreadsRate}}});
+  state.counters.insert(
+      {{"input_height", height},
+       {"input_width", width},
+       {"input_channels", channels},
+       {"input_batch_size", batch_size},
+       {"output_height", out_h},
+       {"output_width", out_w},
+       {"output_channels", out_c},
+       {"output_batch_size", out_n},
+       {"filter_height", filter_height},
+       {"filter_width", filter_width},
+       {"pad_height", pad_height},
+       {"pad_width", pad_width},
+       {"stride_height", stride_height},
+       {"stride_width", stride_width},
+       {"workspace_bytes", workspace_bytes},
+       {"workspace_megabytes", workspace_bytes / 1048576.0},
+       {"convolution_algorithm", convolution_algorithm},
+       {"advised_convolution_algorithm", advised_convolution_algorithm},
+       {"math_type", (int) math_type},
+       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}},
+       {"predicted_advised_flops",
+        {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
