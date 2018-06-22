@@ -1,3 +1,5 @@
+#define BENCHMARK_NAME "CUDNN/CONV"
+
 #include <benchmark/benchmark.h>
 
 #include <iostream>
@@ -28,11 +30,11 @@ static void CUDNN_Impl(benchmark::State& state,
                        std::string convolution_algorithm_name        = "",
                        std::string convolution_algorithm_description = "") {
   if (!has_cuda) {
-    state.SkipWithError("CUDNN/CONV no CUDA device found");
+    state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
   }
   if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(cuda_device_id)) {
-    state.SkipWithError("CUDNN/CONV no Tensorcore support on current device");
+    state.SkipWithError(BENCHMARK_NAME " no Tensorcore support on current device");
     return;
   }
 
@@ -72,7 +74,7 @@ static void CUDNN_Impl(benchmark::State& state,
 
   cudnnTensorDescriptor_t input_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnCreateTensorDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(input_descriptor,
@@ -82,14 +84,14 @@ static void CUDNN_Impl(benchmark::State& state,
                                                 /*channels=*/channels,
                                                 /*image_height=*/height,
                                                 /*image_width=*/width))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnSetTensor4dDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetTensor4dDescriptor");
     return;
   }
   defer(cudnnDestroyTensorDescriptor(input_descriptor));
 
   cudnnFilterDescriptor_t kernel_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateFilterDescriptor(&kernel_descriptor))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnCreateFilterDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateFilterDescriptor");
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetFilter4dDescriptor(kernel_descriptor,
@@ -99,7 +101,7 @@ static void CUDNN_Impl(benchmark::State& state,
                                                 /*in_channels=*/channels,
                                                 /*kernel_height=*/filter_height,
                                                 /*kernel_width=*/filter_width))) {
-    const auto err_msg = fmt::format("CUDNN/CONV failed to cudnnSetFilter4dDescriptor with out_channels = {}, "
+    const auto err_msg = fmt::format(BENCHMARK_NAME " failed to cudnnSetFilter4dDescriptor with out_channels = {}, "
                                      "in_channels = {}, filter_height = {}, filter_width = {}",
                                      kernel_size,
                                      channels,
@@ -112,7 +114,7 @@ static void CUDNN_Impl(benchmark::State& state,
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnCreateConvolutionDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateConvolutionDescriptor");
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetConvolution2dDescriptor(convolution_descriptor,
@@ -124,7 +126,7 @@ static void CUDNN_Impl(benchmark::State& state,
                                                      /*dilation_width=*/1,
                                                      /*mode=*/conv_mode,
                                                      /*computeType=*/accumDataType<T>::type))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnSetConvolution2dDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetConvolution2dDescriptor");
     return;
   }
   defer(cudnnDestroyConvolutionDescriptor(convolution_descriptor));
@@ -135,13 +137,13 @@ static void CUDNN_Impl(benchmark::State& state,
 
   if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, input_descriptor, kernel_descriptor,
                                                            &out_n, &out_c, &out_h, &out_w))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolution2dForwardOutputDim");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolution2dForwardOutputDim");
     return;
   }
 
   cudnnTensorDescriptor_t output_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&output_descriptor))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnCreateTensorDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
     return;
   }
   if (PRINT_IF_ERROR(cudnnSetTensor4dDescriptor(output_descriptor,
@@ -151,7 +153,7 @@ static void CUDNN_Impl(benchmark::State& state,
                                                 /*channels=*/out_c,
                                                 /*image_height=*/out_h,
                                                 /*image_width=*/out_w))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnSetTensor4dDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetTensor4dDescriptor");
     return;
   }
   defer(cudnnDestroyTensorDescriptor(output_descriptor));
@@ -164,7 +166,7 @@ static void CUDNN_Impl(benchmark::State& state,
   if (PRINT_IF_ERROR(cudnnGetConvolutionForwardAlgorithm(
           cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
           CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, &prefered_convolution_algorithm))) {
-    state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolutionForwardAlgorithm");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardAlgorithm");
     return;
   }
 
@@ -180,7 +182,7 @@ static void CUDNN_Impl(benchmark::State& state,
                                                                output_descriptor,
                                                                convolution_algorithm,
                                                                &workspace_bytes))) {
-      state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolutionForwardWorkspaceSize");
+      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
       return;
     }
   }
@@ -188,51 +190,51 @@ static void CUDNN_Impl(benchmark::State& state,
 
   void* d_workspace{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_workspace, workspace_bytes))) {
-    LOG(critical, "CUDNN/CONV device memory allocation failed for workspace");
-    state.SkipWithError("CUDNN/CONV device memory allocation failed for workspace");
+    LOG(critical, BENCHMARK_NAME " device memory allocation failed for workspace");
+    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for workspace");
     return;
   }
   defer(cudaFree(d_workspace));
 
   T* d_input{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_input, input_image_bytes))) {
-    LOG(critical, "CUDNN/CONV device memory allocation failed for input");
-    state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
+    LOG(critical, BENCHMARK_NAME " device memory allocation failed for input");
+    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for output");
     return;
   }
   defer(cudaFree(d_input));
 
   if (PRINT_IF_ERROR(cudaMemcpy(d_input, input_image.data(), input_image_bytes, cudaMemcpyHostToDevice))) {
-    LOG(critical, "CUDNN/CONV failed to copy image vector to device");
-    state.SkipWithError("CUDNN/CONV failed to copy image vector to device");
+    LOG(critical, BENCHMARK_NAME " failed to copy image vector to device");
+    state.SkipWithError(BENCHMARK_NAME " failed to copy image vector to device");
     return;
   }
 
   T* d_output{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_output, output_image_bytes))) {
-    LOG(critical, "CUDNN/CONV device memory allocation failed for input");
-    state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
+    LOG(critical, BENCHMARK_NAME " device memory allocation failed for input");
+    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for output");
     return;
   }
   defer(cudaFree(d_output));
 
   if (PRINT_IF_ERROR(cudaMemset(d_output, 0, output_image_bytes))) {
-    LOG(critical, "CUDNN/CONV failed to initialize output to 0 on device");
-    state.SkipWithError("CUDNN/CONV failed initialize output to 0 on device");
+    LOG(critical, BENCHMARK_NAME " failed to initialize output to 0 on device");
+    state.SkipWithError(BENCHMARK_NAME " failed initialize output to 0 on device");
     return;
   }
 
   T* d_kernel{nullptr};
   if (PRINT_IF_ERROR(cudaMalloc(&d_kernel, kernel_bytes))) {
-    LOG(critical, "CUDNN/CONV device memory allocation failed for input");
-    state.SkipWithError("CUDNN/CONV device memory allocation failed for output");
+    LOG(critical, BENCHMARK_NAME " device memory allocation failed for input");
+    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for output");
     return;
   }
   defer(cudaFree(d_kernel));
 
   if (PRINT_IF_ERROR(cudaMemcpy(d_kernel, kernel.data(), sizeof(kernel_bytes), cudaMemcpyHostToDevice))) {
-    LOG(critical, "CUDNN/CONV failed to copy kernel vector to device");
-    state.SkipWithError("CUDNN/CONV failed to copy kernel vector to device");
+    LOG(critical, BENCHMARK_NAME " failed to copy kernel vector to device");
+    state.SkipWithError(BENCHMARK_NAME " failed to copy kernel vector to device");
     return;
   }
 
@@ -262,17 +264,17 @@ static void CUDNN_Impl(benchmark::State& state,
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError("CUDNN/CONV failed to perform cudnnConvolutionForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnConvolutionForward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {
-      state.SkipWithError("CUDNN/CONV failed to launch kernel");
+      state.SkipWithError(BENCHMARK_NAME " failed to launch kernel");
       break;
     }
 
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
-      state.SkipWithError("CUDNN/CONV failed to launch kernel");
+      state.SkipWithError(BENCHMARK_NAME " failed to launch kernel");
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
