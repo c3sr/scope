@@ -2,6 +2,7 @@
 
 #include <benchmark/benchmark.h>
 
+#include <cmath>
 #include <iostream>
 #include <mutex>
 #include <numeric>
@@ -247,7 +248,7 @@ static void CUDNN_Impl(benchmark::State& state,
                (static_cast<double>(N) * static_cast<double>(C) + static_cast<double>(C) * static_cast<double>(K) +
                 static_cast<double>(N) * static_cast<double>(K)) *
                    (static_cast<double>(H) * static_cast<double>(W)) *
-                   log(static_cast<double>(H) * static_cast<double>(W));
+                   std::log2(static_cast<double>(H) * static_cast<double>(W));
       case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
       case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
         return static_cast<double>(-1); // todo ... implement
