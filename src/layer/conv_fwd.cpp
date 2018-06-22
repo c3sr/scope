@@ -12,8 +12,7 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "layer/conv/args.hpp"
-#include "layer/conv/utils.hpp"
+#include "layer/args.hpp"
 #include "layer/utils.hpp"
 
 // Calculates convolution output dimension using the definition from Caffe
@@ -31,7 +30,7 @@ static void CUDNN_Impl(benchmark::State& state,
     state.SkipWithError("CUDNN/CONV no CUDA device found");
     return;
   }
-  if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(cuda_device_id)) {
+  if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(FLAG(cuda_device_id))) {
     state.SkipWithError("CUDNN/CONV no Tensorcore support on current device");
     return;
   }
@@ -129,7 +128,7 @@ static void CUDNN_Impl(benchmark::State& state,
   }
   defer(cudnnDestroyConvolutionDescriptor(convolution_descriptor));
 
-  cudnnSetConvolutionMathType(math_type);
+  cudnnSetConvolutionMathType(convolution_descriptor, math_type);
 
   int out_h, out_w, out_c, out_n;
 
@@ -160,10 +159,10 @@ static void CUDNN_Impl(benchmark::State& state,
 
   size_t workspace_bytes = 0;
 
-  cudnnConvolutionFwdAlgo_t prefered_convolution_algorithm;
+  cudnnConvolutionFwdAlgo_t advised_convolution_algorithm;
   if (PRINT_IF_ERROR(cudnnGetConvolutionForwardAlgorithm(
           cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
-          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, &prefered_convolution_algorithm))) {
+          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
     state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolutionForwardAlgorithm");
     return;
   }
@@ -281,29 +280,29 @@ static void CUDNN_Impl(benchmark::State& state,
 
   const auto P = out_h, Q = out_w;
 
-  const auto compute_flops =
-      [&](cudnnConvolutionFwdAlgo_t alg) {
-        swich(alg) {
-          case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
-          case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
-          case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
-            // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
-            // state.iterations(); 2KCRSNPQ
-            return 2 * K * C * R * S * N * P * Q;
-          case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
-          case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
-            //(NCKHW + (NC +CK +NK)HW log(HW))
-            return (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W)));
-          case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
-          case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
-            return -1;
-          default:
-            return -1;
-        }
-      }
+  const auto compute_flops = [&](cudnnConvolutionFwdAlgo_t alg) {
+    switch (alg) {
+      case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
+      case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
+      case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
+        // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
+        // state.iterations(); 2KCRSNPQ
+        return static_cast<double>(2) * K * C * R * S * N * P * Q;
+      case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
+      case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
+        //(NCKHW + (NC +CK +NK)HW log(HW))
+        return static_cast<double>(N * C * K * H * W +
+                                   (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W)));
+      case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
+      case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
+        return static_cast<double>(-1); // todo ... implement
+      default:
+        return static_cast<double>(-1);
+    }
+  };
 
-  int64_t predicted_flops         = compute_flops(convolution_algorithm);
-  int64_t predicted_advised_flops = compute_flops(prefered_convolution_algorithm);
+  const double predicted_flops         = compute_flops(convolution_algorithm);
+  const double predicted_advised_flops = compute_flops(advised_convolution_algorithm);
 
   state.counters.insert(
       {{"input_height", height},
@@ -393,7 +392,7 @@ static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
