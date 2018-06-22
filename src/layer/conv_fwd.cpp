@@ -134,7 +134,7 @@ static void CUDNN_Impl(benchmark::State& state,
 
   size_t workspace_bytes = 0;
 
-  cudnnConvolutionFwdAlgo_t advised_convolution_algorithm;
+  cudnnConvolutionFwdAlgo_t advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor,
                                           output_descriptor, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0,
                                           &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
