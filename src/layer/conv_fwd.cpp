@@ -64,7 +64,6 @@ static void CUDNN_Impl(benchmark::State& state,
 
   // const auto output_width  = calc_out_dim(width, filter_width, pad_width, stride_width);
   // const auto output_height = calc_out_dim(height, filter_height.fh, pad_height, stride_height);
-  const auto format = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
 
   auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
   auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
