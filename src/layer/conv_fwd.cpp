@@ -133,8 +133,8 @@ static void CUDNN_Impl(benchmark::State& state,
 
   int out_h, out_w, out_c, out_n;
 
-  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(
-          convolution_descriptor, input_descriptor, kernel_descriptor, &out_n, &out_c, &out_h, &out_w))) {
+  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, input_descriptor, kernel_descriptor,
+                                                           &out_n, &out_c, &out_h, &out_w))) {
     state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolution2dForwardOutputDim");
     return;
   }
@@ -159,6 +159,14 @@ static void CUDNN_Impl(benchmark::State& state,
   const auto output_image_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
 
   size_t workspace_bytes = 0;
+
+  cudnnConvolutionFwdAlgo_t prefered_convolution_algorithm;
+  if (PRINT_IF_ERROR(cudnnGetConvolutionForwardAlgorithm(
+          cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
+          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, &prefered_convolution_algorithm))) {
+    state.SkipWithError("CUDNN/CONV failed to cudnnGetConvolutionForwardAlgorithm");
+    return;
+  }
 
   if (std::is_same<T, int8_t>::value) {
 
@@ -273,28 +281,30 @@ static void CUDNN_Impl(benchmark::State& state,
 
   const auto P = out_h, Q = out_w;
 
-  int64_t flops;
-  swich(convolution_algorithm) {
-    case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
-    case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
-    case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
-      // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size * state.iterations();
-      // 2KCRSNPQ
-      flops = 2 * K * C * R * S * N * P * Q * state.iterations();
-      break;
-    case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
-    case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
-      //(NCKHW + (NC +CK +NK)HW log(HW))
-      flops = (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W))) *
-              state.iterations();
-      break;
-    case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
-    case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
-      flops = -1;
-      break;
-    default:
-      flops = -1;
-  }
+  const auto compute_flops =
+      [&](cudnnConvolutionFwdAlgo_t alg) {
+        swich(alg) {
+          case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
+          case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
+          case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
+            // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
+            // state.iterations(); 2KCRSNPQ
+            return 2 * K * C * R * S * N * P * Q * state.iterations();
+          case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
+          case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
+            //(NCKHW + (NC +CK +NK)HW log(HW))
+            return (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W))) *
+                   state.iterations();
+          case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
+          case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
+            return -1;
+          default:
+            return -1;
+        }
+      }
+
+  int64_t predicted_flops         = compute_flops(convolution_algorithm);
+  int64_t predicted_advised_flops = compute_flops(prefered_convolution_algorithm);
 
   state.counters.insert({{"input_height", height},
                          {"input_width", width},
@@ -313,8 +323,10 @@ static void CUDNN_Impl(benchmark::State& state,
                          {"workspace_bytes", workspace_bytes},
                          {"workspace_megabytes", workspace_bytes / 1048576.0},
                          {"convolution_algorithm", convolution_algorithm},
+                         {"advised_convolution_algorithm", advised_convolution_algorithm},
                          {"math_type", (int) math_type},
-                         {"predicted_flops", {flops, benchmark::Counter::kAvgThreadsRate}}});
+                         {"predicted_flops", {predicted_flops, benchmark::Counter::kAvgThreadsRate}},
+                         {"predicted_advised_flops", {predicted_advised_flops, benchmark::Counter::kAvgThreadsRate}}});
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
