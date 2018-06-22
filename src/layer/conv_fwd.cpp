@@ -12,64 +12,9 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "conv/args.hpp"
-#include "conv/utils.hpp"
-
-template <typename T>
-struct valueDataType {};
-
-template <>
-struct valueDataType<int8_t> {
-  static const cudnnDataType_t type = CUDNN_DATA_INT8;
-};
-
-template <>
-struct valueDataType<int32_t> {
-  static const cudnnDataType_t type = CUDNN_DATA_INT32;
-};
-
-template <>
-struct valueDataType<__half> {
-  static const cudnnDataType_t type = CUDNN_DATA_HALF;
-};
-
-template <>
-struct valueDataType<float> {
-  static const cudnnDataType_t type = CUDNN_DATA_FLOAT;
-};
-
-template <>
-struct valueDataType<double> {
-  static const cudnnDataType_t type = CUDNN_DATA_DOUBLE;
-};
-
-template <typename T>
-struct accumDataType {};
-
-template <>
-struct accumDataType<int8_t> {
-  static const cudnnDataType_t type = CUDNN_DATA_INT32;
-};
-
-template <>
-struct accumDataType<int32_t> {
-  static const cudnnDataType_t type = CUDNN_DATA_INT32;
-};
-
-template <>
-struct accumDataType<__half> {
-  static const cudnnDataType_t type = CUDNN_DATA_HALF;
-};
-
-template <>
-struct accumDataType<float> {
-  static const cudnnDataType_t type = CUDNN_DATA_FLOAT;
-};
-
-template <>
-struct accumDataType<double> {
-  static const cudnnDataType_t type = CUDNN_DATA_DOUBLE;
-};
+#include "layer/conv/args.hpp"
+#include "layer/conv/utils.hpp"
+#include "layer/utils.hpp"
 
 // Calculates convolution output dimension using the definition from Caffe
 static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stride) {
@@ -78,12 +23,16 @@ static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stri
 
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
-template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm, cudnnMathType_t math_type = CUDNN_DEFAULT_MATH>
 static void CUDNN_Impl(benchmark::State& state,
                        std::string convolution_algorithm_name        = "",
                        std::string convolution_algorithm_description = "") {
   if (!has_cuda) {
     state.SkipWithError("CUDNN/CONV no CUDA device found");
+    return;
+  }
+  if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(cuda_device_id)) {
+    state.SkipWithError("CUDNN/CONV no Tensorcore support on current device");
     return;
   }
 
@@ -110,13 +59,16 @@ static void CUDNN_Impl(benchmark::State& state,
   const int kernel_bytes      = kernel_size * channels * filter_height * filter_width * sizeof(T);
 
   const auto N = batch_size, K = kernel_size, C = channels, H = height, W = width, R = filter_height, S = filter_width;
+
+  // const auto output_width  = calc_out_dim(width, filter_width, pad_width, stride_width);
+  // const auto output_height = calc_out_dim(height, filter_height.fh, pad_height, stride_height);
   const auto format = std::is_integral<T>::value ? CUDNN_TENSOR_NHWC : CUDNN_TENSOR_NCHW;
 
   auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
   auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
 
-  std::fill(input_image.begin(), input_image.end(), conv::detail::one<T>());
-  std::fill(kernel.begin(), kernel.end(), conv::detail::one<T>());
+  std::fill(input_image.begin(), input_image.end(), detail::one<T>());
+  std::fill(kernel.begin(), kernel.end(), detail::one<T>());
 
   cudnnTensorDescriptor_t input_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&input_descriptor))) {
@@ -176,6 +128,8 @@ static void CUDNN_Impl(benchmark::State& state,
     return;
   }
   defer(cudnnDestroyConvolutionDescriptor(convolution_descriptor));
+
+  cudnnSetConvolutionMathType(math_type);
 
   int out_h, out_w, out_c, out_n;
 
@@ -317,10 +271,30 @@ static void CUDNN_Impl(benchmark::State& state,
     state.ResumeTiming();
   }
 
-  // const int output_width = calc_out_dim(width, filter_width, pad_width, stride_width);
-  // const int output_height = calc_out_dim(height, filter_height.fh, pad_height, stride_height);
+  const auto P = out_h, Q = out_w;
 
-  const auto flops = 2.0 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size * state.iterations();
+  int64_t flops;
+  swich(convolution_algorithm) {
+    case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
+    case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
+    case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
+      // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size * state.iterations();
+      // 2KCRSNPQ
+      flops = 2 * K * C * R * S * N * P * Q * state.iterations();
+      break;
+    case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
+    case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
+      //(NCKHW + (NC +CK +NK)HW log(HW))
+      flops = (N * C * K * H * W + (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W))) *
+              state.iterations();
+      break;
+    case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
+    case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
+      flops = -1;
+      break;
+    default:
+      flops = -1;
+  }
 
   state.counters.insert({{"input_height", height},
                          {"input_width", width},
@@ -339,7 +313,8 @@ static void CUDNN_Impl(benchmark::State& state,
                          {"workspace_bytes", workspace_bytes},
                          {"workspace_megabytes", workspace_bytes / 1048576.0},
                          {"convolution_algorithm", convolution_algorithm},
-                         {"Flops", {flops, benchmark::Counter::kAvgThreadsRate}}});
+                         {"math_type", (int) math_type},
+                         {"predicted_flops", {flops, benchmark::Counter::kAvgThreadsRate}}});
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
@@ -400,50 +375,50 @@ static void CUDNN_Impl(benchmark::State& state,
 // }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_INT32(benchmark::State& state) {
+static void CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
+  CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
+}
+
+template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+static void LAYER_CUDNN_CONV_FORWARD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void CUDNN_CONV_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
 #define CONV_PROBLEMS ALL_CONV_PROBLEMS
 
-#ifdef USE_CUDA_EVENTS
-#define UseTime UseManualTime
-#else // USE_CUDA_EVENTS
-#define UseTime UseRealTime
-#endif // USE_CUDA_EVENTS
-
 #define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseTime();              \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM)->CONV_PROBLEMS()->UseTime();                 \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_GEMM)->CONV_PROBLEMS()->UseTime();                                  \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT)->CONV_PROBLEMS()->UseTime();                                \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT)->CONV_PROBLEMS()->UseTime();                                   \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING)->CONV_PROBLEMS()->UseTime();                            \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseTime();                              \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseTime()
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseManualTime();                   \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM)->CONV_PROBLEMS()->UseManualTime();           \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_GEMM)->CONV_PROBLEMS()->UseManualTime();                            \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT)->CONV_PROBLEMS()->UseManualTime();                          \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT)->CONV_PROBLEMS()->UseManualTime();                             \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING)->CONV_PROBLEMS()->UseManualTime();                      \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                        \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
 
-BENCHMARK_CUDNN(CUDNN_CONV_INT8);
-BENCHMARK_CUDNN(CUDNN_CONV_INT32);
-BENCHMARK_CUDNN(CUDNN_CONV_HALF);
-BENCHMARK_CUDNN(CUDNN_CONV_FLOAT);
-BENCHMARK_CUDNN(CUDNN_CONV_DOUBLE);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT8);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT32);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_DOUBLE);

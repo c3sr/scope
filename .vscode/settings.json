@@ -20,4 +20,5 @@
     "**/third_party": true,
     "build": true
   },
+  "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/",
 }
