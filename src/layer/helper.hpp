@@ -30,7 +30,7 @@ struct Filter {
   bool is_valid{false};
   cudnnFilterDescriptor_t descriptor{nullptr};
 
-  Filter(benchmark::State& state, const std::initializer_list<int>& shape0) : shape(shape0) {
+  Filter(benchmark::State &state, const std::initializer_list<int> &shape0) : shape(shape0) {
 
     assert(shape.size() <= 4);
     int dims[4] = {1, 1, 1, 1};
@@ -75,7 +75,7 @@ struct Tensor {
   bool is_valid{false};
   cudnnTensorDescriptor_t descriptor{nullptr};
 
-  Tensor(benchmark::State& state, const std::initializer_list<int>& shape0) : shape(shape0) {
+  Tensor(benchmark::State &state, const std::initializer_list<int> &shape0) : shape(shape0) {
 
     assert(shape.size() <= 4);
     int dims[4] = {1, 1, 1, 1};
@@ -107,5 +107,41 @@ struct Tensor {
       return nullptr;
     }
     return descriptor;
+  }
+};
+
+template <typename T>
+struct Layer {
+  using type                   = T;
+  static const auto value_type = valueDataType<T>::type;
+
+  std::vector<int> input_shape{}, output_shape{};
+
+  virtual vector<int> configure(const std::vector<int> &shape) = 0;
+
+  virtual string to_string() const = 0;
+
+  virtual Tensor<float> forward(const Tensor<float> &x) const = 0;
+
+  virtual Tensor<float> backward(const Tensor<T> &dy, const Tensor<T> &y, const Tensor<T> &x,
+                                 bool lastLayer = false) = 0;
+
+  virtual void learn(float lr) const = 0;
+
+  virtual size_t predicted_flops() const         = 0;
+  virtual size_t predicted_advised_flops() const = 0;
+};
+
+// https://github.com/ghostplant/lite-dnn/blob/master/lite-model.cc#L651
+struct Convolution : public Layer {
+
+  string to_string() const {
+    return "Convolution";
+  }
+  size_t predicted_flops() const {
+    return 0;
+  }
+  size_t predicted_advised_flops() const {
+    return 0;
   }
 };
