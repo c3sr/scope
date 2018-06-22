@@ -24,6 +24,27 @@ static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stri
   return (input_dim - filter_dim + 2 * padd) / stride + 1;
 }
 
+// https://github.com/ghostplant/lite-dnn/blob/master/lite-model.cc#L651
+template <typename T>
+struct Convolution : public Layer<T> {
+
+  Convolution() {
+  }
+
+  ~Convolution() {
+  }
+
+  std::string to_string() const {
+    return "Convolution";
+  }
+  size_t predicted_flops() const {
+    return 0;
+  }
+  size_t predicted_advised_flops() const {
+    return 0;
+  }
+};
+
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
 template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm, cudnnMathType_t math_type = CUDNN_DEFAULT_MATH>
@@ -160,13 +181,11 @@ static void CUDNN_Impl(benchmark::State& state,
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
 
-  void* d_workspace{nullptr};
-  if (PRINT_IF_ERROR(cudaMalloc(&d_workspace, workspace_bytes))) {
-    LOG(critical, BENCHMARK_NAME " device memory allocation failed for workspace");
-    state.SkipWithError(BENCHMARK_NAME " device memory allocation failed for workspace");
+  DeviceMemory<T> workspace_memory(state, workspace_bytes);
+  if (!workspace_memory.is_valid) {
     return;
   }
-  defer(cudaFree(d_workspace));
+  const auto d_workspace = workspace_memory.get();
 
   DeviceMemory<T> input_memory(state, input_image.data(), input_image_bytes);
   if (!input_memory.is_valid) {

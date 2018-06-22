@@ -6,8 +6,8 @@
 #include <numeric>
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <cudnn.h>
 
@@ -29,22 +29,22 @@ struct DeviceMemory {
   DeviceMemory(benchmark::State &state, const size_t &size) : size(size) {
     if (PRINT_IF_ERROR(cudaMalloc(&ptr, size))) {
       state.SkipWithError(BENCHMARK_NAME " device memory allocation failed");
-      return ;
+      return;
     }
     if (PRINT_IF_ERROR(cudaMemset(ptr, 0, size))) {
       state.SkipWithError(BENCHMARK_NAME " device memory set failed");
-      return ;
+      return;
     }
     is_valid = true;
   }
   DeviceMemory(benchmark::State &state, const T *data, const size_t &size) : size(size) {
     if (PRINT_IF_ERROR(cudaMalloc(&ptr, size))) {
       state.SkipWithError(BENCHMARK_NAME " device memory allocation failed");
-      return ;
+      return;
     }
     if (PRINT_IF_ERROR(cudaMemcpy(ptr, data, size, cudaMemcpyHostToDevice))) {
       state.SkipWithError(BENCHMARK_NAME " device memory copy failed");
-      return ;
+      return;
     }
     is_valid = true;
   }
@@ -168,21 +168,6 @@ struct Layer {
 
   virtual size_t predicted_flops() const         = 0;
   virtual size_t predicted_advised_flops() const = 0;
-};
-
-// https://github.com/ghostplant/lite-dnn/blob/master/lite-model.cc#L651
-template <typename T>
-struct Convolution : public Layer<T> {
-
-    std::string to_string() const {
-    return "Convolution";
-  }
-  size_t predicted_flops() const {
-    return 0;
-  }
-  size_t predicted_advised_flops() const {
-    return 0;
-  }
 };
 
 // class Flatten : public Layer {
