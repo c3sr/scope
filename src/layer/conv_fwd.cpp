@@ -135,9 +135,9 @@ static void CUDNN_Impl(benchmark::State& state,
   size_t workspace_bytes = 0;
 
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm;
-  if (PRINT_IF_ERROR(cudnnGetConvolutionForwardAlgorithm(
+  if (cudnnGetConvolutionForwardAlgorithm(
           cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
-          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
+          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
     advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   }
 
@@ -167,20 +167,20 @@ static void CUDNN_Impl(benchmark::State& state,
   }
   defer(cudaFree(d_workspace));
 
-  DeviceMemory input_memory<T>(state, input_image.data(), input_image_bytes);
-  if (!input.is_valid) {
+  DeviceMemory<T> input_memory(state, input_image.data(), input_image_bytes);
+  if (!input_memory.is_valid) {
     return;
   }
   const auto d_input = input_memory.get();
 
-  DeviceMemory output_memory<T>(state, output_image_bytes);
-  if (!input.is_valid) {
+  DeviceMemory<T> output_memory(state, output_image_bytes);
+  if (!output_memory.is_valid) {
     return;
   }
   const auto d_output = output_memory.get();
 
-  DeviceMemory kernel_memory<T>(state, kernel.data(), kernel_bytes);
-  if (!input.is_valid) {
+  DeviceMemory<T> kernel_memory(state, kernel.data(), kernel_bytes);
+  if (!kernel_memory.is_valid) {
     return;
   }
   const auto d_kernel = kernel_memory.get();
@@ -252,7 +252,7 @@ static void CUDNN_Impl(benchmark::State& state,
   };
 
   const double predicted_flops         = compute_flops(convolution_algorithm);
-  const double predicted_advised_flops = compute_flops(advised_convolution_algorithm);
+  const double predicted_advised_flops = advised_convolution_algorithm == -1 ? -1.0f : compute_flops(advised_convolution_algorithm);
 
   state.counters.insert(
       {{"input_size", batch_size * channels * height * width},
