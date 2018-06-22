@@ -135,9 +135,9 @@ static void CUDNN_Impl(benchmark::State& state,
   size_t workspace_bytes = 0;
 
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm;
-  if (cudnnGetConvolutionForwardAlgorithm(
-          cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
-          CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
+  if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor,
+                                          output_descriptor, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0,
+                                          &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
     advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   }
 
@@ -241,8 +241,9 @@ static void CUDNN_Impl(benchmark::State& state,
       case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
       case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
         //(NCKHW + (NC +CK +NK)HW log(HW))
-        return static_cast<double>(N * C * K * H * W +
-                                   (N * C + C * K + N * K) * (H * W) * log(static_cast<double>(H * W)));
+        return static_cast<double>(N) * C * K * H * W + (static_cast<double>(N) * C + C * K + N * K) *
+                                                            (static_cast<double>(H) * W) *
+                                                            log(static_cast<double>(H * W));
       case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
       case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
         return static_cast<double>(-1); // todo ... implement
@@ -251,8 +252,9 @@ static void CUDNN_Impl(benchmark::State& state,
     }
   };
 
-  const double predicted_flops         = compute_flops(convolution_algorithm);
-  const double predicted_advised_flops = advised_convolution_algorithm == -1 ? -1.0f : compute_flops(advised_convolution_algorithm);
+  const double predicted_flops = compute_flops(convolution_algorithm);
+  const double predicted_advised_flops =
+      advised_convolution_algorithm == -1 ? -1.0f : compute_flops(advised_convolution_algorithm);
 
   state.counters.insert(
       {{"input_size", batch_size * channels * height * width},
