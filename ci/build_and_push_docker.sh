@@ -34,7 +34,10 @@ if [ $ARCH == x86_64 ]; then
 fi
 
 REPO=raiproject/microbench
-TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo $BRANCH; fi`
+TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo "${BRANCH//\//-}"; fi`
+
+echo "$REPO"
+echo "$TAG"
 
 # untracked files
 git ls-files --exclude-standard --others
@@ -56,6 +59,7 @@ if [ "$DIRTY" != 0 ]; then
     TAG=$TAG-dirty
 fi
 
+or_die docker build -f $ARCH.cuda75.Dockerfile -t $REPO:$ARCH-cuda75-$TAG .
 or_die docker build -f $ARCH.cuda80.Dockerfile -t $REPO:$ARCH-cuda80-$TAG .
 or_die docker build -f $ARCH.cuda92.Dockerfile -t $REPO:$ARCH-cuda92-$TAG .
 
