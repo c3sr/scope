@@ -162,10 +162,18 @@ endif(APPLE)
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
 
+# CMake FindCUDA auto seems to add unsupported architectures somtimes, so we allow the user
+# to override with NVCC_ARCH_FLAGS
 if(CUDA_MULTI_ARCH)
   CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
 else()
-  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
+  if (DEFINED NVCC_ARCH_FLAGS)
+    message(STATUS "Manual cuda arch flags...")
+    CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS ${NVCC_ARCH_FLAGS})
+  else()
+    message(STATUS "Automatic cuda arch flags...")
+    CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
+  endif()
 endif()
 
 LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
@@ -215,6 +223,8 @@ if (USE_CUDA_EVENTS)
 endif(USE_CUDA_EVENTS)
 
 add_definitions(-DPROJECT_NAME=microbench)
+add_definitions(-DCUDA_VERSION_MAJOR=${CUDA_VERSION_MAJOR})
+add_definitions(-DCUDA_VERSION_MINOR=${CUDA_VERSION_MINOR})
 
 set_target_properties(bench PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON

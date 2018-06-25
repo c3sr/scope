@@ -41,7 +41,13 @@ To compile the project run the following commands
     
 if you get errors about nvcc not supporting your gcc compiler, then you may want to use
 
-    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=`which gcc-6` ..  
+    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=`which gcc-6` .. 
+
+You can optionally choose your own CUDA archs that you would like to be compiled:
+
+    cmake -DNVCC_ARCH_FLAGS="2.0 2.1 2.0 2.1 3.0 3.2 3.5 3.7 5.0 5.2 5.3" ..
+
+The accepted syntax is the same as the `CUDA_SELECT_NVCC_ARCH_FLAGS` syntax in the FindCUDA module.
 
 
 ## Available Benchmarks
