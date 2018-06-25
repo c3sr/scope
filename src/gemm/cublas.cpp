@@ -94,8 +94,8 @@ static void CUBLAS(benchmark::State& state) {
   const auto M = state.range(0);
   const auto N = state.range(1);
   const auto K = state.range(2);
-  T alpha{one};
-  T beta{zero};
+  T alpha      = one;
+  T beta       = zero;
 
   auto a = std::vector<T>(M * K);
   auto b = std::vector<T>(K * N);
