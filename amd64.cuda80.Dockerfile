@@ -1,11 +1,11 @@
 FROM nvidia/cuda:8.0-cudnn7-devel
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     curl \
     git \
     libnuma-dev \
     libopenblas-dev \
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://cmake.org/files/v3.11/cmake-3.11.2-Linux-x86_64.tar.gz -o cmake.tar.gz \
     && tar -xf cmake.tar.gz \
