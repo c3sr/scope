@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -14,16 +16,13 @@
 #define NAME "NUMAUM/Latency/GPUToHost"
 
 template <bool NOOP = false>
-void cpu_traverse(size_t *ptr, const size_t steps)
-{
+void cpu_traverse(size_t *ptr, const size_t steps) {
 
-  if (NOOP)
-  {
+  if (NOOP) {
     return;
   }
   size_t next = 0;
-  for (size_t i = 0; i < steps; ++i)
-  {
+  for (size_t i = 0; i < steps; ++i) {
     next = ptr[next];
   }
   ptr[next] = 1;
@@ -42,13 +41,11 @@ static void NUMAUM_Latency_GPUToHost(benchmark::State &state) {
   }
 
   const size_t steps = state.range(0);
-  const int numa_id = state.range(1);
-  const int cuda_id = state.range(2);
+  const int numa_id  = state.range(1);
+  const int cuda_id  = state.range(2);
 
   const size_t stride = 65536 * 2;
-  const size_t bytes = sizeof(size_t) * (steps + 1) * stride;
-
-
+  const size_t bytes  = sizeof(size_t) * (steps + 1) * stride;
 
   numa_bind_node(numa_id);
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
@@ -73,15 +70,13 @@ static void NUMAUM_Latency_GPUToHost(benchmark::State &state) {
   }
 
   // set up stride pattern
-  for (size_t i = 0; i < steps; ++i)
-  {
+  for (size_t i = 0; i < steps; ++i) {
     ptr[i * stride] = (i + 1) * stride;
   }
   if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
     state.SkipWithError(NAME " failed to synchronize");
     return;
   }
-
 
   for (auto _ : state) {
     state.PauseTiming();
@@ -99,9 +94,11 @@ static void NUMAUM_Latency_GPUToHost(benchmark::State &state) {
     cpu_traverse(ptr, steps);
   }
   state.counters["strides"] = steps;
-  
+
   // reset to run on any node
   numa_bind_node(-1);
 }
 
 BENCHMARK(NUMAUM_Latency_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1);
+
+#endif

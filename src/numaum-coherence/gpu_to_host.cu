@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -20,10 +22,8 @@ static void cpu_write(char *ptr, const size_t n, const size_t stride) {
 }
 
 template <bool NOOP = false>
-__global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
-{
-  if (NOOP)
-  {
+__global__ void gpu_write(char *ptr, const size_t count, const size_t stride) {
+  if (NOOP) {
     return;
   }
 
@@ -32,13 +32,11 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   // lane ID 0-31
   const size_t lx = gx & 31;
   // warp ID
-  size_t wx = gx / 32;
+  size_t wx             = gx / 32;
   const size_t numWarps = (gridDim.x * blockDim.x + 32 - 1) / 32;
 
-  if (0 == lx)
-  {
-    for (size_t i = wx * stride; i < count; i += numWarps * stride)
-    {
+  if (0 == lx) {
+    for (size_t i = wx * stride; i < count; i += numWarps * stride) {
       ptr[i] = 0;
     }
   }
@@ -58,7 +56,7 @@ static void NUMAUM_Coherence_GPUToHost(benchmark::State &state) {
 
   const size_t pageSize = page_size();
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
@@ -89,7 +87,7 @@ static void NUMAUM_Coherence_GPUToHost(benchmark::State &state) {
     state.PauseTiming();
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cuda_id);
     if (cudaErrorInvalidDevice == err) {
-      gpu_write<<<256,256>>>(ptr, bytes, pageSize);
+      gpu_write<<<256, 256>>>(ptr, bytes, pageSize);
     }
     if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
       state.SkipWithError(NAME " failed to synchronize");
@@ -108,3 +106,5 @@ static void NUMAUM_Coherence_GPUToHost(benchmark::State &state) {
 }
 
 BENCHMARK(NUMAUM_Coherence_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1);
+
+#endif // CUDA_VERSION_MAJOR >= 8

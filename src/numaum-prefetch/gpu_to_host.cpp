@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -25,7 +27,7 @@ static void NUMAUM_Prefetch_GPUToHost(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
@@ -89,7 +91,6 @@ static void NUMAUM_Prefetch_GPUToHost(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
@@ -100,3 +101,5 @@ static void NUMAUM_Prefetch_GPUToHost(benchmark::State &state) {
 }
 
 BENCHMARK(NUMAUM_Prefetch_GPUToHost)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8

@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -14,16 +16,13 @@
 #define NAME "UM/Latency/GPUToGPU"
 
 template <bool NOOP = false>
-__global__ void gpu_traverse(size_t *ptr, const size_t steps)
-{
+__global__ void gpu_traverse(size_t *ptr, const size_t steps) {
 
-  if (NOOP)
-  {
+  if (NOOP) {
     return;
   }
   size_t next = 0;
-  for (int i = 0; i < steps; ++i)
-  {
+  for (int i = 0; i < steps; ++i) {
     next = ptr[next];
   }
   ptr[next] = 1;
@@ -42,12 +41,11 @@ static void UM_Latency_GPUToGPU(benchmark::State &state) {
   }
 
   const size_t steps = state.range(0);
-  const int src_id = state.range(1);
-  const int dst_id = state.range(2);
+  const int src_id   = state.range(1);
+  const int dst_id   = state.range(2);
 
   const size_t stride = 65536 * 2;
-  const size_t bytes = sizeof(size_t) * (steps + 1) * stride;
-
+  const size_t bytes  = sizeof(size_t) * (steps + 1) * stride;
 
   if (PRINT_IF_ERROR(utils::cuda_reset_device(src_id))) {
     state.SkipWithError(NAME " failed to reset src device");
@@ -75,8 +73,7 @@ static void UM_Latency_GPUToGPU(benchmark::State &state) {
     return;
   }
   // set up stride pattern
-  for (size_t i = 0; i < steps; ++i)
-  {
+  for (size_t i = 0; i < steps; ++i) {
     ptr[i * stride] = (i + 1) * stride;
   }
   if (PRINT_IF_ERROR(cudaSetDevice(src_id))) {
@@ -104,8 +101,6 @@ static void UM_Latency_GPUToGPU(benchmark::State &state) {
     return;
   }
   defer(cudaEventDestroy(stop));
-
-
 
   for (auto _ : state) {
     if (PRINT_IF_ERROR(cudaMemPrefetchAsync(ptr, bytes, src_id))) {
@@ -142,7 +137,8 @@ static void UM_Latency_GPUToGPU(benchmark::State &state) {
     state.SetIterationTime(millis / 1000);
     state.counters["strides"] = steps;
   }
-
 }
 
 BENCHMARK(UM_Latency_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->UseManualTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8

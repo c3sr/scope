@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -14,10 +16,8 @@
 #define NAME "NUMAUM/Coherence/HostToGPU"
 
 template <bool NOOP = false>
-__global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
-{
-  if (NOOP)
-  {
+__global__ void gpu_write(char *ptr, const size_t count, const size_t stride) {
+  if (NOOP) {
     return;
   }
 
@@ -26,13 +26,11 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   // lane ID 0-31
   const size_t lx = gx & 31;
   // warp ID
-  size_t wx = gx / 32;
+  size_t wx             = gx / 32;
   const size_t numWarps = (gridDim.x * blockDim.x + 32 - 1) / 32;
 
-  if (0 == lx)
-  {
-    for (size_t i = wx * stride; i < count; i += numWarps * stride)
-    {
+  if (0 == lx) {
+    for (size_t i = wx * stride; i < count; i += numWarps * stride) {
       ptr[i] = 0;
     }
   }
@@ -52,9 +50,9 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
 
   const size_t pageSize = page_size();
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes   = 1ULL << static_cast<size_t>(state.range(0));
   const int src_numa = state.range(1);
-  const int dst_gpu = state.range(2);
+  const int dst_gpu  = state.range(2);
 
   numa_bind_node(src_numa);
 
@@ -67,7 +65,6 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to set CUDA src device");
     return;
   }
-
 
   char *ptr = nullptr;
   if (PRINT_IF_ERROR(cudaMallocManaged(&ptr, bytes))) {
@@ -94,7 +91,6 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
   }
   defer(cudaEventDestroy(stop));
 
-
   for (auto _ : state) {
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId);
     if (err == cudaErrorInvalidDevice) {
@@ -109,7 +105,7 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
     }
 
     cudaEventRecord(start);
-    gpu_write<<<256,256>>>(ptr, bytes, pageSize);
+    gpu_write<<<256, 256>>>(ptr, bytes, pageSize);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
 
@@ -119,14 +115,14 @@ static void NUMAUM_Coherence_HostToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
 
   numa_bind_node(-1);
-
 }
 
 BENCHMARK(NUMAUM_Coherence_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8

@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -13,12 +15,9 @@
 
 #define NAME "NUMAUM/Coherence/GPUToHostThreads"
 
-
 template <bool NOOP = false>
-__global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
-{
-  if (NOOP)
-  {
+__global__ void gpu_write(char *ptr, const size_t count, const size_t stride) {
+  if (NOOP) {
     return;
   }
 
@@ -27,13 +26,11 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   // lane ID 0-31
   const size_t lx = gx & 31;
   // warp ID
-  size_t wx = gx / 32;
+  size_t wx             = gx / 32;
   const size_t numWarps = (gridDim.x * blockDim.x + 32 - 1) / 32;
 
-  if (0 == lx)
-  {
-    for (size_t i = wx * stride; i < count; i += numWarps * stride)
-    {
+  if (0 == lx) {
+    for (size_t i = wx * stride; i < count; i += numWarps * stride) {
       ptr[i] = 0;
     }
   }
@@ -54,9 +51,9 @@ static void NUMAUM_Coherence_GPUToHostThreads(benchmark::State &state) {
   const size_t pageSize = page_size();
 
   const size_t threads = state.range(0);
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(1));
-  const int numa_id = state.range(2);
-  const int cuda_id = state.range(3);
+  const auto bytes     = 1ULL << static_cast<size_t>(state.range(1));
+  const int numa_id    = state.range(2);
+  const int cuda_id    = state.range(3);
 
   omp_set_num_threads(threads);
   if (threads != omp_get_max_threads()) {
@@ -93,7 +90,7 @@ static void NUMAUM_Coherence_GPUToHostThreads(benchmark::State &state) {
 
     cudaError_t err = cudaMemPrefetchAsync(ptr, bytes, cuda_id);
     if (cudaErrorInvalidDevice == err) {
-      gpu_write<<<256,256>>>(ptr, bytes, pageSize);
+      gpu_write<<<256, 256>>>(ptr, bytes, pageSize);
     }
     if (PRINT_IF_ERROR(cudaDeviceSynchronize())) {
       state.SkipWithError(NAME " failed to synchronize");
@@ -101,13 +98,11 @@ static void NUMAUM_Coherence_GPUToHostThreads(benchmark::State &state) {
     }
     state.ResumeTiming();
 
-
-  #pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
     for (size_t i = 0; i < bytes; i += pageSize) {
       benchmark::DoNotOptimize(ptr[i] = 0);
     }
     benchmark::ClobberMemory();
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
@@ -118,3 +113,5 @@ static void NUMAUM_Coherence_GPUToHostThreads(benchmark::State &state) {
 }
 
 BENCHMARK(NUMAUM_Coherence_GPUToHostThreads)->Apply(ArgsThreadsCountNumaGpu)->UseRealTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8

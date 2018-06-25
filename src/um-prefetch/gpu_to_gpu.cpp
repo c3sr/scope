@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -13,7 +15,6 @@
 
 #define NAME "UM/Prefetch/GPUToGPU"
 
-
 static void UM_Prefetch_GPUToGPU(benchmark::State &state) {
 
   if (!has_cuda) {
@@ -21,7 +22,7 @@ static void UM_Prefetch_GPUToGPU(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int src_gpu = state.range(1);
   const int dst_gpu = state.range(2);
 
@@ -33,7 +34,6 @@ static void UM_Prefetch_GPUToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to reset CUDA src device");
     return;
   }
-
 
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
     state.SkipWithError(NAME " failed to set CUDA dst device");
@@ -90,12 +90,12 @@ static void UM_Prefetch_GPUToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
-
 }
 
 BENCHMARK(UM_Prefetch_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseManualTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8

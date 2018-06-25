@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -25,9 +27,9 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes   = 1ULL << static_cast<size_t>(state.range(0));
   const int src_numa = state.range(1);
-  const int dst_gpu = state.range(2);
+  const int dst_gpu  = state.range(2);
 
   numa_bind_node(src_numa);
 
@@ -66,7 +68,6 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
   }
   defer(cudaEventDestroy(stop));
 
-
   for (auto _ : state) {
     if (PRINT_IF_ERROR(cudaMemPrefetchAsync(ptr, bytes, cudaCpuDeviceId))) {
       state.SkipWithError(NAME " failed to move data to src");
@@ -91,7 +92,6 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
@@ -101,3 +101,5 @@ static void NUMAUM_Prefetch_HostToGPU(benchmark::State &state) {
 }
 
 BENCHMARK(NUMAUM_Prefetch_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8

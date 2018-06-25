@@ -1,3 +1,5 @@
+#if CUDA_VERSION_MAJOR >= 8
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -14,10 +16,8 @@
 #define NAME "UM/Coherence/GPUToGPU"
 
 template <bool NOOP = false>
-__global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
-{
-  if (NOOP)
-  {
+__global__ void gpu_write(char *ptr, const size_t count, const size_t stride) {
+  if (NOOP) {
     return;
   }
 
@@ -26,13 +26,11 @@ __global__ void gpu_write(char *ptr, const size_t count, const size_t stride)
   // lane ID 0-31
   const size_t lx = gx & 31;
   // warp ID
-  size_t wx = gx / 32;
+  size_t wx             = gx / 32;
   const size_t numWarps = (gridDim.x * blockDim.x + 32 - 1) / 32;
 
-  if (0 == lx)
-  {
-    for (size_t i = wx * stride; i < count; i += numWarps * stride)
-    {
+  if (0 == lx) {
+    for (size_t i = wx * stride; i < count; i += numWarps * stride) {
       ptr[i] = 0;
     }
   }
@@ -47,11 +45,9 @@ static void UM_Coherence_GPUToGPU(benchmark::State &state) {
 
   const size_t pageSize = page_size();
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int src_gpu = state.range(1);
   const int dst_gpu = state.range(2);
-
-
 
   if (PRINT_IF_ERROR(utils::cuda_reset_device(src_gpu))) {
     state.SkipWithError(NAME " failed to reset CUDA src device");
@@ -103,9 +99,8 @@ static void UM_Coherence_GPUToGPU(benchmark::State &state) {
       return;
     }
 
-
     cudaEventRecord(start);
-    gpu_write<<<256,256>>>(ptr, bytes, pageSize);
+    gpu_write<<<256, 256>>>(ptr, bytes, pageSize);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
 
@@ -115,12 +110,12 @@ static void UM_Coherence_GPUToGPU(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(millis / 1000);
-
   }
 
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
-
 }
 
 BENCHMARK(UM_Coherence_GPUToGPU)->Apply(ArgsCountGpuGpuNoSelf)->MinTime(0.1)->UseManualTime();
+
+#endif // CUDA_VERSION_MAJOR >= 8
