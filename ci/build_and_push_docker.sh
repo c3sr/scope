@@ -59,7 +59,7 @@ if [ "$DIRTY" != 0 ]; then
     TAG=$TAG-dirty
 fi
 
-or_die docker build -f $ARCH.cuda75.Dockerfile -t $REPO:$ARCH-cuda75-$TAG .
+# or_die docker build -f $ARCH.cuda75.Dockerfile -t $REPO:$ARCH-cuda75-$TAG .
 or_die docker build -f $ARCH.cuda80.Dockerfile -t $REPO:$ARCH-cuda80-$TAG .
 or_die docker build -f $ARCH.cuda92.Dockerfile -t $REPO:$ARCH-cuda92-$TAG .
 
