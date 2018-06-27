@@ -55,7 +55,7 @@ if [ "$DIRTY" != 0 ]; then
 fi
 
 # if DOCKER_CUDA is set
-if [ -n ${DOCKER_CUDA+x} ]; then
+if [[ ! -z ${DOCKER_CUDA+x} ]]; then
     or_die docker build -f $ARCH.cuda${DOCKER_CUDA}.Dockerfile -t $REPO:$ARCH-cuda${DOCKER_CUDA}-$TAG .
     set +x
     echo "$DOCKER_PASSWORD" | or_die docker login --username "$DOCKER_USERNAME" --password-stdin
