@@ -48,6 +48,7 @@ env:
   - CXX_COMPILER=g++-7
   - CMAKE_CXX_COMPILER=g++-7
   - CC=gcc-7
+  - CXX=g++-7
   - CMAKE_C_COMPILER=gcc-7
   - CMAKE_CUDA_HOST_COMPILER=g++7
   - CMAKE_CUDA_COMPILER=/usr/local/cuda-9.2/bin/nvcc
@@ -56,6 +57,8 @@ env:
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
+  - CMAKE_VERSION=3.11.1
+  - CMAKE_ROOT=${HOME}/.cmake
 matrix:
   include:
     - env: DO_BUILD=0 DOCKER_CUDA=75
@@ -70,17 +73,9 @@ matrix:
     - env: DO_BUILD=1 USE_HUNTER=OFF
 
 before_install:
-- sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
-- sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-- echo "Installing CMAKE"
-- export CMAKE_VERSION=3.11.1
-- mkdir -p $HOME/.cmake
-- cd $HOME/.cmake
-- wget -q https://cmake.org/files/v3.11/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
-- sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=$HOME/.cmake --exclude-subdir
-- ls -l $HOME/.cmake
-- export PATH=$HOME/.cmake/bin:$PATH
-- which cmake
+- cd ${TRAVIS_BUILD_DIR}
+- ./ci/install_cmake.sh
+- export PATH=${CMAKE_ROOT}/bin:$PATH
 - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
 script:
 - cd ${TRAVIS_BUILD_DIR}
