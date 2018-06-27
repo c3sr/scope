@@ -43,26 +43,24 @@ include(CMakePackageConfigHelpers)
 
 if (CONFIG_USE_HUNTER)
 
-hunter_add_package(Sugar)
-include(${SUGAR_ROOT}/cmake/Sugar)
+  hunter_add_package(Sugar)
+  include(${SUGAR_ROOT}/cmake/Sugar)
 
-hunter_add_package(benchmark)
-find_package(benchmark CONFIG REQUIRED)
+  hunter_add_package(benchmark)
+  hunter_add_package(cub)
+  hunter_add_package(fmt)
+  hunter_add_package(spdlog)
+
+  find_package(benchmark CONFIG REQUIRED)
+  find_package(cub CONFIG REQUIRED)
+  find_package(fmt CONFIG REQUIRED)
+  find_package(spdlog CONFIG REQUIRED)
 
 # hunter_add_package(nlohmann_json)
 # find_package(nlohmann_json CONFIG REQUIRED)
 
-hunter_add_package(fmt)
-find_package(fmt CONFIG REQUIRED)
-
-hunter_add_package(spdlog)
-find_package(spdlog CONFIG REQUIRED)
-
 # hunter_add_package(cxxopts)
 # find_package(cxxopts CONFIG REQUIRED)
-
-hunter_add_package(cub)
-find_package(cub CONFIG REQUIRED)
 
 #hunter_add_package(debug_assert)
 #find_package(debug_assert CONFIG REQUIRED)
@@ -79,6 +77,15 @@ find_package(cub CONFIG REQUIRED)
 # hunter_add_package(Protobuf)
 # find_package(Protobuf CONFIG REQUIRED)
 
+else()
+  # Add Sugar
+  set(SUGAR_ROOT "/path/to/sugar/root/directory")
+  list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/core")
+  
+  find_package(cub REQUIRED)
+  find_package(spdlog REQUIRED)
+  find_package(benchmark REQUIRED)
+  find_package(fmt REQUIRED)
 endif (CONFIG_USE_HUNTER)
 
 
