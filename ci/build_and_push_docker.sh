@@ -1,11 +1,5 @@
 #! /bin/bash
 
-# This script should build and push docker images in travis or on development systems
-# It will tag the docker image as dirty if there are
-# uncommited staged changes,
-# changes that could be staged
-# untracked, unignored files
-
 set -x
 
 function or_die () {
@@ -25,16 +19,17 @@ else
     BRANCH=`git rev-parse --abbrev-ref HEAD`
 fi
 
+# replace / with -
+BRANCH="${BRANCH//\//-}"
 
 
 ARCH=`uname -m`
-
 if [ $ARCH == x86_64 ]; then
     ARCH=amd64
 fi
 
 REPO=raiproject/microbench
-TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo "${BRANCH//\//-}"; fi`
+TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo "${BRANCH}"; fi`
 
 echo "$REPO"
 echo "$TAG"
@@ -59,15 +54,14 @@ if [ "$DIRTY" != 0 ]; then
     TAG=$TAG-dirty
 fi
 
-# or_die docker build -f $ARCH.cuda75.Dockerfile -t $REPO:$ARCH-cuda75-$TAG .
-or_die docker build -f $ARCH.cuda80.Dockerfile -t $REPO:$ARCH-cuda80-$TAG .
-or_die docker build -f $ARCH.cuda92.Dockerfile -t $REPO:$ARCH-cuda92-$TAG .
-
-set +x
-echo "$DOCKER_PASSWORD" | or_die docker login --username "$DOCKER_USERNAME" --password-stdin
-set -x
-
-or_die docker push $REPO
+# if DOCKER_CUDA is set
+if [ -n ${DOCKER_CUDA+x} ]; then
+    or_die docker build -f $ARCH.cuda${DOCKER_CUDA}.Dockerfile -t $REPO:$ARCH-cuda${DOCKER_CUDA}-$TAG .
+    set +x
+    echo "$DOCKER_PASSWORD" | or_die docker login --username "$DOCKER_USERNAME" --password-stdin
+    set -x
+    or_die docker push $REPO
+fi
 
 set +x
 exit 0

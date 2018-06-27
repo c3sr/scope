@@ -53,6 +53,17 @@ env:
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
+matrix:
+  include:
+    - DO_BUILD=0 DOCKER_CUDA=75
+    - DO_BUILD=0 DOCKER_CUDA=80 
+    - DO_BUILD=0 DOCKER_CUDA=92 
+    - DO_BUILD=1 USE_HUNTER=1
+    - DO_BUILD=1 USE_HUNTER=0
+  allow_failures:
+    - DO_BUILD=0 DOCKER_CUDA=75
+    - DO_BUILD=1 USE_HUNTER=0
+
 before_install:
 - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
 - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
@@ -67,11 +78,6 @@ before_install:
 - which cmake
 - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
 script:
-- cd $TRAVIS_BUILD_DIR
-- mkdir -p build && cd build
-- cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-  ..
-- make
-- cd $TRAVIS_BUILD_DIR
+- ./ci/build.sh
 - ./ci/build_and_push_docker.sh
 
