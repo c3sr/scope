@@ -1,11 +1,34 @@
-list: &packagelist
-  - libnccl2
-  - cuda-cudart-dev-9-2
-  - cuda-libraries-dev-9-2
-  - cuda-command-line-tools-9-2
-  - cuda-cublas-dev-9-2
-  - libcudnn7
-  - libcudnn7-dev
+buildaddons: &buildaddons
+  apt:
+    sources:
+    - sourceline: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64
+        /
+      key_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+    - sourceline: deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64
+        /
+    - ubuntu-toolchain-r-test
+    packages:
+    - libopenblas-dev
+    - libgsl0-dev
+    - liblapacke-dev
+    - google-perftools
+    - libgoogle-perftools-dev
+    - graphviz
+    - cmake
+    - libmicrohttpd-dev
+    - libssl-dev
+    - libpci-dev
+    - libhwloc-dev
+    - libnuma-dev
+    - gcc-7
+    - g++-7
+    - libnccl2
+    - cuda-cudart-dev-9-2
+    - cuda-libraries-dev-9-2
+    - cuda-command-line-tools-9-2
+    - cuda-cublas-dev-9-2
+    - libcudnn7
+    - libcudnn7-dev
 
 language: cpp
 dist: trusty
@@ -19,36 +42,7 @@ cache:
   - "$HOME/.hunter"
   - "$HOME/.cmake"
 addons:
-  apt:
-    sources:
-    - sourceline: deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64
-        /
-      key_url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
-    - sourceline: deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64
-        /
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-7
-    - g++-7
-    - libopenblas-dev
-    - libgsl0-dev
-    - liblapacke-dev
-    - google-perftools
-    - libgoogle-perftools-dev
-    - graphviz
-    - cmake
-    - libmicrohttpd-dev
-    - libssl-dev
-    - libpci-dev
-    - libhwloc-dev
-    - libnuma-dev
-    - libnccl2
-    - cuda-cudart-dev-9-2
-    - cuda-libraries-dev-9-2
-    - cuda-command-line-tools-9-2
-    - cuda-cublas-dev-9-2
-    - libcudnn7
-    - libcudnn7-dev
+  
 env:
   global:
   - CXX_COMPILER=g++-7
@@ -68,13 +62,9 @@ matrix:
     - env: DO_BUILD=0 DOCKER_CUDA=80 
     - env: DO_BUILD=0 DOCKER_CUDA=92 
     - env: DO_BUILD=1 USE_HUNTER=ON
-      addons:
-        apt:
-        addons:
-          apt:
-            packages: *packagelist
-
+      addons: *buildaddons
     - env: DO_BUILD=1 USE_HUNTER=OFF
+      addons: *buildaddons
   allow_failures:
     - env: DO_BUILD=0 DOCKER_CUDA=75
     - env: DO_BUILD=1 USE_HUNTER=OFF
