@@ -55,14 +55,14 @@ env:
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
 matrix:
   include:
-    - DO_BUILD=0 DOCKER_CUDA=75
-    - DO_BUILD=0 DOCKER_CUDA=80 
-    - DO_BUILD=0 DOCKER_CUDA=92 
-    - DO_BUILD=1 USE_HUNTER=1
-    - DO_BUILD=1 USE_HUNTER=0
+    - env: DO_BUILD=0 DOCKER_CUDA=75
+    - env: DO_BUILD=0 DOCKER_CUDA=80 
+    - env: DO_BUILD=0 DOCKER_CUDA=92 
+    - env: DO_BUILD=1 USE_HUNTER=1
+    - env: DO_BUILD=1 USE_HUNTER=0
   allow_failures:
-    - DO_BUILD=0 DOCKER_CUDA=75
-    - DO_BUILD=1 USE_HUNTER=0
+    - env: DO_BUILD=0 DOCKER_CUDA=75
+    - env: DO_BUILD=1 USE_HUNTER=0
 
 before_install:
 - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
