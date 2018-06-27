@@ -287,48 +287,51 @@ static void CUDNN_Impl(benchmark::State& state) {
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
 #define CONV_PROBLEMS ALL_CONV_PROBLEMS
 
-#define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_0)->CONV_PROBLEMS()->UseManualTime();                          \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_1)->CONV_PROBLEMS()->UseManualTime();                          \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT)->CONV_PROBLEMS()->UseManualTime();                        \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_​FFT_TILING)->CONV_PROBLEMS()->UseManualTime();              \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                   \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_​WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
 
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT8);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT32);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_DOUBLE);
+#define BENCHMARK_CUDNN(b)                                                                                             \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseManualTime();                   \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM)->CONV_PROBLEMS()->UseManualTime();           \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_GEMM)->CONV_PROBLEMS()->UseManualTime();                            \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT)->CONV_PROBLEMS()->UseManualTime();                          \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT)->CONV_PROBLEMS()->UseManualTime();                             \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING)->CONV_PROBLEMS()->UseManualTime();                      \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                        \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
+
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT8);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT32);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_DOUBLE);
