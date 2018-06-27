@@ -1,3 +1,12 @@
+list: &packagelist
+  - libnccl2
+  - cuda-cudart-dev-9-2
+  - cuda-libraries-dev-9-2
+  - cuda-command-line-tools-9-2
+  - cuda-cublas-dev-9-2
+  - libcudnn7
+  - libcudnn7-dev
+
 language: cpp
 dist: trusty
 sudo: true
@@ -59,6 +68,12 @@ matrix:
     - env: DO_BUILD=0 DOCKER_CUDA=80 
     - env: DO_BUILD=0 DOCKER_CUDA=92 
     - env: DO_BUILD=1 USE_HUNTER=ON
+      addons:
+        apt:
+        addons:
+          apt:
+            packages: *packagelist
+
     - env: DO_BUILD=1 USE_HUNTER=OFF
   allow_failures:
     - env: DO_BUILD=0 DOCKER_CUDA=75
