@@ -13,13 +13,17 @@ function or_die () {
 
 source ~/.bashrc
 
+if [[ ${DO_BUILD} == 0 ]]; then
+    echo "DO_BUILD == 0, not installing cmake"
+    exit 0
+fi
+
 if [[ ! -z ${CMAKE_VERSION+x} ]]; then
-    echo "Installing CMake"
     v=( ${CMAKE_VERSION//./ } )  # replace points, split into array
-    MAJOR_MINOR="${a[0]}.${a[1]}" # only major and minor version
+    MAJOR_MINOR="${v[0]}.${v[1]}" # only major and minor version
     mkdir -p ${CMAKE_ROOT}
     cd ${CMAKE_ROOT}
-    wget -q https://cmake.org/files/v${MAJOR_MINOR}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+    travis_retry wget -q https://cmake.org/files/v${MAJOR_MINOR}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
     sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=${CMAKE_ROOT} --exclude-subdir
     ls -l ${CMAKE_ROOT}
 fi
