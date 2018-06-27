@@ -13,11 +13,15 @@ function or_die () {
 
 source ~/.bashrc
 
-
 if [[ $DO_BUILD == 1 ]]; then
     cd ${TRAVIS_BUILD_DIR}
     or_die mkdir -p build && cd build
-    or_die cmake -DCONFIG_USE_TRAVIS=ON -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} ..
+    or_die cmake \
+        -DCONFIG_USE_HUNTER=${USE_HUNTER} \
+        -DCONFIG_USE_TRAVIS=ON \
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} \
+        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} \
+        ..
     or_die make
 fi
 
