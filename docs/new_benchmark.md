@@ -15,9 +15,15 @@ Briefly, the benchmark should be a function that takes `benchmark::State& state`
 
 A typical benchmark might consist of one or more source files and one or more header files.
 Benchmarks are presently grouped into directories representing what they are measuring.
+You can duplicate `src/example` to get started.
+
+    cp -r src/example src/mynewbenchmark
 
 ## Run `tools/generate_sugar_files.py`
+
+    tools/generate_sugar_files.py
 
 This generates the `sugar.cmake` files in all of the source directories.
 It will add your new benchmark source files to the build system.
 It can be run from anywhere, it will only modify the benchmark source directory.
+

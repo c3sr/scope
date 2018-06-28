@@ -4,7 +4,7 @@
 |--|
 | [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
 
-## Installing latest cmake
+## Install a Recent CMake
 
 cmake version >=3.8 is required.
 (there's a problem with hunter using cmake 3.10.2)
@@ -39,6 +39,10 @@ To compile the project run the following commands
     cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON ..
     make
     
+The build system uses Hunter to download all dependencies.
+If you have trouble downloading dependencies, [check to make sure](docs/hunter_problems.md) Hunter/CMake can use SSL.
+Or you can forego Hunter entirely and [provide your own dependencies](docs/build_without_hunter.md).
+
 if you get errors about nvcc not supporting your gcc compiler, then you may want to use
 
     cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=`which gcc-6` .. 
@@ -49,37 +53,29 @@ You can optionally choose your own CUDA archs that you would like to be compiled
 
 The accepted syntax is the same as the `CUDA_SELECT_NVCC_ARCH_FLAGS` syntax in the FindCUDA module.
 
+These documents describe how to provide your own dependencies instead of relying on Hunter to download them
 
 ## Available Benchmarks
 
-The following micro-benchmarks are currently available
+The available benchmarks and descriptions are listed [here](docs/benchmark_descriptions.md).
 
-| Benchmarks            |
-| --------------------- |
-| CUDAMemcpyToGPU       |
-| CUDAPinnedMemcpyToGPU |
-| C_DAXPY               |
-| C_SGEMM               |
-| CUBLAS_SGEMM          |
-| CUDA_SGEMM_BASIC      |
-| CUDA_SGEMM_TILED      |
-| CUDA_VECTOR_ADD       |
+you can filter the benchmarks that are run with a regular expression passed to `--benchmark_filter`.
 
-you can run each individually using
-
-./bench --benchmark_filter=[name_of_benchmark]
+    ./bench --benchmark_filter=[regex]
 
 for example
 
-./bench --benchmark_filter=SGEMM
+    ./bench --benchmark_filter=SGEMM
 
 futher controls over the benchmarks are explained in the `--help` option
 
 ## Run all the benchmarks
 
+This is not generally recommended, as it will take quite some time.
+
     ./bench
 
-The above will output to stdout somthing like 
+The above will output to stdout something like 
 
     ------------------------------------------------------------------------------
     Benchmark                       Time           CPU Iterations UserCounters...
@@ -105,7 +101,6 @@ Output as JSON using
     ./bench --benchmark_out_format=json --benchmark_out=test.json
     
 or preferably 
-
 
     ./bench --benchmark_out_format=json --benchmark_out=`hostname`.json
 
@@ -141,7 +136,6 @@ You can run benchmarks in the following way (probably with the `--benchmark_filt
 
     nvidia-docker run --privileged --rm -v `readlink -f .`:/data -u `id -u`:`id -g` raiproject/microbench:amd64-latest ./numa-separate-process.sh dgx bench /data/sync2
 
-
 * `--privileged` is needed to set the NUMA policy for NUMA benchmarks.
 * `` -v `readlink -f .`:/data `` maps the current directory into the container as `/data`.
 * `` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write out to `/data`, which is mapped to the current directory.
@@ -155,13 +149,7 @@ If some of the third-party code compiled by hunter needs a different compiler, y
 
 ## Adding a new benchmark
 
-You may start by duplicating `src/example`.
-
-    cp src/example src/newbenchmark
-
-To build the benchmark, you will need to inform the build system about the new benchmark. Run
-
-    tools/genenerate_sugar_files.py
+Read [here](docs/new_benchmark.md) for more information.
 
 ## Resources
 
