@@ -8,7 +8,7 @@
 #include "init/init.hpp"
 #include "utils/utils.hpp"
 
-#include "numamemcpy-duplex/args.hpp" 
+#include "numamemcpy-duplex/args.hpp" // need to make file
 
 #define NAME "DUPLEX/Memcpy/HostToGPU" //correct name?
 
@@ -26,14 +26,20 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
 
   const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
   const int numa = state.range(1);
-  const int gpu = state.range(2);
+  const int gpu1 = state.range(2);
 
-  if (PRINT_IF_ERROR(utils::cuda_reset_device(gpu))) {
+  numa_bind_node(numa); //do I need this line
+//stopped working here do i rest host device
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(numa))) {
+    state.SkipWithError(NAME " failed to reset CUDA device");
+    return;
+  }
+  if (PRINT_IF_ERROR(utils::cuda_reset_device(gpu1))) {
     state.SkipWithError(NAME " failed to reset CUDA device");
     return;
   }
 
-  // There are two copies, one numa -> gpu, one gpu -> numa
+  // There are two copies, one host -> gpu1, one gpu1 -> host
 
   // Create One stream per copy
   cudaStream_t stream1, stream2;
@@ -55,38 +61,9 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
   std::vector<char *> srcs;
   std::vector<char *> dsts;
 
-  // create a source and destination allocation for first copy: host -> gpu1
+  // create a source and destination allocation for first copy
   char *ptr;
-  if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
-    state.SkipWithError(NAME " failed to set device");
-    return;
-  }
-  if(PRINT_IF_ERROR(cudaMallocHost(&ptr, bytes))){
-    state.SkipWithError(NAME " failed to perform cudaMallocHost");
-    return;
-  }
-  srcs.push_back(ptr);
-  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform src cudaMemset");
-    return;
-  }
-
-  // gpu destination
-  if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
-    state.SkipWithError(NAME " failed to set device");
-    return;
-  }
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
-    state.SkipWithError(NAME " failed to perform cudaMalloc");
-    return;
-  }
-  dsts.push_back(ptr);
-  if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
-    state.SkipWithError(NAME " failed to perform dst cudaMemset");
-    return;
-  }
-  // create a source and destination for second copy: gpu -> host
-  if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
@@ -99,13 +76,39 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
-  //destination
-  if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-  if(PRINT_IF_ERROR(cudaMallocHost(&ptr, bytes))){
-    state.SkipWithError(NAME " failed to perform cudaMallocHost");
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  dsts.push_back(ptr);
+  if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
+    state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
+  // create a source and destination for second copy
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  srcs.push_back(ptr);
+  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+    state.SkipWithError(NAME " failed to perform src cudaMemset");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
     return;
   }
   dsts.push_back(ptr);

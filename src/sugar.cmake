@@ -14,6 +14,7 @@ include(sugar_include)
 
 sugar_include(um-coherence)
 sugar_include(gemv)
+sugar_include(numamemcpy-duplex)
 sugar_include(numaum-latency)
 sugar_include(numamemcpy)
 sugar_include(launch)
