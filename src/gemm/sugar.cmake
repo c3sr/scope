@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED GEMM_SUGAR_CMAKE_)
+if(DEFINED SRC_GEMM_SUGAR_CMAKE_)
   return()
 else()
-  set(GEMM_SUGAR_CMAKE_ 1)
+  set(SRC_GEMM_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
@@ -19,13 +19,13 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    cublas.cpp
     cblas.cpp
+    cublas.cpp
 )
 
 sugar_files(
     BENCHMARK_CUDA_SOURCES
-    cutlass.cu
     cuda.cu
+    cutlass.cu
 )
 
