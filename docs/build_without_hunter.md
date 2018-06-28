@@ -37,6 +37,8 @@ spdlog uses fmt 4.0.0, so microbench does too.
 
 ## spdlog 0.17.0
 
-    apt-get install libspdlog-dev, or
+    apt-get install libspdlog-dev
+    
+or
 
 [Github Release](https://github.com/gabime/spdlog/releases/tag/v0.17.0)
