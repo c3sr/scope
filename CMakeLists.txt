@@ -79,14 +79,25 @@ if (CONFIG_USE_HUNTER)
 
 else()
   # Add Sugar
-  set(SUGAR_ROOT "/path/to/sugar/root/directory")
-  list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/core")
+  message(STATUS "looking for Sugar in: ${SUGAR_ROOT}")
+  list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/module")
+  message(STATUS "${CMAKE_MODULE_PATH}")
   
   message(STATUS "looking for CUB in: ${CUB_ROOT}")
   include_directories(${CUB_ROOT}/include)
-  find_package(spdlog REQUIRED)
-  find_package(benchmark REQUIRED)
-  find_package(fmt REQUIRED)
+    
+  message(STATUS "looking for fmt in: ${FMT_ROOT}")
+  include_directories(${FMT_ROOT}/include)
+  link_directories(${FMT_ROOT}/lib)
+
+  message(STATUS "looking for spdlog in: ${SPDLOG_ROOT}")
+  include_directories(${SPDLOG_ROOT}/include)
+  link_directories(${SPDLOG_ROOT}/lib)
+
+  message(STATUS "looking for benchmark in: ${BENCHMARK_ROOT}")
+  include_directories(${BENCHMARK_ROOT}/include)
+  link_directories(${BENCHMARK_ROOT}/lib)
+
 endif (CONFIG_USE_HUNTER)
 
 

@@ -2,7 +2,7 @@ FROM nvidia/cuda:9.2-cudnn7-devel
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     curl \
-    libgtest-dev \
+    libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://cmake.org/files/v3.11/cmake-3.11.4-Linux-x86_64.tar.gz -o cmake.tar.gz \
@@ -13,6 +13,7 @@ RUN curl -sSL https://cmake.org/files/v3.11/cmake-3.11.4-Linux-x86_64.tar.gz -o 
 
 RUN cmake --version
 
+ENV HOME /opt
 ENV BECNHMARK_ROOT ${HOME}/.benchmark
 ENV CUB_ROOT ${HOME}/.cub
 ENV FMT_ROOT ${HOME}/.fmt
@@ -23,11 +24,10 @@ ENV SUGAR_ROOT ${HOME}/.sugar
 # build gtest
 RUN cd $HOME \
     && curl -sSL https://github.com/google/googletest/archive/release-1.8.0.tar.gz -o gtest.tar.gz \
-    && mkdir -p gtest \
+    && mkdir -p gtest/build \
     && tar -xf gtest.tar.gz --strip-components=1 -C gtest \
-    && mkdir -p ${GTEST_ROOT} \
-    && cd ${GTEST_ROOT} \
-    && cmake $HOME/gtest  \
+    && cd gtest/build \
+    && cmake $HOME/gtest -DCMAKE_INSTALL_PREFIX=${GTEST_ROOT} \
     && make -j4 install \
     && cd ${HOME}
 
@@ -50,7 +50,7 @@ RUN cd $HOME \
     && cd sugar \
     && mkdir -p build \
     && cd build \
-    && cmake --prefix=${SUGAR_ROOT} .. \
+    && cmake -DCMAKE_INSTALL_PREFIX=${SUGAR_ROOT} .. \
     && make -j4 install \
     && cd $HOME \
     && rm sugar.tar.gz
@@ -96,6 +96,7 @@ RUN mkdir -p build \
     -DCONFIG_USE_HUNTER=OFF \
     -DCUB_ROOT=${CUB_ROOT} \
     -DSUGAR_ROOT=${SUGAR_ROOT} \
+    -DFMT_ROOT=${FMT_ROOT} \
     -DCMAKE_BUILD_TYPE=Release \
     -DUSE_CUDA_EVENTS=ON \
     -DNVCC_ARCH_FLAGS="2.0 3.0 3.2 3.5 3.7 5.0 5.2 5.3" \
