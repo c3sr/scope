@@ -51,9 +51,9 @@ if (CONFIG_USE_HUNTER)
   hunter_add_package(fmt)
   hunter_add_package(spdlog)
 
-  find_package(benchmark CONFIG REQUIRED)
+
   find_package(cub CONFIG REQUIRED)
-  find_package(fmt CONFIG REQUIRED)
+
   find_package(spdlog CONFIG REQUIRED)
 
 # hunter_add_package(nlohmann_json)
@@ -83,23 +83,14 @@ else()
   list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/module")
   message(STATUS "${CMAKE_MODULE_PATH}")
   
-  message(STATUS "looking for CUB in: ${CUB_ROOT}")
-  include_directories(${CUB_ROOT}/include)
-    
-  message(STATUS "looking for fmt in: ${FMT_ROOT}")
-  include_directories(${FMT_ROOT}/include)
-  link_directories(${FMT_ROOT}/lib)
-
-  message(STATUS "looking for spdlog in: ${SPDLOG_ROOT}")
-  include_directories(${SPDLOG_ROOT}/include)
-  link_directories(${SPDLOG_ROOT}/lib)
-
-  message(STATUS "looking for benchmark in: ${BENCHMARK_ROOT}")
-  include_directories(${BENCHMARK_ROOT}/include)
-  link_directories(${BENCHMARK_ROOT}/lib)
+  find_package(cub REQUIRED)
+  include_directories(${cub_INCLUDE_DIR})
 
 endif (CONFIG_USE_HUNTER)
 
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
 
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
@@ -254,7 +245,7 @@ target_link_libraries(bench benchmark::benchmark)
 # target_link_libraries(bench nlohmann_json)
 target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
-target_link_libraries(bench cub::cub)
+# target_link_libraries(bench cub::cub)
 # target_link_libraries(bench rangev3)
 # target_link_libraries(bench type_safe)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)

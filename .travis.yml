@@ -82,4 +82,3 @@ script:
 - ./ci/build.sh
 - cd ${TRAVIS_BUILD_DIR}
 - ./ci/build_and_push_docker.sh
-

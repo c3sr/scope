@@ -2,6 +2,7 @@ FROM nvidia/cuda:9.2-cudnn7-devel
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     curl \
+    libnuma-dev \
     libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -14,7 +15,7 @@ RUN curl -sSL https://cmake.org/files/v3.11/cmake-3.11.4-Linux-x86_64.tar.gz -o 
 RUN cmake --version
 
 ENV HOME /opt
-ENV BECNHMARK_ROOT ${HOME}/.benchmark
+ENV BENCHMARK_ROOT ${HOME}/.benchmark
 ENV CUB_ROOT ${HOME}/.cub
 ENV FMT_ROOT ${HOME}/.fmt
 ENV GTEST_ROOT ${HOME}/.gtest
@@ -75,9 +76,9 @@ RUN cd $HOME \
     && cd $HOME \
     && rm spdlog.tar.gz
 
-# install fmt
+# install fmt 4.0
 RUN cd $HOME \
-    && curl -sSL https://github.com/fmtlib/fmt/archive/5.0.0.tar.gz -o fmt.tar.gz \
+    && curl -sSL https://github.com/fmtlib/fmt/archive/4.0.0.tar.gz -o fmt.tar.gz \
     && mkdir -p fmt/build \
     && tar -xf fmt.tar.gz --strip-components=1 -C fmt \
     && cd fmt/build \
@@ -94,13 +95,12 @@ RUN mkdir -p build \
     && cd build \
     && cmake .. \
     -DCONFIG_USE_HUNTER=OFF \
-    -DCUB_ROOT=${CUB_ROOT} \
+    -DCMAKE_PREFIX_PATH="${BENCHMARK_ROOT};${CUB_ROOT};${FMT_ROOT};${SPDLOG_ROOT};${BENCHMARK_ROOT}" \
     -DSUGAR_ROOT=${SUGAR_ROOT} \
-    -DFMT_ROOT=${FMT_ROOT} \
     -DCMAKE_BUILD_TYPE=Release \
     -DUSE_CUDA_EVENTS=ON \
-    -DNVCC_ARCH_FLAGS="2.0 3.0 3.2 3.5 3.7 5.0 5.2 5.3" \
-    && make VERBOSE=1
+    -DNVCC_ARCH_FLAGS="3.0 3.2 3.5 3.7 5.0 5.2 5.3" \
+    && make -j4 || make VERBOSE=1
 
 RUN mv build/bench /bin/.
 
