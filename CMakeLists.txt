@@ -81,12 +81,14 @@ else()
   # Add Sugar
   message(STATUS "looking for Sugar in: ${SUGAR_ROOT}")
   list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/module")
-  message(STATUS "${CMAKE_MODULE_PATH}")
   
   find_package(cub REQUIRED)
   include_directories(${cub_INCLUDE_DIR})
 
 endif (CONFIG_USE_HUNTER)
+
+find_package(numa)
+find_package(OpenMP)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
@@ -95,9 +97,7 @@ find_package(benchmark CONFIG REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
 find_package(OpenBLAS REQUIRED)
-find_package(OpenMP REQUIRED)
 #find_package(Protobuf REQUIRED)
-
 
 include(sugar_doxygen_generate)
 include(sugar_include)
@@ -254,9 +254,23 @@ target_link_libraries(bench spdlog::spdlog)
 target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
-target_link_libraries(bench numa)
-target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
 
+
+if(${numa_FOUND})
+  add_definitions(-DUSE_NUMA=1)
+  target_link_libraries(bench numa)
+else()
+  add_definitions(-DUSE_NUMA=0)
+  message(WARNING "didn't find NUMA, some benchmarks will be unavailable.")
+endif(${numa_FOUND})
+
+if(${OpenMP_FOUND})
+  add_definitions(-DUSE_OPENMP=1)
+  target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
+else()
+  add_definitions(-DUSE_OPENMP=0)
+  message(WARNING "didn't find OpenMP, some benchmarks will be unavailable.")
+endif(${OpenMP_FOUND})
 
 # Request that bench be built with -std=c++11
 # As this is a public compile feature anything that links to
