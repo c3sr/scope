@@ -1,5 +1,5 @@
-#ifndef NUMA_HPP
-#define NUMA_HPP
+#ifndef UTILS_NUMA_HPP
+#define UTILS_NUMA_HPP
 
 #if USE_NUMA == 1
 
@@ -39,4 +39,4 @@ static inline void numa_bind_node(const int node) {
 
 #endif // USE_NUMA == 1
 
-#endif
+#endif // UTILS_NUMA_HPP
