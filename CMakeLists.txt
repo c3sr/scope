@@ -13,7 +13,6 @@ set(VERBOSE_BUILD ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
-option(USE_CUDA_EVENTS "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
 option(USE_NUMA "Build benchmarks that require NUMA support" ON)
 option(USE_OPENMP "Build benchmarks that require OpenMP support" ON)
@@ -208,10 +207,6 @@ include_directories(bench
   ${CUDA_INCLUDE_DIRS}
   ${CUDNN_INCLUDE_DIR}
 )
-
-if (USE_CUDA_EVENTS)
-  add_definitions(-DUSE_CUDA_EVENTS=1)
-endif(USE_CUDA_EVENTS)
 
 add_definitions(-DPROJECT_NAME=microbench)
 add_definitions(-DCUDA_VERSION_MAJOR=${CUDA_VERSION_MAJOR})

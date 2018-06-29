@@ -21,7 +21,7 @@ WORKDIR microbench
 
 RUN mkdir -p build \
     && cd build \
-    && cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release\
     && make VERBOSE=1
 
 RUN mv build/bench /bin/.

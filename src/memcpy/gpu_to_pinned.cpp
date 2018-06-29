@@ -43,23 +43,17 @@ static void CUDA_Memcpy_GPUToPinned(benchmark::State &state) {
   }
   defer(cudaFreeHost(dst));
 
-#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
-#endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
-#endif // USE_CUDA_EVENTS
 
     auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToHost);
 
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
-#endif // USE_CUDA_EVENTS
 
     state.PauseTiming();
 
@@ -67,14 +61,12 @@ static void CUDA_Memcpy_GPUToPinned(benchmark::State &state) {
       state.SkipWithError("CUDA/MEMCPY/GPUToPinned failed to perform memcpy");
       break;
     }
-#ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/MEMCPY/GPUToPinned failed to get elapsed time");
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-#endif // USE_CUDA_EVENTS
     state.ResumeTiming();
   }
 
@@ -82,8 +74,4 @@ static void CUDA_Memcpy_GPUToPinned(benchmark::State &state) {
   state.counters.insert({{"bytes", bytes}});
 }
 
-#ifdef USE_CUDA_EVENTS
 BENCHMARK(CUDA_Memcpy_GPUToPinned)->ALL_ARGS()->UseManualTime();
-#else  // USE_CUDA_EVENTS
-BENCHMARK(CUDA_Memcpy_GPUToPinned)->ALL_ARGS();
-#endif // USE_CUDA_EVENTS

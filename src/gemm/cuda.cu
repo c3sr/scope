@@ -202,16 +202,12 @@ static void CUDA_SGEMM(benchmark::State &state) {
     return;
   }
 
-#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
-#endif //  USE_CUDA_EVENTS
 
   for (auto _ : state) {
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
-#endif // USE_CUDA_EVENTS
 
     switch (IMPLEMENTATION) {
       case CUDA_BLAS_IMPLEMENTATION::BASIC:
@@ -223,12 +219,8 @@ static void CUDA_SGEMM(benchmark::State &state) {
             <<<gridDim, blockDim>>>(d_a, d_b, d_c, numARows, numAColumns, numBRows, numBColumns, numCRows, numCColumns);
         break;
     }
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
-#else  // USE_CUDA_EVENTS
-    const auto cuda_err = cudaDeviceSynchronize();
-#endif // USE_CUDA_EVENTS
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cuda_err)) {
@@ -236,14 +228,12 @@ static void CUDA_SGEMM(benchmark::State &state) {
       break;
     }
 
-#ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError(fmt::format("CUDA/SGEMM/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-#endif // USE_CUDA_EVENTS
 
     state.ResumeTiming();
   }
@@ -269,14 +259,8 @@ static void CUDA_SGEMM_TILED(benchmark::State &state) {
   CUDA_SGEMM<CUDA_BLAS_IMPLEMENTATION::TILED, TILE_WIDTH>(state);
 }
 
-#ifdef USE_CUDA_EVENTS
 BENCHMARK(CUDA_SGEMM_BASIC)->ALL_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 16)->ALL_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 32)->ALL_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 64)->ALL_ARGS()->UseManualTime();
-#else  // USE_CUDA_EVENTS
-BENCHMARK(CUDA_SGEMM_BASIC)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 16)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 32)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_SGEMM_TILED, 64)->ALL_ARGS();
-#endif // USE_CUDA_EVENTS
+

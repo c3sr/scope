@@ -106,16 +106,12 @@ static void CUDA_LAUNCH(benchmark::State &state) {
     return;
   }
 
-#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
-#endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
-#endif // USE_CUDA_EVENTS
 
     for (int ii = 0; ii < LAUNCH_COUNT; ii++) {
       switch (IMPLEMENTATION) {
@@ -131,12 +127,8 @@ static void CUDA_LAUNCH(benchmark::State &state) {
       }
     }
 
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
-#else // USE_CUDA_EVENTS
-    const auto cuda_err = cudaDeviceSynchronize();
-#endif
 
     state.PauseTiming();
 
@@ -144,14 +136,12 @@ static void CUDA_LAUNCH(benchmark::State &state) {
       state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to synchronize", IMPLEMENTATION_NAME).c_str());
       break;
     }
-#ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError(fmt::format("CUDA/LAUNCH/{} failed to get elapsed time", IMPLEMENTATION_NAME).c_str());
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-#endif // USE_CUDA_EVENTS
 
     state.ResumeTiming();
   }
@@ -180,11 +170,8 @@ static void CUDA_LAUNCH_RELU(benchmark::State &state) {
   return CUDA_LAUNCH<CUDA_LAUNCH_IMPLEMENTATION::RELU, T, LAUNCH_COUNT, ITERATION_COUNT, BLOCK_SIZE>(state);
 }
 
-#ifdef USE_CUDA_EVENTS
 #define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->ALL_ARGS()->UseManualTime();
-#else // USE_CUDA_EVENTS
-#define BENCHMARK_CUDA_LAUNCH0(B, ...) BENCHMARK_TEMPLATE(B, __VA_ARGS__)->ALL_ARGS()
-#endif // USE_CUDA_EVENTS
+
 #define BENCHMARK_CUDA_LAUNCH(B, ...)                                                                                  \
   BENCHMARK_CUDA_LAUNCH0(B, char, __VA_ARGS__);                                                                        \
   BENCHMARK_CUDA_LAUNCH0(B, int, __VA_ARGS__);                                                                         \

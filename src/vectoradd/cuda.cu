@@ -94,39 +94,29 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
     return;
   }
 
-#ifdef USE_CUDA_EVENTS
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
-#endif // USE_CUDA_EVENTS
 
   for (auto _ : state) {
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(start, NULL);
-#endif // USE_CUDA_EVENTS
 
     cuda_vector_add<T, COARSINING_FACTOR, BLOCK_SIZE><<<gridDim, blockDim>>>(d_a, d_b, d_c, N);
 
-#ifdef USE_CUDA_EVENTS
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
-#else  // USE_CUDA_EVENTS
-    const auto cuda_err = cudaDeviceSynchronize();
-#endif // USE_CUDA_EVENTS
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cuda_err)) {
       state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to launch kernel");
       break;
     }
-#ifdef USE_CUDA_EVENTS
     float msecTotal = 0.0f;
     if (PRINT_IF_ERROR(cudaEventElapsedTime(&msecTotal, start, stop))) {
       state.SkipWithError("CUDA/VECTOR_ADD/BASIC failed to get elapsed time");
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-#endif // USE_CUDA_EVENTS
     state.ResumeTiming();
   }
 
@@ -138,7 +128,6 @@ static void CUDA_VECTOR_ADD(benchmark::State &state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * N);
 }
 
-#ifdef USE_CUDA_EVENTS
 #ifndef FAST_MODE
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 32)->ALL_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 32)->ALL_ARGS()->UseManualTime();
@@ -166,33 +155,3 @@ BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 512)->ALL_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 512)->ALL_ARGS()->UseManualTime();
 BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 512)->ALL_ARGS()->UseManualTime();
 
-#else // USE_CUDA_EVENTS
-#ifndef FAST_MODE
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 32)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 32)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 32)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 32)->ALL_ARGS();
-
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 64)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 64)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 64)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 64)->ALL_ARGS();
-
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 128)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 128)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 128)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 128)->ALL_ARGS();
-
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 256)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 256)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 256)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 256)->ALL_ARGS();
-
-#endif // FAST_MODE
-
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, char, 1, 512)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, int, 1, 512)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, float, 1, 512)->ALL_ARGS();
-BENCHMARK_TEMPLATE(CUDA_VECTOR_ADD, double, 1, 512)->ALL_ARGS();
-
-#endif // USE_CUDA_EVENTS

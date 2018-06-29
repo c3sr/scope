@@ -36,7 +36,7 @@ To compile the project run the following commands
 
     mkdir -p build
     cd build
-    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON ..
+    cmake -DCMAKE_BUILD_TYPE=Release ..
     make
     
 The build system uses Hunter to download all dependencies.
@@ -45,7 +45,7 @@ Or you can forego Hunter entirely and [provide your own dependencies](docs/build
 
 if you get errors about nvcc not supporting your gcc compiler, then you may want to use
 
-    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA_EVENTS=ON -DCMAKE_CUDA_HOST_COMPILER=`which gcc-6` .. 
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_HOST_COMPILER=`which gcc-6` .. 
 
 You can optionally choose your own CUDA archs that you would like to be compiled:
 
@@ -107,7 +107,7 @@ or preferably
 ## On Minsky With PowerAI
 
 ```
-cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DUSE_CUDA_EVENTS=ON -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
+cd build && rm -fr * && OpenBLAS=/opt/DL/openblas cmake -DCMAKE_BUILD_TYPE=Release .. -DOpenBLAS=/opt/DL/openblas
 ```
 
 ## Disable CPU frequency scaling

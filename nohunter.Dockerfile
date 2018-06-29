@@ -98,7 +98,6 @@ RUN mkdir -p build \
     -DCMAKE_PREFIX_PATH="${BENCHMARK_ROOT};${CUB_ROOT};${FMT_ROOT};${SPDLOG_ROOT};${BENCHMARK_ROOT}" \
     -DSUGAR_ROOT=${SUGAR_ROOT} \
     -DCMAKE_BUILD_TYPE=Release \
-    -DUSE_CUDA_EVENTS=ON \
     -DNVCC_ARCH_FLAGS="3.0 3.2 3.5 3.7 5.0 5.2 5.3" \
     && make -j4 || make VERBOSE=1
 
