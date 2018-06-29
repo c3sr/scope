@@ -4,6 +4,33 @@
 |--|
 | [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
 
+A CUDA microbenchmark suite developed by the [IMPACT](impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
+
+Primary maintainers:
+* Carl Pearson ([web](cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
+* Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
+
+The suite aims to systematically measure CUDA data transfer performance through
+* CUDA explicit memory
+* CUDA unified memory
+
+The suite also aims to systematically measure CUDA neural network primitives
+* CUDA kernel launches
+* CUDNN convolutions
+* Vector add
+* GEMM
+* GEMV
+* Locks / Mutexes
+
+With coming support for:
+* Tensorcores
+* Atomic operations
+* Collective communication (e.g. NCCL)
+* Communication link contention
+* and more!
+
+The benchmark suite is NUMA-aware on Linux systems.
+
 ## Install a Recent CMake
 
 cmake version >=3.8 is required.
@@ -57,11 +84,11 @@ You can disable benchmarks that depend on NUMA or OpenMP, even if your system su
 
     cmake -DUSE_OPENMP=OFF -DUSE_NUMA=OFF
 
-These documents describe how to provide your own dependencies instead of relying on Hunter to download them
-
 ## Available Benchmarks
 
-The available benchmarks and descriptions are listed [here](docs/benchmark_descriptions.md).
+The available benchmarks and descriptions are listed [here](docs/benchmark_descriptions.md). You can list all the benchmarks with
+
+    ./bench --benchmark_list_tests=true
 
 you can filter the benchmarks that are run with a regular expression passed to `--benchmark_filter`.
 
@@ -108,6 +135,10 @@ or preferably
 
     ./bench --benchmark_out_format=json --benchmark_out=`hostname`.json
 
+## Plot Benchmark JSON files
+
+Try the [microbench_plot](https://github.com/rai-project/microbench_plot) python package.
+
 ## On Minsky With PowerAI
 
 ```
@@ -140,9 +171,9 @@ You can run benchmarks in the following way (probably with the `--benchmark_filt
 
     nvidia-docker run --privileged --rm -v `readlink -f .`:/data -u `id -u`:`id -g` raiproject/microbench:amd64-latest ./numa-separate-process.sh dgx bench /data/sync2
 
-* `--privileged` is needed to set the NUMA policy for NUMA benchmarks.
+* `--privileged` is needed to set the NUMA policy if NUMA benchmarks are to be run.
 * `` -v `readlink -f .`:/data `` maps the current directory into the container as `/data`.
-* `` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write out to `/data`, which is mapped to the current directory.
+* `` --benchmark_out=/data/\`hostname`.json `` tells the `bench` binary to write the json output files to `/data` in the container, which is mapped to the current directory.
 * `` -u `id -u`:`id -g` `` tells docker to run as user `id -u` and group `id -g`, which is the current user and group. This means that files that docker produces will be modifiable from the host system without root permission.
 
 ## Hunter Toolchain File
@@ -153,8 +184,8 @@ If some of the third-party code compiled by hunter needs a different compiler, y
 
 ## Adding a new benchmark
 
-Read [here](docs/new_benchmark.md) for more information.
+If you would like to extend the benchmark suite, read [here](docs/new_benchmark.md) for more information.
 
-## Resources
+## Third-Party Resources
 
 * https://github.com/google/benchmark
