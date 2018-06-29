@@ -1,4 +1,4 @@
-#if CUDA_VERSION_MAJOR >= 8
+#if CUDA_VERSION_MAJOR >= 8 && USE_NUMA == 1
 
 #include <assert.h>
 #include <iostream>
@@ -101,4 +101,4 @@ static void NUMAUM_Latency_GPUToHost(benchmark::State &state) {
 
 BENCHMARK(NUMAUM_Latency_GPUToHost)->Apply(ArgsCountNumaGpu)->MinTime(0.1);
 
-#endif
+#endif // CUDA_VERSION_MAJOR >= 8 && USE_NUMA == 1

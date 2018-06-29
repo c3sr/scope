@@ -1,3 +1,5 @@
+#if USE_NUMA == 1
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -25,7 +27,7 @@ static void NUMA_Memcpy_HostToGPU(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
@@ -35,9 +37,9 @@ static void NUMA_Memcpy_HostToGPU(benchmark::State &state) {
     return;
   }
 
-  char *src        = new char[bytes];
+  char *src = new char[bytes];
   defer(delete[] src);
-  char *dst        = nullptr;
+  char *dst = nullptr;
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
@@ -86,3 +88,5 @@ static void NUMA_Memcpy_HostToGPU(benchmark::State &state) {
 }
 
 BENCHMARK(NUMA_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
+#endif // USE_NUMA == 1

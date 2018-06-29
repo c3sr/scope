@@ -1,3 +1,5 @@
+#if USE_NUMA == 1
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -6,9 +8,8 @@
 #include <cuda_runtime.h>
 
 #include "init/init.hpp"
-#include "utils/utils.hpp"
-
 #include "numamemcpy/args.hpp"
+#include "utils/utils.hpp"
 
 #define NAME "NUMA/Memcpy/GPUToGPU"
 
@@ -24,15 +25,15 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int src_gpu = state.range(2);
   const int dst_gpu = state.range(3);
 
   numa_bind_node(numa_id);
 
-  char *src        = nullptr;
-  char *dst        = nullptr;
+  char *src = nullptr;
+  char *dst = nullptr;
 
   if (PRINT_IF_ERROR(utils::cuda_reset_device(src_gpu))) {
     state.SkipWithError(NAME " failed to reset CUDA device");
@@ -61,7 +62,6 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to disable peer access");
     return;
   }
-
 
   if (PRINT_IF_ERROR(cudaSetDevice(dst_gpu))) {
     state.SkipWithError(NAME " failed to set dst device");
@@ -126,7 +126,8 @@ static void NUMA_Memcpy_GPUToGPU(benchmark::State &state) {
   }
 
   numa_bind_node(-1);
-
 }
 
 BENCHMARK(NUMA_Memcpy_GPUToGPU)->Apply(ArgsCountNumaGpuGpuNoSelf)->UseManualTime();
+
+#endif // USE_NUMA == 1

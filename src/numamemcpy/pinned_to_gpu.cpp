@@ -1,3 +1,5 @@
+#if USE_NUMA == 1
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -7,9 +9,8 @@
 #include <numa.h>
 
 #include "init/init.hpp"
-#include "utils/utils.hpp"
-
 #include "numamemcpy/args.hpp"
+#include "utils/utils.hpp"
 
 #define NAME "NUMA/Memcpy/PinnedToGPU"
 
@@ -25,7 +26,7 @@ static void NUMA_Memcpy_PinnedToGPU(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
@@ -37,7 +38,6 @@ static void NUMA_Memcpy_PinnedToGPU(benchmark::State &state) {
 
   char *src = new char[bytes];
   char *dst = nullptr;
-
 
   std::memset(src, 0, bytes);
   if (PRINT_IF_ERROR(cudaHostRegister(src, bytes, cudaHostRegisterPortable))) {
@@ -96,3 +96,5 @@ static void NUMA_Memcpy_PinnedToGPU(benchmark::State &state) {
 }
 
 BENCHMARK(NUMA_Memcpy_PinnedToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
+#endif // USE_NUMA == 1

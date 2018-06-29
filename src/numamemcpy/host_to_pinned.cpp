@@ -1,3 +1,5 @@
+#if USE_NUMA == 1
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -7,9 +9,8 @@
 #include <numa.h>
 
 #include "init/init.hpp"
-#include "utils/utils.hpp"
-
 #include "numamemcpy/args.hpp"
+#include "utils/utils.hpp"
 
 #define NAME "NUMA/Memcpy/HostToPinned"
 
@@ -25,7 +26,7 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes   = 1ULL << static_cast<size_t>(state.range(0));
   const int src_numa = state.range(1);
   const int dst_numa = state.range(2);
 
@@ -80,3 +81,5 @@ static void NUMA_Memcpy_HostToPinned(benchmark::State &state) {
 }
 
 BENCHMARK(NUMA_Memcpy_HostToPinned)->Apply(ArgsCountNumaNuma)->UseManualTime();
+
+#endif // USE_NUMA == 1

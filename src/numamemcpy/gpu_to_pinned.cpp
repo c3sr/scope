@@ -1,3 +1,5 @@
+#if USE_NUMA == 1
+
 #include <assert.h>
 #include <iostream>
 #include <stdio.h>
@@ -7,9 +9,8 @@
 #include <numa.h>
 
 #include "init/init.hpp"
-#include "utils/utils.hpp"
-
 #include "numamemcpy/args.hpp"
+#include "utils/utils.hpp"
 
 #define NAME "NUMA/Memcpy/GPUToPinned"
 
@@ -25,7 +26,7 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
     return;
   }
 
-  const auto bytes = 1ULL << static_cast<size_t>(state.range(0));
+  const auto bytes  = 1ULL << static_cast<size_t>(state.range(0));
   const int numa_id = state.range(1);
   const int cuda_id = state.range(2);
 
@@ -35,7 +36,7 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
     return;
   }
 
-  char *src        = nullptr;
+  char *src = nullptr;
   char *dst = new char[bytes];
   std::memset(dst, 0, bytes);
   if (PRINT_IF_ERROR(cudaHostRegister(dst, bytes, cudaHostRegisterPortable))) {
@@ -44,7 +45,6 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
   }
   defer(cudaHostUnregister(dst));
   defer(delete[] dst);
-
 
   if (PRINT_IF_ERROR(cudaSetDevice(cuda_id))) {
     state.SkipWithError(NAME " failed to set CUDA device");
@@ -66,7 +66,6 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
 
     const auto cuda_err = cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToHost);
 
-
     cudaEventRecord(stop, NULL);
     cudaEventSynchronize(stop);
 
@@ -81,7 +80,6 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
       break;
     }
     state.SetIterationTime(msecTotal / 1000);
-
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes));
   state.counters.insert({{"bytes", bytes}});
@@ -91,3 +89,5 @@ static void NUMA_Memcpy_GPUToPinned(benchmark::State &state) {
 }
 
 BENCHMARK(NUMA_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
+#endif // USE_NUMA == 1
