@@ -114,27 +114,6 @@ if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
     CACHE STRING "Toolchain C++ linker flags." FORCE)
 endif()
 
-
-if (OpenMP_FOUND)
-  if (OpenMP_C_FLAGS)
-    string(REPLACE ";" " " OpenMP_C_FLAGS ${OpenMP_C_FLAGS})
-  endif()
-  if (OpenMP_CXX_FLAGS)
-    string(REPLACE ";" " " OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS})
-  endif()
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-
-  foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
-  LIST(APPEND CMAKE_CUDA_FLAGS
-    -Xcompiler
-    ${flag}
-  )
-  endforeach(flag)
-
-endif()
-
-
 if (UNIX AND NOT APPLE)
   execute_process(COMMAND ${CMAKE_CXX_COMPILER}
                   -fuse-ld=gold -Wl,--version
@@ -192,11 +171,7 @@ LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
 					         --expt-extended-lambda
 )
 
-MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
-string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
-
-MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
 			   " archs: ${CUDA_ARCH_FLAGS_readable})")
@@ -256,27 +231,48 @@ target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
 
-if(${numa_FOUND})
+if(numa_FOUND)
   add_definitions(-DUSE_NUMA=1)
   target_link_libraries(bench numa)
 else()
   add_definitions(-DUSE_NUMA=0)
   message(WARNING "didn't find NUMA, some benchmarks will be unavailable.")
-endif(${numa_FOUND})
+endif(numa_FOUND)
 
-if(${OpenMP_FOUND})
-  add_definitions(-DUSE_OPENMP=1)
+# Compile with OpenMP
+if (OpenMP_FOUND)
   target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
-else()
+  if (OpenMP_C_FLAGS)
+    string(REPLACE ";" " " OpenMP_C_FLAGS ${OpenMP_C_FLAGS})
+  endif()
+  if (OpenMP_CXX_FLAGS)
+    string(REPLACE ";" " " OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS})
+  endif()
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
+  foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
+  LIST(APPEND CMAKE_CUDA_FLAGS
+    -Xcompiler
+    ${flag}
+  )
+  endforeach(flag)
+
+  add_definitions(-DUSE_OPENMP=1)
+else(OpenMP_FOUND)
   add_definitions(-DUSE_OPENMP=0)
   message(WARNING "didn't find OpenMP, some benchmarks will be unavailable.")
-endif(${OpenMP_FOUND})
+endif(OpenMP_FOUND)
 
 # Request that bench be built with -std=c++11
 # As this is a public compile feature anything that links to
 # bench will also build with -std=c++11
 target_compile_features(bench PUBLIC cxx_std_11)
 
+# Convert CUDA flags from list
+MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
+MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 cotire(bench)
 
