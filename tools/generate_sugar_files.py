@@ -216,6 +216,9 @@ class Generator:
         source_variable = args.var
         tests_variable = args.test
         for rootdir, dirlist, filelist in os.walk(args.top):
+            filelist.sort()
+            dirlist.sort()
+
             for x in exclude_filenames:
                 try:
                     filelist.remove(x)
@@ -235,6 +238,7 @@ class Generator:
 
             relative = os.path.relpath(rootdir, cwd)
             file_name = '{}/sugar.cmake'.format(rootdir)
+
             Generator.process_file(
                 relative, source_variable,
                 tests_variable,
@@ -245,6 +249,7 @@ class Generator:
         generator = Generator()
         generator.parse()
         generator.create()
+
 
 if __name__ == '__main__':
     Generator.run()
