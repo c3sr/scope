@@ -53,6 +53,10 @@ You can optionally choose your own CUDA archs that you would like to be compiled
 
 The accepted syntax is the same as the `CUDA_SELECT_NVCC_ARCH_FLAGS` syntax in the FindCUDA module.
 
+You can disable benchmarks that depend on NUMA or OpenMP, even if your system supports them
+
+    cmake -DUSE_OPENMP=OFF -DUSE_NUMA=OFF
+
 These documents describe how to provide your own dependencies instead of relying on Hunter to download them
 
 ## Available Benchmarks
