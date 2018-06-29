@@ -15,6 +15,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(USE_CUDA_EVENTS "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
+option(USE_NUMA "Build benchmarks that require NUMA support" ON)
+option(USE_OPENMP "Build benchmarks that require OpenMP support" ON)
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -87,8 +89,12 @@ else()
 
 endif (CONFIG_USE_HUNTER)
 
-find_package(numa)
-find_package(OpenMP)
+if (USE_NUMA)
+  find_package(numa)
+endif(USE_NUMA)
+if (USE_OPENMP)
+  find_package(OpenMP)
+endif(USE_OPENMP)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
