@@ -27,3 +27,13 @@ This generates the `sugar.cmake` files in all of the source directories.
 It will add your new benchmark source files to the build system.
 It can be run from anywhere, it will only modify the benchmark source directory.
 
+## Conditional Compilation
+
+If your benchmark relies on some underlying system feature to function, you should add detection and conditional compilation of that feature to `CMakeLists.txt`. Currently, CMake sets the following `#defines` appropriately:
+
+| Feature | Definition |
+|-|-|
+| OpenMP | `-DUSE_OPENMP` |
+| NUMA | `-DUSE_NUMA` |
+| CUDA Version| `-DCUDA_VERSION_MAJOR`, `-DCUDA_VERSION_MINOR` |
+
