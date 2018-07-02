@@ -132,9 +132,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   size_t workspace_bytes = 0;
 
   cudnnConvolutionBwdDataAlgo_t advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
-  if (cudnnGetConvolutionBackwardFilterAlgorithm(
+  if (IS_ERROR(cudnnGetConvolutionBackwardFilterAlgorithm(
           cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
-          CUDNN_CONVOLUTION_BWD_PREFER_FASTEST, 0, &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
+          CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
     advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
   }
 
@@ -317,7 +317,7 @@ static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
-#define INFERENCE_SERVER_CONV_PROBLEMS ALL_INFERENCE_SERVER_CONV_PROBLEMS
+#define CONV_PROBLEMS ALL_INFERENCE_SERVER_CONV_PROBLEMS
 
 #define BENCHMARK_CUDNN(b)                                                                                             \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_0)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();         \

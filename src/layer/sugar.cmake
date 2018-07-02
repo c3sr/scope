@@ -33,7 +33,7 @@ sugar_files(
     scale.cpp
     reduce.cpp
     conv_fwd.cpp
-    conv_bwd.cpp
+    #conv_bwd.cpp
     find_rnn_alg.cpp
 )
 
