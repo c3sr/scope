@@ -250,8 +250,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
       case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
       case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
-        // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
-        // state.iterations(); 2KCRSNPQ
+        // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size;
         return static_cast<double>(2) * static_cast<double>(K) * static_cast<double>(C) * static_cast<double>(R) *
                static_cast<double>(S) * static_cast<double>(N) * static_cast<double>(P) * static_cast<double>(Q);
       case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
@@ -316,8 +315,7 @@ static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
-#define CONV_PROBLEMS ALL_CONV_PROBLEMS
-
+#define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
 
 #define BENCHMARK_CUDNN(b)                                                                                             \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseManualTime();                   \

@@ -5,7 +5,7 @@
 #define CONV_ARG_NAMES()                                                                                               \
   ArgNames({"W", "H", "C", "N", "K", "filter_w(s)", "filter_h(r)", "pad_w", "pad_h", "wstride", "hstride"})
 
-#define SMALL_CONV_PROBLEMS()                                                                                          \
+#define INFERENCE_DEVICE_CONV_PROBLEMS()                                                                               \
   Args({112, 112, 64, 1, 64, 1, 1, 0, 0, 1, 1})                                                                        \
       ->Args({56, 56, 64, 1, 256, 1, 1, 0, 0, 1, 1})                                                                   \
       ->Args({56, 56, 256, 1, 64, 1, 1, 0, 0, 1, 1})                                                                   \
@@ -24,7 +24,7 @@
       ->Args({7, 7, 2048, 1, 512, 1, 1, 0, 0, 1, 1})                                                                   \
       ->CONV_ARG_NAMES()
 
-#define ALL_CONV_PROBLEMS()                                                                                            \
+#define INFERENCE_SERVER_CONV_PROBLEMS()                                                                               \
   Args({700, 161, 1, 1, 32, 20, 5, 0, 0, 2, 2})                                                                        \
       ->Args({700, 161, 1, 2, 32, 20, 5, 0, 0, 2, 2})                                                                  \
       ->Args({700, 161, 1, 4, 32, 20, 5, 0, 0, 2, 2})                                                                  \
