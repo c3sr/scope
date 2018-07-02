@@ -317,15 +317,19 @@ static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
-#define CONV_PROBLEMS ALL_CONV_PROBLEMS
+#define INFERENCE_SERVER_CONV_PROBLEMS ALL_INFERENCE_SERVER_CONV_PROBLEMS
 
 #define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_0)->CONV_PROBLEMS()->UseManualTime();                          \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_1)->CONV_PROBLEMS()->UseManualTime();                          \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT)->CONV_PROBLEMS()->UseManualTime();                        \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_​FFT_TILING)->CONV_PROBLEMS()->UseManualTime();              \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                   \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_​WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_0)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();         \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_1)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();         \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();       \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_​FFT_TILING)                                                 \
+      ->INFERENCE_SERVER_CONV_PROBLEMS()                                                                               \
+      ->UseManualTime();                                                                                               \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();  \
+  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_DATA_ALGO_​WINOGRAD_NONFUSED)                                          \
+      ->INFERENCE_SERVER_CONV_PROBLEMS()                                                                               \
+      ->UseManualTime()
 
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT8);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT32);
