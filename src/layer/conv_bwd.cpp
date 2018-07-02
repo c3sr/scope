@@ -26,17 +26,23 @@ static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stri
 
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
-template <typename T, cudnnConvolutionBwdDataAlgo_t convolution_algorithm,
-          cudnnMathType_t math_type = CUDNN_DEFAULT_MATH>
+template <typename T, cudnnConvolutionBwdDataAlgo_t convolution_algorithm
+#ifdef CUDNN_SUPPORTS_TENSOR_OPS
+          ,
+          cudnnMathType_t math_type = CUDNN_DEFAULT_MATH
+#endif // CUDNN_SUPPORTS_TENSOR_OPS
+          >
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
   }
+#ifdef CUDNN_SUPPORTS_TENSOR_OPS
   if (math_type == CUDNN_TENSOR_OP_MATH && !detail::SupportsTensorCore(FLAG(cuda_device_id))) {
     state.SkipWithError(BENCHMARK_NAME "no Tensorcore support on current device");
     return;
   }
+#endif // CUDNN_SUPPORTS_TENSOR_OPS
 
   const float alpha = 1, beta = 0;
   const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
@@ -107,7 +113,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   defer(cudnnDestroyConvolutionDescriptor(convolution_descriptor));
 
+#ifdef CUDNN_SUPPORTS_TENSOR_OPS
   cudnnSetConvolutionMathType(convolution_descriptor, math_type);
+#endif // CUDNN_SUPPORTS_TENSOR_OPS
 
   int out_h, out_w, out_c, out_n;
 
@@ -334,6 +342,8 @@ static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT8);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT32);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_HALF);
+#ifdef CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP);
+#endif // CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_FLOAT);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_DOUBLE);
