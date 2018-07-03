@@ -294,11 +294,11 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   cudnnStatus_t cudnn_err;
-  int max_count;
-  cudnn_err = cudnnGetConvolutionForwardAlgorithmMaxCount(cudnn_handle, &max_count);
-  if (PRINT_IF_ERROR(cudnn_err)) {
-    state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnGetConvolutionForwardAlgorithmMaxCount");
-  }
+  int max_count = 10;
+  /* cudnn_err = cudnnGetConvolutionForwardAlgorithmMaxCount(cudnn_handle, &max_count); */
+  /* if (PRINT_IF_ERROR(cudnn_err)) { */
+  /*   state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnGetConvolutionForwardAlgorithmMaxCount"); */
+  /* } */
 
   cudnnConvolutionFwdAlgoPerf_t perfResults[max_count];
   int returned_count;
@@ -314,8 +314,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     if (perfResult.algo == convolution_algorithm) {
       state.counters.insert({{"advised_time", perfResult.time},
                              {"advised_memory", perfResult.memory},
-                             {"advised_determinism", (int) perfResult.determinism},
-                             {"advised_mathType", (int) perfResult.mathType}});
+                             {"advised_determinism", (int) perfResult.determinism}});
     }
   }
 
@@ -337,10 +336,12 @@ static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
+#ifdef CUDNN_SUPPORTS_TENSOR_OPS
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
+#endif
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_FLOAT(benchmark::State& state) {
