@@ -1,0 +1,34 @@
+{
+  "context": {
+    "date": "2018-07-02 22:10:55",
+    "num_cpus": 40,
+    "mhz_per_cpu": 3600,
+    "cpu_scaling_enabled": false,
+    "library_build_type": "release"
+  },
+  "benchmarks": [
+    {
+      "name": "LAYER_CUDNN_CONV_FORWARD_GET_ALGO_FLOAT/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",
+      "iterations": 183739,
+      "real_time": 3.7586809175941180e+03,
+      "cpu_time": 9.6272194525930227e+03,
+      "time_unit": "ns",
+      "items_per_second": 9.5948554268565295e+11,
+      "advised_convolution_algorithm": 1.0000000000000000e+00,
+      "filter_height": 5.0000000000000000e+00,
+      "filter_width": 2.0000000000000000e+01,
+      "input_batch_size": 1.0000000000000000e+00,
+      "input_channels": 1.0000000000000000e+00,
+      "input_height": 1.6100000000000000e+02,
+      "input_size": 1.1270000000000000e+05,
+      "input_width": 7.0000000000000000e+02,
+      "math_type": 0.0000000000000000e+00,
+      "output_batch_size": 1.0000000000000000e+00,
+      "output_channels": 3.2000000000000000e+01,
+      "output_height": 7.9000000000000000e+01,
+      "output_width": 3.4100000000000000e+02,
+      "pad_height": 0.0000000000000000e+00,
+      "pad_width": 0.0000000000000000e+00,
+      "stride_height": 2.0000000000000000e+00,
+      "stride_width": 2.0000000000000000e+00
+    }

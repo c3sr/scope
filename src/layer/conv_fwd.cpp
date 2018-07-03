@@ -291,7 +291,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                             {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
   }
 
-  const cudnnStatus_t cudnn_err;
+  cudnnStatus_t cudnn_err;
   int max_count;
   cudnn_err = cudnnGetConvolutionForwardAlgorithmMaxCount(cudnn_handle, &max_count);
   if (PRINT_IF_ERROR(cudnn_err)) {
@@ -308,7 +308,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   for (auto ii = 0; ii < returned_count; ii++) {
-    perfResult = perfResults[ii];
+    cudnnConvolutionFwdAlgoPerf_t perfResult = perfResults[ii];
     if (perfResult.algo == convolution_algorithm) {
       state.counters.insert({{"advised_time", perfResult.time},
                              {"advised_memory", perfResult.memory},
@@ -362,8 +362,8 @@ static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                        \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
 
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT8);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT32);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT32); */
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF);
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP);
