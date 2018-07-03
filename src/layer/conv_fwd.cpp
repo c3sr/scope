@@ -42,6 +42,8 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.SkipWithError(BENCHMARK_NAME "no Tensorcore support on current device");
     return;
   }
+#else
+  int math_type = 0;
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
 
   const float alpha = 1, beta = 0;
