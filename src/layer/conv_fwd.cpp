@@ -291,6 +291,32 @@ static void CUDNN_Impl(benchmark::State& state) {
                             {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
   }
 
+  const cudnnStatus_t cudnn_err;
+  int max_count;
+  cudnn_err = cudnnGetConvolutionForwardAlgorithmMaxCount(cudnn_handle, &max_count);
+  if (PRINT_IF_ERROR(cudnn_err)) {
+    state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnGetConvolutionForwardAlgorithmMaxCount");
+  }
+
+  cudnnConvolutionFwdAlgoPerf_t perfResults[max_count];
+  int returned_count;
+  cudnn_err =
+      cudnnFindConvolutionForwardAlgorithm(cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor,
+                                           output_descriptor, max_count, &returned_count, perfResults);
+  if (PRINT_IF_ERROR(cudnn_err)) {
+    state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionForwardAlgorithm");
+  }
+
+  for (auto ii = 0; ii < returned_count; ii++) {
+    perfResult = perfResults[ii];
+    if (perfResult.algo == convolution_algorithm) {
+      state.counters.insert({{"advised_time", perfResult.time},
+                             {"advised_memory", perfResult.memory},
+                             {"advised_determinism", (int) perfResult.determinism},
+                             {"advised_mathType", (int) perfResult.mathType}});
+    }
+  }
+
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 

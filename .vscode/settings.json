@@ -1,7 +1,8 @@
 {
   "files.associations": {
-    "*.mc": "cpp",
     "*.cu": "cpp",
+    "*.proto3": "proto",
+    "*.mc": "cpp",
     "*.cuh": "cpp",
     "locale": "cpp",
     "string": "cpp",
@@ -12,7 +13,9 @@
     "ios": "cpp",
     "iterator": "cpp",
     "array": "cpp",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "__locale": "cpp",
+    "deque": "cpp"
   },
   // Configure glob patterns for excluding files and folders.
   "files.exclude": {
