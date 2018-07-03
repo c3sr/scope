@@ -9,7 +9,7 @@
 
 #if CUDNN_VERSION >= 7000
 #define CUDNN_SUPPORTS_TENSOR_OPS 1
-#endif CUDNN_VERSION >= 7000
+#endif // CUDNN_VERSION >= 7000
 
 template <typename T>
 struct valueDataType {};

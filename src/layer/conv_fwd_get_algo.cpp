@@ -1,4 +1,4 @@
-#define BENCHMARK_NAME "CUDNN/CONV_FWD"
+#define BENCHMARK_NAME "CUDNN/CONV_FWD_GET_ALGO"
 
 #include <benchmark/benchmark.h>
 
@@ -19,14 +19,9 @@
 #include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
-// Calculates convolution output dimension using the definition from Caffe
-static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stride) {
-  return (input_dim - filter_dim + 2 * padd) / stride + 1;
-}
-
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
-template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm
+template <typename T
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
           ,
           cudnnMathType_t math_type = CUDNN_DEFAULT_MATH
@@ -140,53 +135,6 @@ static void CUDNN_Impl(benchmark::State& state) {
   size_t workspace_bytes = 0;
 
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
-  if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor,
-                                          output_descriptor, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0,
-                                          &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
-    advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
-  }
-
-  if (std::is_same<T, int8_t>::value) {
-
-    // Note: cudnn workspace size function doesn't work for INT8_CONFIG
-    workspace_bytes = 1073741824;
-  } else {
-    if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
-                                                               input_descriptor,
-                                                               kernel_descriptor,
-                                                               convolution_descriptor,
-                                                               output_descriptor,
-                                                               convolution_algorithm,
-                                                               &workspace_bytes))) {
-      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
-      return;
-    }
-  }
-  // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
-
-  DeviceMemory<T> workspace_memory(state, workspace_bytes);
-  if (!workspace_memory.is_valid) {
-    return;
-  }
-  const auto d_workspace = workspace_memory.get();
-
-  DeviceMemory<T> input_memory(state, input_image.data(), input_image_bytes);
-  if (!input_memory.is_valid) {
-    return;
-  }
-  const auto d_input = input_memory.get();
-
-  DeviceMemory<T> output_memory(state, output_image_bytes);
-  if (!output_memory.is_valid) {
-    return;
-  }
-  const auto d_output = output_memory.get();
-
-  DeviceMemory<T> kernel_memory(state, kernel.data(), kernel_bytes);
-  if (!kernel_memory.is_valid) {
-    return;
-  }
-  const auto d_kernel = kernel_memory.get();
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -195,19 +143,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const cudnnStatus_t cudnn_err = cudnnConvolutionForward(cudnn_handle,
-                                                            &alpha,
-                                                            input_descriptor,
-                                                            d_input,
-                                                            kernel_descriptor,
-                                                            d_kernel,
-                                                            convolution_descriptor,
-                                                            convolution_algorithm,
-                                                            d_workspace,
-                                                            workspace_bytes,
-                                                            &beta,
-                                                            output_descriptor,
-                                                            d_output);
+    const cudnnStatus_t cudnn_err = cudnnGetConvolutionForwardAlgorithm(
+        cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
+        CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0, &advised_convolution_algorithm);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -246,101 +184,43 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"pad_width", pad_width},
                          {"stride_height", stride_height},
                          {"stride_width", stride_width},
-                         {"workspace_bytes", workspace_bytes},
-                         {"workspace_megabytes", workspace_bytes / 1048576.0},
-                         {"convolution_algorithm", (int) convolution_algorithm},
                          {"advised_convolution_algorithm", (int) advised_convolution_algorithm},
                          {"math_type", (int) math_type}});
-
-  const auto P = out_h, Q = out_w;
-
-  const auto compute_flops = [&](cudnnConvolutionFwdAlgo_t alg) {
-    switch (alg) {
-      case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM:
-      case CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM:
-      case CUDNN_CONVOLUTION_FWD_ALGO_GEMM:
-        // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size;
-        return static_cast<double>(2) * static_cast<double>(K) * static_cast<double>(C) * static_cast<double>(R) *
-               static_cast<double>(S) * static_cast<double>(N) * static_cast<double>(P) * static_cast<double>(Q);
-      case CUDNN_CONVOLUTION_FWD_ALGO_FFT:
-      case CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING:
-        //(NCKHW + (NC +CK +NK)HW log(HW))
-        return (static_cast<double>(N) * static_cast<double>(C) * static_cast<double>(K) * static_cast<double>(H) *
-                static_cast<double>(W)) +
-               (static_cast<double>(N) * static_cast<double>(C) + static_cast<double>(C) * static_cast<double>(K) +
-                static_cast<double>(N) * static_cast<double>(K)) *
-                   (static_cast<double>(H) * static_cast<double>(W)) *
-                   std::log2(static_cast<double>(H) * static_cast<double>(W));
-      case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED:
-      case CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD:
-        return static_cast<double>(-1); // todo ... implement
-      default:
-        return static_cast<double>(-1);
-    }
-  };
-
-  const double predicted_flops = compute_flops(convolution_algorithm);
-  state.counters.insert(
-      {{"predicted_flops_count", predicted_flops},
-       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
-
-  if (advised_convolution_algorithm != -1) {
-    const double predicted_advised_flops = compute_flops(advised_convolution_algorithm);
-    state.counters.insert({{"predicted_advised_flops_count", predicted_advised_flops},
-                           {"predicted_advised_flops",
-                            {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
-  }
 
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
-  CUDNN_Impl<int8_t, convolution_algorithm>(state);
+  CUDNN_Impl<int8_t>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
-  CUDNN_Impl<int32_t, convolution_algorithm>(state);
+  CUDNN_Impl<int32_t>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
-  CUDNN_Impl<__half, convolution_algorithm>(state);
+  CUDNN_Impl<__half>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
-  CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
+  CUDNN_Impl<__half, CUDNN_TENSOR_OP_MATH>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_FLOAT(benchmark::State& state) {
-  CUDNN_Impl<float, convolution_algorithm>(state);
+  CUDNN_Impl<float>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
-  CUDNN_Impl<double, convolution_algorithm>(state);
+  CUDNN_Impl<double>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
 
-#define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM)->CONV_PROBLEMS()->UseManualTime();                   \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM)->CONV_PROBLEMS()->UseManualTime();           \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_GEMM)->CONV_PROBLEMS()->UseManualTime();                            \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_DIRECT)->CONV_PROBLEMS()->UseManualTime();                          \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT)->CONV_PROBLEMS()->UseManualTime();                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING)->CONV_PROBLEMS()->UseManualTime();                      \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                        \
-  BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
-
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT8);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT32);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF);
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_INT8)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_INT32)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_HALF)->CONV_PROBLEMS()->UseManualTime();
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP);
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP)->CONV_PROBLEMS()->UseManualTime();
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_DOUBLE);
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_FLOAT)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_DOUBLE)->CONV_PROBLEMS()->UseManualTime();
