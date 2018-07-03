@@ -190,37 +190,37 @@ static void CUDNN_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
-static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_GET_ALGO_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t>(state);
 }
 
-static void LAYER_CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_GET_ALGO_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t>(state);
 }
 
-static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_GET_ALGO_HALF(benchmark::State& state) {
   CUDNN_Impl<__half>(state);
 }
 
-static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_GET_ALGO_HALF_TENSOROP(benchmark::State& state) {
   CUDNN_Impl<__half, CUDNN_TENSOR_OP_MATH>(state);
 }
 
-static void LAYER_CUDNN_CONV_FORWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_GET_ALGO_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float>(state);
 }
 
-static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FORWARD_GET_ALGO_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
 
-BENCHMARK(LAYER_CUDNN_CONV_FORWARD_INT8)->CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_FORWARD_INT32)->CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_FORWARD_HALF)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_GET_ALGO_INT8)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_GET_ALGO_INT32)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_GET_ALGO_HALF)->CONV_PROBLEMS()->UseManualTime();
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_GET_ALGO_HALF_TENSOROP)->CONV_PROBLEMS()->UseManualTime();
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK(LAYER_CUDNN_CONV_FORWARD_FLOAT)->CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_FORWARD_DOUBLE)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_GET_ALGO_FLOAT)->CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_FORWARD_GET_ALGO_DOUBLE)->CONV_PROBLEMS()->UseManualTime();
