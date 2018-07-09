@@ -84,7 +84,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   if (!kernel_filter.is_valid) {
     return;
   }
-  cudnnDataDescriptor_t kernel_descriptor = kernel_filter.get();
+  cudnnFilterDescriptor_t kernel_descriptor = kernel_filter.get();
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -244,8 +244,8 @@ static void CUDNN_Impl(benchmark::State& state) {
         // state.iterations(); 2KCRSNPQ
         return static_cast<double>(2) * static_cast<double>(K) * static_cast<double>(C) * static_cast<double>(R) *
                static_cast<double>(S) * static_cast<double>(N) * static_cast<double>(P) * static_cast<double>(Q);
-      case CUDNN_CONVOLUTION_BWD_ALGO_FFT:
-      case CUDNN_CONVOLUTION_BWD_ALGO_FFT_TILING:
+      case CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT:
+      case CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING:
         //(NCKHW + (NC +CK +NK)HW log(HW))
         return (static_cast<double>(N) * static_cast<double>(C) * static_cast<double>(K) * static_cast<double>(H) *
                 static_cast<double>(W)) +
@@ -253,7 +253,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                 static_cast<double>(N) * static_cast<double>(K)) *
                    (static_cast<double>(H) * static_cast<double>(W)) *
                    std::log2(static_cast<double>(H) * static_cast<double>(W));
-      case CUDNN_CONVOLUTION_BWD_ALGO_WINOGRAD_NONFUSED:
+      case CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED:
         return static_cast<double>(-1); // todo ... implement
       default:
         return static_cast<double>(-1);

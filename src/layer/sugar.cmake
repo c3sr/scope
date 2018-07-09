@@ -34,7 +34,8 @@ sugar_files(
     reduce.cpp
     conv_fwd.cpp
     conv_fwd_get_algo
-    conv_bwd.cpp
+    conv_bwd_data.cpp
+    conv_bwd_filter.cpp
     find_rnn_alg.cpp
 )
 
