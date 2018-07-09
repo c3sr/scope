@@ -61,53 +61,62 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
     return;
   }
 
-  if (PRINT_IF_ERROR(ptr = (char*) malloc(bytes))) {
-    state.SkipWithError(NAME " failed to perform malloc");
+  ptr = (char*) malloc(bytes);
+  if(NULL == ptr){
+    state.SkipWithError(NAME " ptr is null");
     return;
   }
+
   srcs.push_back(ptr);
-  free(ptr);
+  defer(free(ptr));
 
   // gpu destination
+  char *ptr2;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr2, bytes))) {
     state.SkipWithError(NAME " failed to perform cudaMalloc");
     return;
   }
-  dsts.push_back(ptr);
-  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+  dsts.push_back(ptr2);
+  defer(cudaFree(ptr));
+  if (PRINT_IF_ERROR(cudaMemset(ptr2, 0, bytes))) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
     return;
   }
   // create a source and destination for second copy: gpu -> host
+  char *ptr3;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr3, bytes))) {
     state.SkipWithError(NAME " failed to perform cudaMalloc");
     return;
   }
-  srcs.push_back(ptr);
-  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
+  srcs.push_back(ptr3);
+  defer(cudaFree(ptr3)); 
+  if (PRINT_IF_ERROR(cudaMemset(ptr3, 0, bytes))) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
   // destination
+  char *ptr4;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
 
-  if (PRINT_IF_ERROR(ptr = (char*) malloc(bytes))) {
-    state.SkipWithError(NAME " failed to perform malloc");
+  ptr4 = (char*) malloc(bytes);
+  if(NULL == ptr4){
+    state.SkipWithError(NAME " ptr is null");
     return;
   }
-  dsts.push_back(ptr);
-  free(ptr);
+  dsts.push_back(ptr4);
+  defer(free(ptr4));
+
 
   assert(starts.size() == stops.size());
   assert(streams.size() == starts.size());
@@ -127,7 +136,7 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
         state.SkipWithError(NAME " failed to record start event");
         return;
       }
-      if (PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream))) {
+      if (PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDefault, stream))) {
         state.SkipWithError(NAME " failed to start cudaMemcpyAsync");
         return;
       }
@@ -164,13 +173,6 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
-
-  for (auto src : srcs) {
-    cudaFree(src);
-  }
-  for (auto dst : dsts) {
-    cudaFree(dst);
-  }
 }
 // need to fix args count
 BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();

@@ -12,7 +12,7 @@ inline static void ArgsCountNumaGpu(benchmark::internal::Benchmark* b) {
 
   for (auto numa : numa_nodes()) {
     for (int gpu = 0; gpu < n; ++gpu) {
-      for (int j = 8; j <= 33; ++j) {
+      for (int j = 8; j <= 32; ++j) {
         b->Args({j, numa, gpu});
       }
     }

@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED MEMCPY_DUPLEX_SUGAR_CMAKE_)
+if(DEFINED SRC_MEMCPY_DUPLEX_SUGAR_CMAKE_)
   return()
 else()
-  set(MEMCPY_DUPLEX_SUGAR_CMAKE_ 1)
+  set(SRC_MEMCPY_DUPLEX_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
