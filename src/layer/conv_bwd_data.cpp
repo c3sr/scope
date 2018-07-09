@@ -133,7 +133,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   cudnnConvolutionBwdDataAlgo_t advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
   if (IS_ERROR(cudnnGetConvolutionBackwardDataAlgorithm(
-          cudnn_handle, input_descriptor, output_descriptor, convolution_descriptor, kernel_descriptor,
+          cudnn_handle, kernel_descriptor, output_descriptor, convolution_descriptor, input_descriptor,
           CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
     advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
   }
@@ -144,10 +144,10 @@ static void CUDNN_Impl(benchmark::State& state) {
     workspace_bytes = 1073741824;
   } else {
     if (PRINT_IF_ERROR(cudnnGetConvolutionBackwardDataWorkspaceSize(cudnn_handle,
-                                                                    input_descriptor,
+                                                                    kernel_descriptor,
                                                                     output_descriptor,
                                                                     convolution_descriptor,
-                                                                    kernel_descriptor,
+                                                                    input_descriptor,
                                                                     convolution_algorithm,
                                                                     &workspace_bytes))) {
       state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardDataWorkspaceSize");
@@ -188,8 +188,8 @@ static void CUDNN_Impl(benchmark::State& state) {
     cudaEventRecord(start, NULL);
 
     const cudnnStatus_t cudnn_err = cudnnConvolutionBackwardData(
-        cudnn_handle, &alpha, input_descriptor, d_input, output_descriptor, d_output, convolution_descriptor,
-        convolution_algorithm, d_workspace, workspace_bytes, &beta, kernel_descriptor, d_kernel);
+        cudnn_handle, &alpha, kernel_descriptor, d_kernel, output_descriptor, d_output, convolution_descriptor,
+        convolution_algorithm, d_workspace, workspace_bytes, &beta, input_descriptor, d_input);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -281,8 +281,8 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   cudnnConvolutionBwdDataAlgoPerf_t perfResults[max_count];
   int returned_count;
-  cudnn_err = cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, input_descriptor, output_descriptor,
-                                                        convolution_descriptor, kernel_descriptor, max_count,
+  cudnn_err = cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, kernel_descriptor, output_descriptor,
+                                                        convolution_descriptor, input_descriptor, max_count,
                                                         &returned_count, perfResults);
   if (PRINT_IF_ERROR(cudnn_err)) {
     state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionBackwardDataAlgorithm");
