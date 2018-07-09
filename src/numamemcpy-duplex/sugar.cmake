@@ -19,5 +19,6 @@ sugar_files(
 sugar_files(
     BENCHMARK_SOURCES
     host_to_gpu.cpp
+    pinned_to_gpu.cpp
 )
 

@@ -13,7 +13,7 @@
 #define NAME "DUPLEX/Memcpy/HostToGPU" // correct name?
 
 static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
-
+cudaProfilerStart();
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
     return;
@@ -173,6 +173,9 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
+  
+  cudaProfilerStop();
 }
 // need to fix args count
 BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+
