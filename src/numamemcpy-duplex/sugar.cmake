@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SRC_NUMAMEMCPY_DUPLEX_SUGAR_CMAKE_)
+if(DEFINED SUGAR_CMAKE_)
   return()
 else()
-  set(SRC_NUMAMEMCPY_DUPLEX_SUGAR_CMAKE_ 1)
+  set(SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)

@@ -60,15 +60,13 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaMallocHost(&ptr, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMallocHost");
+
+  if (PRINT_IF_ERROR(ptr = (char*) malloc(bytes))) {
+    state.SkipWithError(NAME " failed to perform malloc");
     return;
   }
   srcs.push_back(ptr);
-  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform src cudaMemset");
-    return;
-  }
+  free(ptr);
 
   // gpu destination
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
@@ -103,15 +101,13 @@ static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaMallocHost(&ptr, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMallocHost");
+
+  if (PRINT_IF_ERROR(ptr = (char*) malloc(bytes))) {
+    state.SkipWithError(NAME " failed to perform malloc");
     return;
   }
   dsts.push_back(ptr);
-  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform dst cudaMemset");
-    return;
-  }
+  free(ptr);
 
   assert(starts.size() == stops.size());
   assert(streams.size() == starts.size());
