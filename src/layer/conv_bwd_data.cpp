@@ -19,13 +19,8 @@
 #include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
-// Calculates convolution output dimension using the definition from Caffe
-static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stride) {
-  return (input_dim - filter_dim + 2 * padd) / stride + 1;
-}
-
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
-// http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionBwdDataAlgo_t
 template <typename T, cudnnConvolutionBwdDataAlgo_t convolution_algorithm
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
           ,
@@ -65,9 +60,6 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   const auto N = batch_size, K = kernel_size, C = channels, H = height, W = width, R = filter_height, S = filter_width;
 
-  // const auto output_width  = calc_out_dim(width, filter_width, pad_width, stride_width);
-  // const auto output_height = calc_out_dim(height, filter_height.fh, pad_height, stride_height);
-
   auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
   auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
 
@@ -92,7 +84,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   if (!kernel_filter.is_valid) {
     return;
   }
-  cudnnFilterDescriptor_t kernel_descriptor = kernel_filter.get();
+  cudnnDataDescriptor_t kernel_descriptor = kernel_filter.get();
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -140,9 +132,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   size_t workspace_bytes = 0;
 
   cudnnConvolutionBwdDataAlgo_t advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
-  if (IS_ERROR(cudnnGetConvolutionBackwardFilterAlgorithm(
-          cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor, output_descriptor,
-          CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
+  if (IS_ERROR(cudnnGetConvolutionBackwardDataAlgorithm(
+          cudnn_handle, input_descriptor, output_descriptor, convolution_descriptor, kernel_descriptor,
+          CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
     advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
   }
 
@@ -151,14 +143,14 @@ static void CUDNN_Impl(benchmark::State& state) {
     // Note: cudnn workspace size function doesn't work for INT8_CONFIG
     workspace_bytes = 1073741824;
   } else {
-    if (PRINT_IF_ERROR(cudnnGetConvolutionBackwardFilterWorkspaceSize(cudnn_handle,
-                                                                      input_descriptor,
-                                                                      kernel_descriptor,
-                                                                      convolution_descriptor,
-                                                                      output_descriptor,
-                                                                      convolution_algorithm,
-                                                                      &workspace_bytes))) {
-      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
+    if (PRINT_IF_ERROR(cudnnGetConvolutionBackwardDataWorkspaceSize(cudnn_handle,
+                                                                    input_descriptor,
+                                                                    output_descriptor,
+                                                                    convolution_descriptor,
+                                                                    kernel_descriptor,
+                                                                    convolution_algorithm,
+                                                                    &workspace_bytes))) {
+      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardDataWorkspaceSize");
       return;
     }
   }
@@ -195,26 +187,16 @@ static void CUDNN_Impl(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const cudnnStatus_t cudnn_err = cudnnConvolutionForward(cudnn_handle,
-                                                            &alpha,
-                                                            input_descriptor,
-                                                            d_input,
-                                                            kernel_descriptor,
-                                                            d_kernel,
-                                                            convolution_descriptor,
-                                                            convolution_algorithm,
-                                                            d_workspace,
-                                                            workspace_bytes,
-                                                            &beta,
-                                                            output_descriptor,
-                                                            d_output);
+    const cudnnStatus_t cudnn_err = cudnnConvolutionBackwardData(
+        cudnn_handle, &alpha, input_descriptor, d_input, output_descriptor, d_output, convolution_descriptor,
+        convolution_algorithm, d_workspace, workspace_bytes, &beta, kernel_descriptor, d_kernel);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnConvolutionForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnConvolutionBackwardData");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {
@@ -254,11 +236,10 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   const auto P = out_h, Q = out_w;
 
-  const auto compute_flops = [&](cudnnConvolutionFwdAlgo_t alg) {
+  const auto compute_flops = [&](cudnnConvolutionBwdDataAlgo_t alg) {
     switch (alg) {
-      case CUDNN_CONVOLUTION_BWD_ALGO_IMPLICIT_GEMM:
-      case CUDNN_CONVOLUTION_BWD_ALGO_IMPLICIT_PRECOMP_GEMM:
-      case CUDNN_CONVOLUTION_BWD_ALGO_GEMM:
+      case CUDNN_CONVOLUTION_BWD_DATA_ALGO_0:
+      case CUDNN_CONVOLUTION_BWD_DATA_ALGO_1:
         // flops = 2 * filter_width * filter_height * out_w * out_h * channels * out_c * batch_size *
         // state.iterations(); 2KCRSNPQ
         return static_cast<double>(2) * static_cast<double>(K) * static_cast<double>(C) * static_cast<double>(R) *
@@ -273,7 +254,6 @@ static void CUDNN_Impl(benchmark::State& state) {
                    (static_cast<double>(H) * static_cast<double>(W)) *
                    std::log2(static_cast<double>(H) * static_cast<double>(W));
       case CUDNN_CONVOLUTION_BWD_ALGO_WINOGRAD_NONFUSED:
-      case CUDNN_CONVOLUTION_BWD_ALGO_WINOGRAD:
         return static_cast<double>(-1); // todo ... implement
       default:
         return static_cast<double>(-1);
@@ -292,35 +272,60 @@ static void CUDNN_Impl(benchmark::State& state) {
                             {predicted_advised_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
   }
 
+  cudnnStatus_t cudnn_err;
+  int max_count = 10;
+  /* cudnn_err = cudnnGetConvolutionBackwardDataAlgorithmMaxCount(cudnn_handle, &max_count); */
+  /* if (PRINT_IF_ERROR(cudnn_err)) { */
+  /*   state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnGetConvolutionBackwardDataAlgorithmMaxCount"); */
+  /* } */
+
+  cudnnConvolutionBwdDataAlgoPerf_t perfResults[max_count];
+  int returned_count;
+  cudnn_err = cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, input_descriptor, output_descriptor,
+                                                        convolution_descriptor, kernel_descriptor, max_count,
+                                                        &returned_count, perfResults);
+  if (PRINT_IF_ERROR(cudnn_err)) {
+    state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionBackwardDataAlgorithm");
+  }
+
+  for (auto ii = 0; ii < returned_count; ii++) {
+    cudnnConvolutionFwdAlgoPerf_t perfResult = perfResults[ii];
+    if (perfResult.algo == convolution_algorithm) {
+      state.counters.insert({{"advised_time", perfResult.time},
+                             {"advised_memory", perfResult.memory},
+                             {"advised_determinism", (int) perfResult.determinism}});
+    }
+  }
+
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_BACKWARD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, convolution_algorithm>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_BACKWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_BACKWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_BACKWARD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, convolution_algorithm>(state);
 }
 
-template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
+template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
