@@ -201,19 +201,15 @@ if (ENABLE_COMM)
     find_package(numa)
   endif(USE_NUMA)
 
-  # To download scope_comm
-  # git_clone(
-  #   PROJECT_NAME comm_scope
-  #   GIT_URL "https://github.com/rai-project/comm_scope"
-  #   GIT_BRANCH "master"
-  # )
-  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
+  git_clone(
+    PROJECT_NAME comm_scope
+    GIT_URL "https://github.com/rai-project/comm_scope"
+    GIT_BRANCH "master"
+  )
+  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
+  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/comm_scope")
 
-
-  # For local development
-  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/scope_comm")
-
-  find_package(scope_comm CONFIG REQUIRED)
+  find_package(comm_scope CONFIG REQUIRED)
   include_directories(${comm_scope_INCLUDE_DIRS})
   set(BENCHMARK_SOURCES ${BENCHMARK_SOURCES} ${comm_scope_BENCHMARK_SOURCES})
 endif(ENABLE_COMM)
