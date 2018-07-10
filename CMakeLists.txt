@@ -16,7 +16,7 @@ option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" 
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
 option(USE_NUMA "Build benchmarks that require NUMA support" ON)
 option(USE_OPENMP "Build benchmarks that require OpenMP support" ON)
-option(ENABLE_COMM "Use the scope_comm" ON)
+option(ENABLE_COMM "Use the comm_scope" ON)
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -35,10 +35,12 @@ project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
 include(cotire)
-include(GetGitRevisionDescription)
-include(CTest)
-include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(CTest)
+include(ExternalProject)
+include(GetGitRevisionDescription)
+include(GNUInstallDirs)
+include(cmake/GitUtils.cmake)
 
 #set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -90,9 +92,7 @@ else()
 
 endif (CONFIG_USE_HUNTER)
 
-if (USE_NUMA)
-  find_package(numa)
-endif(USE_NUMA)
+
 if (USE_OPENMP)
   find_package(OpenMP)
 endif(USE_OPENMP)
@@ -193,10 +193,29 @@ set(SRC_DIR "${TOP_DIR}/src")
 
 sugar_include("./src")
 
+
 if (ENABLE_COMM)
-message(STATUS "Enabling COMM submodule")
-add_subdirectory(scope_comm)
-message(STATUS ${BENCHMARK_SOURCES})
+  message(STATUS "Enabling COMM submodule...")
+
+  if (USE_NUMA)
+    find_package(numa)
+  endif(USE_NUMA)
+
+  # To download scope_comm
+  # git_clone(
+  #   PROJECT_NAME comm_scope
+  #   GIT_URL "https://github.com/rai-project/comm_scope"
+  #   GIT_BRANCH "master"
+  # )
+  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
+
+
+  # For local development
+  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/scope_comm")
+
+  find_package(scope_comm CONFIG REQUIRED)
+  include_directories(${comm_scope_INCLUDE_DIRS})
+  set(BENCHMARK_SOURCES ${BENCHMARK_SOURCES} ${comm_scope_BENCHMARK_SOURCES})
 endif(ENABLE_COMM)
 
 add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
@@ -235,7 +254,6 @@ target_link_libraries(bench spdlog::spdlog)
 target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
-
 
 if(numa_FOUND)
   add_definitions(-DUSE_NUMA=1)

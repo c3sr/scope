@@ -34,6 +34,3 @@
 [submodule "third_party/transwarp"]
 	path = third_party/transwarp
 	url = https://github.com/bloomen/transwarp
-[submodule "scope_comm"]
-	path = scope_comm
-	url = git@github.com:rai-project/scope_comm.git
