@@ -198,13 +198,13 @@ sugar_include("./src")
 if (ENABLE_COMM)
   message(STATUS "Enabling COMM submodule...")
 
-  # git_clone(
-  #   PROJECT_NAME comm_scope
-  #   GIT_URL "https://github.com/rai-project/comm_scope"
-  #   GIT_BRANCH "master"
-  # )
-  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
-  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/comm_scope")
+  git_clone(
+    PROJECT_NAME comm_scope
+    GIT_URL "https://github.com/rai-project/comm_scope"
+    GIT_BRANCH "master"
+  )
+  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
+  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/comm_scope")
 
   find_package(comm_scope CONFIG REQUIRED)
   include_directories(${comm_scope_INCLUDE_DIRS})
