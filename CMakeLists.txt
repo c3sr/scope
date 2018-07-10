@@ -33,6 +33,7 @@ project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
 
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
+set(SCOPE_WANTS_NUMA OFF)
 
 include(cotire)
 include(CMakePackageConfigHelpers)
@@ -197,22 +198,25 @@ sugar_include("./src")
 if (ENABLE_COMM)
   message(STATUS "Enabling COMM submodule...")
 
-  if (USE_NUMA)
-    find_package(numa)
-  endif(USE_NUMA)
-
-  git_clone(
-    PROJECT_NAME comm_scope
-    GIT_URL "https://github.com/rai-project/comm_scope"
-    GIT_BRANCH "master"
-  )
-  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
-  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/comm_scope")
+  # git_clone(
+  #   PROJECT_NAME comm_scope
+  #   GIT_URL "https://github.com/rai-project/comm_scope"
+  #   GIT_BRANCH "master"
+  # )
+  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
+  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/comm_scope")
 
   find_package(comm_scope CONFIG REQUIRED)
   include_directories(${comm_scope_INCLUDE_DIRS})
   set(BENCHMARK_SOURCES ${BENCHMARK_SOURCES} ${comm_scope_BENCHMARK_SOURCES})
+  foreach(pkg ${comm_scope_OPTIONAL_PACKAGES})
+    find_package(${pkg})
+  endforeach(pkg)
+  foreach(pkg ${comm_scope_REQUIRED_PACKAGES})
+    find_package(${pkg} REQUIRED)
+  endforeach(pkg)
 endif(ENABLE_COMM)
+
 
 add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
