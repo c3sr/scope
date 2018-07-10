@@ -1,4 +1,4 @@
-#define BENCHMARK_NAME "CUDNN/CONV_BWD"
+#define BENCHMARK_NAME "CUDNN/CONV_BWD_DATA"
 
 #include <benchmark/benchmark.h>
 
@@ -47,7 +47,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto height        = state.range(1);
   const auto channels      = state.range(2);
   const auto batch_size    = state.range(3);
-  const auto kernel_size   = state.range(4);
+  const auto num_filters   = state.range(4);
   const auto filter_width  = state.range(5);
   const auto filter_height = state.range(6);
   const auto pad_width     = state.range(7);
@@ -55,36 +55,15 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const int input_image_bytes = batch_size * channels * height * width * sizeof(T);
-  const int kernel_bytes      = kernel_size * channels * filter_height * filter_width * sizeof(T);
+  const auto N = batch_size, K = num_filters, C = channels, H = height, W = width, R = filter_height, S = filter_width;
 
-  const auto N = batch_size, K = kernel_size, C = channels, H = height, W = width, R = filter_height, S = filter_width;
+  const int input_bytes  = batch_size * channels * height * width * sizeof(T);
+  const int kernel_bytes = num_filters * channels * filter_height * filter_width * sizeof(T);
+  auto input             = std::vector<T>(input_bytes / sizeof(T));
+  auto kernel            = std::vector<T>(kernel_bytes / sizeof(T));
 
-  auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
-  auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
-
-  std::fill(input_image.begin(), input_image.end(), detail::one<T>());
+  std::fill(input.begin(), input.end(), detail::one<T>());
   std::fill(kernel.begin(), kernel.end(), detail::one<T>());
-
-  auto input_tensor = Tensor<T>(state,
-                                {/*batch_size=*/batch_size,
-                                 /*channels=*/channels,
-                                 /*image_height=*/height,
-                                 /*image_width=*/width});
-  if (!input_tensor.is_valid) {
-    return;
-  }
-  cudnnTensorDescriptor_t input_descriptor = input_tensor.get();
-
-  const auto kernel_filter = Filter<T>(state,
-                                       {/*out_channels=*/kernel_size,
-                                        /*in_channels=*/channels,
-                                        /*kernel_height=*/filter_height,
-                                        /*kernel_width=*/filter_width});
-  if (!kernel_filter.is_valid) {
-    return;
-  }
-  cudnnFilterDescriptor_t kernel_descriptor = kernel_filter.get();
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -109,45 +88,61 @@ static void CUDNN_Impl(benchmark::State& state) {
   cudnnSetConvolutionMathType(convolution_descriptor, math_type);
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
 
-  int out_h, out_w, out_c, out_n;
+  auto dx_tensor = Tensor<T>(state,
+                                {/*batch_size=*/batch_size,
+                                 /*channels=*/channels,
+                                 /*image_height=*/height,
+                                 /*image_width=*/width});
+  if (!dx_tensor.is_valid) {
+    return;
+  }
+  cudnnTensorDescriptor_t dx_descriptor = dx_tensor.get();
 
-  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, input_descriptor, kernel_descriptor,
+  const auto w_filter = Filter<T>(state,
+                                       {/*out_channels=*/num_filters,
+                                        /*in_channels=*/channels,
+                                        /*kernel_height=*/filter_height,
+                                        /*kernel_width=*/filter_width});
+  if (!w_filter.is_valid) {
+    return;
+  }
+  cudnnFilterDescriptor_t w_descriptor = w_filter.get();
+
+  int out_h, out_w, out_c, out_n;
+  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, dx_descriptor, w_descriptor,
                                                            &out_n, &out_c, &out_h, &out_w))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolution2dForwardOutputDim");
     return;
   }
 
-  auto output_tensor = Tensor<T>(state,
+  auto dy_tensor  Tensor<T>(state,
                                  {/*batch_size=*/out_n,
                                   /*channels=*/out_c,
                                   /*image_height=*/out_h,
                                   /*image_width=*/out_w});
-  if (!output_tensor.is_valid) {
+  if (!dy_tensor.is_valid) {
     return;
   }
-  cudnnTensorDescriptor_t output_descriptor = output_tensor.get();
-
-  const auto output_image_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
-
-  size_t workspace_bytes = 0;
+  cudnnTensorDescriptor_t dy_descriptor = dy_tensor.get();
 
   cudnnConvolutionBwdDataAlgo_t advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
   if (IS_ERROR(cudnnGetConvolutionBackwardDataAlgorithm(
-          cudnn_handle, kernel_descriptor, output_descriptor, convolution_descriptor, input_descriptor,
+          cudnn_handle, w_descriptor, dy_descriptor, convolution_descriptor, dx_descriptor,
           CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST, 0, &advised_convolution_algorithm))) {
     advised_convolution_algorithm = (cudnnConvolutionBwdDataAlgo_t) -1;
   }
 
+  size_t workspace_bytes = 0;
   if (std::is_same<T, int8_t>::value) {
 
     // Note: cudnn workspace size function doesn't work for INT8_CONFIG
     workspace_bytes = 1073741824;
   } else {
     if (PRINT_IF_ERROR(cudnnGetConvolutionBackwardDataWorkspaceSize(cudnn_handle,
-                                                                    kernel_descriptor,
-                                                                    output_descriptor,
+                                                                    w_descriptor,
+                                                                    dy_descriptor,
                                                                     convolution_descriptor,
-                                                                    input_descriptor,
+                                                                    dx_descriptor,
                                                                     convolution_algorithm,
                                                                     &workspace_bytes))) {
       state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardDataWorkspaceSize");
@@ -156,29 +151,33 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
 
+  const auto output_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
+  auto output             = std::vector<T>(output_bytes / sizeof(T));
+  std::fill(output.begin(), output.end(), detail::one<T>());
+
   DeviceMemory<T> workspace_memory(state, workspace_bytes);
   if (!workspace_memory.is_valid) {
     return;
   }
   const auto d_workspace = workspace_memory.get();
 
-  DeviceMemory<T> input_memory(state, input_image.data(), input_image_bytes);
-  if (!input_memory.is_valid) {
+  DeviceMemory<T> w_memory(state, kernel.data(), kernel_bytes);
+  if (!w_memory.is_valid) {
     return;
   }
-  const auto d_input = input_memory.get();
+  const auto d_w = w_memory.get();
 
-  DeviceMemory<T> output_memory(state, output_image_bytes);
-  if (!output_memory.is_valid) {
+  DeviceMemory<T> dy_memory(state, output.get(), output_bytes);
+  if (!dy_memory.is_valid) {
     return;
   }
-  const auto d_output = output_memory.get();
+  const auto d_dy = dy_memory.get();
 
-  DeviceMemory<T> kernel_memory(state, kernel.data(), kernel_bytes);
-  if (!kernel_memory.is_valid) {
+  DeviceMemory<T> dx_memory(state, input_bytes);
+  if (!dx_memory.is_valid) {
     return;
   }
-  const auto d_kernel = kernel_memory.get();
+  const auto d_dx = x_memory.get();
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -188,8 +187,8 @@ static void CUDNN_Impl(benchmark::State& state) {
     cudaEventRecord(start, NULL);
 
     const cudnnStatus_t cudnn_err = cudnnConvolutionBackwardData(
-        cudnn_handle, &alpha, kernel_descriptor, d_kernel, output_descriptor, d_output, convolution_descriptor,
-        convolution_algorithm, d_workspace, workspace_bytes, &beta, input_descriptor, d_input);
+        cudnn_handle, &alpha, w_descriptor, d_w, dy_descriptor, d_dy, convolution_descriptor,
+        convolution_algorithm, d_workspace, workspace_bytes, &beta, dx_descriptor, d_dx);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -218,16 +217,18 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"input_width", width},
                          {"input_channels", channels},
                          {"input_batch_size", batch_size},
-                         {"output_height", out_h},
-                         {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
+                         {"num_filters", num_filters},
                          {"filter_height", filter_height},
                          {"filter_width", filter_width},
                          {"pad_height", pad_height},
                          {"pad_width", pad_width},
                          {"stride_height", stride_height},
                          {"stride_width", stride_width},
+                         {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_height", out_h},
+                         {"output_width", out_w},
+                         {"output_channels", out_c},
+                         {"output_batch_size", out_n},
                          {"workspace_bytes", workspace_bytes},
                          {"workspace_megabytes", workspace_bytes / 1048576.0},
                          {"convolution_algorithm", (int) convolution_algorithm},
@@ -281,7 +282,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   cudnnConvolutionBwdDataAlgoPerf_t perfResults[max_count];
   int returned_count;
-  cudnn_err = cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, kernel_descriptor, output_descriptor,
+  cudnn_err = cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, w_descriptor, dy_descriptor,
                                                         convolution_descriptor, input_descriptor, max_count,
                                                         &returned_count, perfResults);
   if (PRINT_IF_ERROR(cudnn_err)) {

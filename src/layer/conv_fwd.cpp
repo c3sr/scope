@@ -19,7 +19,7 @@
 #include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
-// Calculates convolution output dimension using the definition from Caffe
+// calculates convolution output dimension
 static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stride) {
   return (input_dim - filter_dim + 2 * padd) / stride + 1;
 }
@@ -54,7 +54,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto height        = state.range(1);
   const auto channels      = state.range(2);
   const auto batch_size    = state.range(3);
-  const auto kernel_size   = state.range(4);
+  const auto num_filters   = state.range(4);
   const auto filter_width  = state.range(5);
   const auto filter_height = state.range(6);
   const auto pad_width     = state.range(7);
@@ -62,39 +62,15 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const int input_image_bytes = batch_size * channels * height * width * sizeof(T);
-  const int kernel_bytes      = kernel_size * channels * filter_height * filter_width * sizeof(T);
+  const auto N = batch_size, K = num_filters, C = channels, H = height, W = width, R = filter_height, S = filter_width;
 
-  const auto N = batch_size, K = kernel_size, C = channels, H = height, W = width, R = filter_height, S = filter_width;
+  const int input_bytes  = batch_size * channels * height * width * sizeof(T);
+  const int kernel_bytes = num_filters * channels * filter_height * filter_width * sizeof(T);
+  auto input             = std::vector<T>(input_bytes / sizeof(T));
+  auto kernel            = std::vector<T>(kernel_bytes / sizeof(T));
 
-  // const auto output_width  = calc_out_dim(width, filter_width, pad_width, stride_width);
-  // const auto output_height = calc_out_dim(height, filter_height.fh, pad_height, stride_height);
-
-  auto input_image = std::vector<T>(input_image_bytes / sizeof(T));
-  auto kernel      = std::vector<T>(kernel_bytes / sizeof(T));
-
-  std::fill(input_image.begin(), input_image.end(), detail::one<T>());
+  std::fill(input.begin(), input.end(), detail::one<T>());
   std::fill(kernel.begin(), kernel.end(), detail::one<T>());
-
-  auto input_tensor = Tensor<T>(state,
-                                {/*batch_size=*/batch_size,
-                                 /*channels=*/channels,
-                                 /*image_height=*/height,
-                                 /*image_width=*/width});
-  if (!input_tensor.is_valid) {
-    return;
-  }
-  cudnnTensorDescriptor_t input_descriptor = input_tensor.get();
-
-  const auto kernel_filter = Filter<T>(state,
-                                       {/*out_channels=*/kernel_size,
-                                        /*in_channels=*/channels,
-                                        /*kernel_height=*/filter_height,
-                                        /*kernel_width=*/filter_width});
-  if (!kernel_filter.is_valid) {
-    return;
-  }
-  cudnnFilterDescriptor_t kernel_descriptor = kernel_filter.get();
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -119,45 +95,61 @@ static void CUDNN_Impl(benchmark::State& state) {
   cudnnSetConvolutionMathType(convolution_descriptor, math_type);
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
 
-  int out_h, out_w, out_c, out_n;
+  auto x_tensor = Tensor<T>(state,
+                            {/*batch_size=*/batch_size,
+                             /*channels=*/channels,
+                             /*image_height=*/height,
+                             /*image_width=*/width});
+  if (!x_tensor.is_valid) {
+    return;
+  }
+  cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
 
-  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, input_descriptor, kernel_descriptor,
-                                                           &out_n, &out_c, &out_h, &out_w))) {
+  const auto w_filter = Filter<T>(state,
+                                  {/*out_channels=*/num_filters,
+                                   /*in_channels=*/channels,
+                                   /*kernel_height=*/filter_height,
+                                   /*kernel_width=*/filter_width});
+  if (!w_filter.is_valid) {
+    return;
+  }
+  cudnnFilterDescriptor_t w_descriptor = w_filter.get();
+
+  int out_h, out_w, out_c, out_n;
+  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, x_descriptor, w_descriptor, &out_n,
+                                                           &out_c, &out_h, &out_w))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolution2dForwardOutputDim");
     return;
   }
 
-  auto output_tensor = Tensor<T>(state,
-                                 {/*batch_size=*/out_n,
-                                  /*channels=*/out_c,
-                                  /*image_height=*/out_h,
-                                  /*image_width=*/out_w});
-  if (!output_tensor.is_valid) {
+  auto y_tensor = Tensor<T>(state,
+                            {/*batch_size=*/out_n,
+                             /*channels=*/out_c,
+                             /*image_height=*/out_h,
+                             /*image_width=*/out_w});
+  if (!y_tensor.is_valid) {
     return;
   }
-  cudnnTensorDescriptor_t output_descriptor = output_tensor.get();
-
-  const auto output_image_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
-
-  size_t workspace_bytes = 0;
+  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
-  if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor,
-                                          output_descriptor, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0,
+  if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
+                                          y_descriptor, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0,
                                           &advised_convolution_algorithm) != CUDNN_STATUS_SUCCESS) {
     advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   }
 
+  size_t workspace_bytes = 0;
   if (std::is_same<T, int8_t>::value) {
 
     // Note: cudnn workspace size function doesn't work for INT8_CONFIG
     workspace_bytes = 1073741824;
   } else {
     if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
-                                                               input_descriptor,
-                                                               kernel_descriptor,
+                                                               x_descriptor,
+                                                               w_descriptor,
                                                                convolution_descriptor,
-                                                               output_descriptor,
+                                                               y_descriptor,
                                                                convolution_algorithm,
                                                                &workspace_bytes))) {
       state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
@@ -165,6 +157,8 @@ static void CUDNN_Impl(benchmark::State& state) {
     }
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
+  
+  const auto output_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
 
   DeviceMemory<T> workspace_memory(state, workspace_bytes);
   if (!workspace_memory.is_valid) {
@@ -172,23 +166,23 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_workspace = workspace_memory.get();
 
-  DeviceMemory<T> input_memory(state, input_image.data(), input_image_bytes);
-  if (!input_memory.is_valid) {
+  DeviceMemory<T> x_memory(state, input.data(), input_bytes);
+  if (!x_memory.is_valid) {
     return;
   }
-  const auto d_input = input_memory.get();
+  const auto d_x = x_memory.get();
 
-  DeviceMemory<T> output_memory(state, output_image_bytes);
-  if (!output_memory.is_valid) {
+  DeviceMemory<T> w_memory(state, kernel.data(), kernel_bytes);
+  if (!w_memory.is_valid) {
     return;
   }
-  const auto d_output = output_memory.get();
+  const auto d_w = w_memory.get();
 
-  DeviceMemory<T> kernel_memory(state, kernel.data(), kernel_bytes);
-  if (!kernel_memory.is_valid) {
+  DeviceMemory<T> y_memory(state, output_bytes);
+  if (!y_memory.is_valid) {
     return;
   }
-  const auto d_kernel = kernel_memory.get();
+  const auto d_y = y_memory.get();
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -199,17 +193,17 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     const cudnnStatus_t cudnn_err = cudnnConvolutionForward(cudnn_handle,
                                                             &alpha,
-                                                            input_descriptor,
-                                                            d_input,
-                                                            kernel_descriptor,
-                                                            d_kernel,
+                                                            x_descriptor,
+                                                            d_x,
+                                                            w_descriptor,
+                                                            d_w,
                                                             convolution_descriptor,
                                                             convolution_algorithm,
                                                             d_workspace,
                                                             workspace_bytes,
                                                             &beta,
-                                                            output_descriptor,
-                                                            d_output);
+                                                            y_descriptor,
+                                                            d_y);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -238,16 +232,18 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"input_width", width},
                          {"input_channels", channels},
                          {"input_batch_size", batch_size},
-                         {"output_height", out_h},
-                         {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
+                         {"num_filters", num_filters},
                          {"filter_height", filter_height},
                          {"filter_width", filter_width},
                          {"pad_height", pad_height},
                          {"pad_width", pad_width},
                          {"stride_height", stride_height},
                          {"stride_width", stride_width},
+                         {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_height", out_h},
+                         {"output_width", out_w},
+                         {"output_channels", out_c},
+                         {"output_batch_size", out_n},
                          {"workspace_bytes", workspace_bytes},
                          {"workspace_megabytes", workspace_bytes / 1048576.0},
                          {"convolution_algorithm", (int) convolution_algorithm},
@@ -303,8 +299,8 @@ static void CUDNN_Impl(benchmark::State& state) {
   cudnnConvolutionFwdAlgoPerf_t perfResults[max_count];
   int returned_count;
   cudnn_err =
-      cudnnFindConvolutionForwardAlgorithm(cudnn_handle, input_descriptor, kernel_descriptor, convolution_descriptor,
-                                           output_descriptor, max_count, &returned_count, perfResults);
+      cudnnFindConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
+                                           y_descriptor, max_count, &returned_count, perfResults);
   if (PRINT_IF_ERROR(cudnn_err)) {
     state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionForwardAlgorithm");
   }
