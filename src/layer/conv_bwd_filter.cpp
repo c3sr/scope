@@ -245,8 +245,8 @@ static void CUDNN_Impl(benchmark::State& state) {
         // state.iterations(); 2KCRSNPQ
         return static_cast<double>(2) * static_cast<double>(K) * static_cast<double>(C) * static_cast<double>(R) *
                static_cast<double>(S) * static_cast<double>(N) * static_cast<double>(P) * static_cast<double>(Q);
-      case CUDNN_CONVOLUTION_BWD_ALGO_FFT:
-      case CUDNN_CONVOLUTION_BWD_ALGO_FFT_TILING:
+      case CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT:
+      case CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING:
         //(NCKHW + (NC +CK +NK)HW log(HW))
         return (static_cast<double>(N) * static_cast<double>(C) * static_cast<double>(K) * static_cast<double>(H) *
                 static_cast<double>(W)) +
@@ -254,7 +254,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                 static_cast<double>(N) * static_cast<double>(K)) *
                    (static_cast<double>(H) * static_cast<double>(W)) *
                    std::log2(static_cast<double>(H) * static_cast<double>(W));
-      case CUDNN_CONVOLUTION_BWD_ALGO_WINOGRAD_NONFUSED:
+      case CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED:
         return static_cast<double>(-1); // todo ... implement
       default:
         return static_cast<double>(-1);
@@ -290,7 +290,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   for (auto ii = 0; ii < returned_count; ii++) {
-    cudnnConvolutionFwdAlgoPerf_t perfResult = perfResults[ii];
+    cudnnConvolutionBwdFilterAlgoPerf_t perfResult = perfResults[ii];
     if (perfResult.algo == convolution_algorithm) {
       state.counters.insert({{"advised_time", perfResult.time},
                              {"advised_memory", perfResult.memory},
