@@ -55,7 +55,6 @@ static void DUPLEX_Memcpy_GPUToHost(benchmark::State &state) {
   std::vector<char *> dsts;
 
   // create a source and destination allocation for first copy: gpu ->host
-  // gpu source
   char *ptr;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
@@ -71,30 +70,26 @@ static void DUPLEX_Memcpy_GPUToHost(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
     return;
   }
-  //host destination 
+
   char *ptr2;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
   ptr2 = (char*) malloc(bytes);
   if(NULL == ptr2){
     state.SkipWithError(NAME " ptr is null");
     return;
   }
-
   srcs.push_back(ptr2);
   defer(free(ptr2));
 
   // create a source and destination for second copy: host -> gpu
-  // host allocation
   char *ptr3;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
   ptr3 = (char*) malloc(bytes);
   if(NULL == ptr3){
     state.SkipWithError(NAME " ptr is null");
@@ -103,7 +98,6 @@ static void DUPLEX_Memcpy_GPUToHost(benchmark::State &state) {
   dsts.push_back(ptr3);
   defer(free(ptr3));
 
-  // gpu destination
   char *ptr4;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
@@ -186,7 +180,6 @@ static void DUPLEX_Memcpy_GPUToHost(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime2, starts[1], starts[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -195,7 +188,6 @@ static void DUPLEX_Memcpy_GPUToHost(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime2, stops[1], stops[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -210,6 +202,6 @@ static void DUPLEX_Memcpy_GPUToHost(benchmark::State &state) {
 
   cudaProfilerStop();
 }
-// need to fix args count
+
 BENCHMARK(DUPLEX_Memcpy_GPUToHost)->Apply(ArgsCountNumaGpu)->UseManualTime();
 

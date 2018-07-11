@@ -179,7 +179,6 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime2, starts[1], starts[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -188,12 +187,10 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime2, stops[1], stops[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         startSum += std::max(startTime1, startTime2);
         stopSum += std::max(stopTime1, stopTime2);
   }
@@ -202,5 +199,6 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
   state.counters["stop_spread"] = stopSum/state.iterations();
   cudaProfilerStop();
 }
+
 BENCHMARK(DUPLEX_Memcpy_PinnedToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
 

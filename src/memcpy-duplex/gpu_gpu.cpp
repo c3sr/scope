@@ -177,7 +177,6 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime2, starts[1], starts[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -186,7 +185,6 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime2, stops[1], stops[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -198,7 +196,6 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-
 
   for (auto src : srcs) {
     cudaFree(src);

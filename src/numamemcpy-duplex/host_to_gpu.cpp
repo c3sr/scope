@@ -10,7 +10,7 @@
 
 #include "numamemcpy-duplex/args.hpp"
 
-#define NAME "DUPLEX/Memcpy/HostToGPU" // correct name?
+#define NAME "DUPLEX/Memcpy/HostToGPU" 
 
 static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
 cudaProfilerStart();
@@ -60,17 +60,14 @@ cudaProfilerStart();
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
   ptr = (char*) malloc(bytes);
   if(NULL == ptr){
     state.SkipWithError(NAME " ptr is null");
     return;
   }
-
   srcs.push_back(ptr);
   defer(free(ptr));
 
-  // gpu destination
   char *ptr2;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
@@ -102,13 +99,12 @@ cudaProfilerStart();
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
-  // destination
+
   char *ptr4;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
   ptr4 = (char*) malloc(bytes);
   if(NULL == ptr4){
     state.SkipWithError(NAME " ptr is null");
@@ -183,7 +179,6 @@ cudaProfilerStart();
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime2, starts[1], starts[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -192,7 +187,6 @@ cudaProfilerStart();
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime2, stops[1], stops[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -204,9 +198,8 @@ cudaProfilerStart();
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-  
   cudaProfilerStop();
 }
-// need to fix args count
+
 BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
 

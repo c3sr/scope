@@ -55,7 +55,6 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
   std::vector<char *> dsts;
 
   // create a source and destination allocation for first copy: gpu -> host
-  // gpu source
   char *ptr;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
@@ -71,7 +70,7 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
     return;
   }
-  // host destination
+
   char *ptr2;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
@@ -85,7 +84,6 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
   defer(cudaFree(ptr2));
 
   // create a source and destination for second copy: host -> gpu
-  // host source
   char *ptr3;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
@@ -99,7 +97,7 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
   dsts.push_back(ptr3);
   defer(cudaFree(ptr3));
 
-  // gpu destination
+
   char *ptr4;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
@@ -182,7 +180,6 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime2, starts[1], starts[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -191,7 +188,6 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
         }
-
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime2, stops[1], stops[0]))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -206,6 +202,6 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
 
   cudaProfilerStop();
 }
-// need to fix args count
+
 BENCHMARK(DUPLEX_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();
 
