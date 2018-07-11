@@ -95,7 +95,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   if (PRINT_IF_ERROR(
-          cudnnSetActivationDescriptor(convolution_descriptor, activation_mode, CUDNN_NOT_PROPAGATE_NAN, coef))) {
+          cudnnSetActivationDescriptor(activation_descriptor, activation_mode, CUDNN_NOT_PROPAGATE_NAN, coef))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetActivationDescriptor");
     return;
   }

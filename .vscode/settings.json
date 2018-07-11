@@ -28,7 +28,8 @@
     "algorithm": "cpp",
     "__bit_reference": "cpp",
     "__split_buffer": "cpp",
-    "__tree": "cpp"
+    "__tree": "cpp",
+    "limits": "cpp"
   },
   // Configure glob patterns for excluding files and folders.
   "files.exclude": {

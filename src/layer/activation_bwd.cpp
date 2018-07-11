@@ -64,16 +64,16 @@ static void CUDNN_Impl(benchmark::State& state) {
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
 
   auto dx_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
+                             {/*batch_size=*/out_n,
+                              /*channels=*/out_c,
+                              /*image_height=*/out_h,
+                              /*image_width=*/out_w});
   if (!dx_tensor.is_valid) {
     return;
   }
   cudnnTensorDescriptor_t dx_descriptor = dx_tensor.get();
-  
-  auto y_tensor                        = Tensor<T>(state,
+
+  auto y_tensor = Tensor<T>(state,
                             {/*batch_size=*/out_n,
                              /*channels=*/out_c,
                              /*image_height=*/out_h,
@@ -83,11 +83,11 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
-  auto dy_tensor                        = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
+  auto dy_tensor = Tensor<T>(state,
+                             {/*batch_size=*/out_n,
+                              /*channels=*/out_c,
+                              /*image_height=*/out_h,
+                              /*image_width=*/out_w});
   if (!dy_tensor.is_valid) {
     return;
   }
@@ -128,7 +128,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   if (PRINT_IF_ERROR(
-          cudnnSetActivationDescriptor(convolution_descriptor, activation_mode, CUDNN_NOT_PROPAGATE_NAN, coef))) {
+          cudnnSetActivationDescriptor(activation_descriptor, activation_mode, CUDNN_NOT_PROPAGATE_NAN, coef))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetActivationDescriptor");
     return;
   }
@@ -140,8 +140,18 @@ static void CUDNN_Impl(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const cudnnStatus_t cudnn_err = cudnnActivationBackward(
-        cudnn_handle, activation_descriptor, &alpha, y_descriptor, d_y,  dy_descriptor, d_dy, x_descriptor, d_x, &beta, dx_descriptor, d_dx);
+    const cudnnStatus_t cudnn_err = cudnnActivationBackward(cudnn_handle,
+                                                            activation_descriptor,
+                                                            &alpha,
+                                                            y_descriptor,
+                                                            d_y,
+                                                            dy_descriptor,
+                                                            d_dy,
+                                                            x_descriptor,
+                                                            d_x,
+                                                            &beta,
+                                                            dx_descriptor,
+                                                            d_dx);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
