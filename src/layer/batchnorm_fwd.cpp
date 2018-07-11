@@ -1,4 +1,4 @@
-#define BENCHMARK_NAME "CUDNN/BATCHNORM_FWD_TRAINING"
+#define BENCHMARK_NAME "CUDNN/BATCHNORM_FWD"
 
 #include <benchmark/benchmark.h>
 
@@ -140,6 +140,18 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_saved_in_var = saved_in_var_memory.get();
 
+  DeviceMemory<T> estimated_mean_memory(state, scale_bias_bytes);
+  if (!estimated_mean_memory.is_valid) {
+    return;
+  }
+  const auto d_estimated_mean = estimated_mean_memory.get();
+
+  DeviceMemory<T> estimated_var_memory(state, scale_bias_bytes);
+  if (!estimated_var_memory.is_valid) {
+    return;
+  }
+  const auto d_estimated_var = estimated_var_memory.get();
+
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
@@ -179,7 +191,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                          d_scale,
                                                          d_bias,
                                                          d_estimated_mean,
-                                                         d_maybe_inv_var,
+                                                         d_estimated_var,
                                                          epsilon);
     }
 
@@ -222,30 +234,32 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"output_width", out_w},
                          {"output_channels", out_c},
                          {"output_batch_size", out_n},
-                         {"batchnorm_mode", (int) batchnorm_mode}});
+                         {"batchnorm_mode", (int) batchnorm_mode},
+                         {"is_training", is_training}});
+});
 
-  const auto P = out_h, Q = out_w;
+const auto P = out_h, Q = out_w;
 
-  const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
-    switch (mode) {
-      case CUDNN_ACTIVATION_SIGMOID:
-      case CUDNN_ACTIVATION_RELU:
-      case CUDNN_ACTIVATION_TANH:
-      case CUDNN_ACTIVATION_CLIPPED_RELU:
-      case CUDNN_ACTIVATION_ELU:
-      case CUDNN_ACTIVATION_IDENTITY:
-        return out_n * out_c * out_h * out_w;
-      default:
-        return static_cast<double>(-1);
-    }
-  };
+const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
+  switch (mode) {
+    case CUDNN_ACTIVATION_SIGMOID:
+    case CUDNN_ACTIVATION_RELU:
+    case CUDNN_ACTIVATION_TANH:
+    case CUDNN_ACTIVATION_CLIPPED_RELU:
+    case CUDNN_ACTIVATION_ELU:
+    case CUDNN_ACTIVATION_IDENTITY:
+      return out_n * out_c * out_h * out_w;
+    default:
+      return static_cast<double>(-1);
+  }
+};
 
-  const double predicted_flops = compute_flops(batchnorm_mode);
-  state.counters.insert(
-      {{"predicted_flops_count", predicted_flops},
-       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
+const double predicted_flops = compute_flops(batchnorm_mode);
+state.counters.insert({{"predicted_flops_count", predicted_flops},
+                       {"predicted_flops",
+                        {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
