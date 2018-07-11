@@ -10,10 +10,10 @@
 
 #include "numamemcpy-duplex/args.hpp"
 
-#define NAME "DUPLEX/Memcpy/HostToGPU" // correct name?
+#define NAME "DUPLEX/Memcpy/PinnedToGPU" 
 
-static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
-cudaProfilerStart();
+static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
+  cudaProfilerStart();
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
     return;
@@ -60,15 +60,12 @@ cudaProfilerStart();
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
-  ptr = (char*) malloc(bytes);
-  if(NULL == ptr){
-    state.SkipWithError(NAME " ptr is null");
+  if (PRINT_IF_ERROR(cudaMallocHost(&ptr, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMallocHost");
     return;
   }
-
   srcs.push_back(ptr);
-  defer(free(ptr));
+  defer(cudaFree(ptr));
 
   // gpu destination
   char *ptr2;
@@ -108,14 +105,13 @@ cudaProfilerStart();
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
-  ptr4 = (char*) malloc(bytes);
-  if(NULL == ptr4){
-    state.SkipWithError(NAME " ptr is null");
+  if (PRINT_IF_ERROR(cudaMallocHost(&ptr4, bytes))){
+    state.SkipWithError(NAME "failed to perform cudaMallocHost");
     return;
   }
+  
   dsts.push_back(ptr4);
-  defer(free(ptr4));
+  defer(cudaFree(ptr4));
 
 
   assert(starts.size() == stops.size());
@@ -159,7 +155,7 @@ cudaProfilerStart();
     for (const auto start : starts) {
       for (const auto stop : stops) {
         float millis;
-
+  
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&millis, start, stop))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -168,12 +164,12 @@ cudaProfilerStart();
         maxMillis = std::max(millis, maxMillis);
       }
     }
-
     state.SetIterationTime(maxMillis / 1000);
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
-  
+  // find largest time between starts/stops
+
   float stopSum = 0;
   float startSum = 0;
   for ( const auto stream : streams ){
@@ -204,9 +200,7 @@ cudaProfilerStart();
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-  
   cudaProfilerStop();
 }
-// need to fix args count
-BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+BENCHMARK(DUPLEX_Memcpy_PinnedToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
 

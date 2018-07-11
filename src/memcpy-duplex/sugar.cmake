@@ -19,5 +19,6 @@ sugar_files(
 sugar_files(
     BENCHMARK_SOURCES
     gpu_gpu.cpp
+    gpu_gpuV2.cpp
 )
 

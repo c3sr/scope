@@ -168,6 +168,38 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
 
+  float stopSum = 0;
+  float startSum = 0;
+  for ( const auto stream : streams ){
+
+        float startTime1, startTime2, stopTime1, stopTime2;
+        if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime1, starts[0], starts[1]))) {
+          state.SkipWithError(NAME " failed to synchronize");
+          return;
+        }
+
+        if (PRINT_IF_ERROR(cudaEventElapsedTime(&startTime2, starts[1], starts[0]))) {
+          state.SkipWithError(NAME " failed to synchronize");
+          return;
+        }
+        if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime1, stops[0], stops[1]))) {
+          state.SkipWithError(NAME " failed to synchronize");
+          return;
+        }
+
+        if (PRINT_IF_ERROR(cudaEventElapsedTime(&stopTime2, stops[1], stops[0]))) {
+          state.SkipWithError(NAME " failed to synchronize");
+          return;
+        }
+
+        startSum += std::max(startTime1, startTime2);
+        stopSum += std::max(stopTime1, stopTime2);
+  }
+
+  state.counters["start_spread"] = startSum/state.iterations();
+  state.counters["stop_spread"] = stopSum/state.iterations();
+
+
   for (auto src : srcs) {
     cudaFree(src);
   }

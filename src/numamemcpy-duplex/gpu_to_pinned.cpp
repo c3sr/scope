@@ -10,10 +10,10 @@
 
 #include "numamemcpy-duplex/args.hpp"
 
-#define NAME "DUPLEX/Memcpy/HostToGPU" // correct name?
+#define NAME "DUPLEX/Memcpy/GPUToPinned" 
 
-static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
-cudaProfilerStart();
+static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
+  cudaProfilerStart();
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
     return;
@@ -33,7 +33,7 @@ cudaProfilerStart();
     return;
   }
 
-  // There are two copies, one numa -> gpu, one gpu -> numa
+  // There are two copies, one gpu -> host, one host -> gpu
 
   // Create One stream per copy
   cudaStream_t stream1, stream2;
@@ -54,69 +54,67 @@ cudaProfilerStart();
   std::vector<char *> srcs;
   std::vector<char *> dsts;
 
-  // create a source and destination allocation for first copy: host -> gpu1
+  // create a source and destination allocation for first copy: gpu -> host
+  // gpu source
   char *ptr;
-  if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
-    state.SkipWithError(NAME " failed to set device");
-    return;
-  }
-
-  ptr = (char*) malloc(bytes);
-  if(NULL == ptr){
-    state.SkipWithError(NAME " ptr is null");
-    return;
-  }
-
-  srcs.push_back(ptr);
-  defer(free(ptr));
-
-  // gpu destination
-  char *ptr2;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr2, bytes))) {
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr, bytes))) {
     state.SkipWithError(NAME " failed to perform cudaMalloc");
     return;
   }
-  dsts.push_back(ptr2);
-  defer(cudaFree(ptr2));
-  if (PRINT_IF_ERROR(cudaMemset(ptr2, 0, bytes))) {
+  dsts.push_back(ptr);
+  defer(cudaFree(ptr));
+  if (PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
     return;
   }
-  // create a source and destination for second copy: gpu -> host
-  char *ptr3;
-  if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
-    state.SkipWithError(NAME " failed to set device");
-    return;
-  }
-  if (PRINT_IF_ERROR(cudaMalloc(&ptr3, bytes))) {
-    state.SkipWithError(NAME " failed to perform cudaMalloc");
-    return;
-  }
-  srcs.push_back(ptr3);
-  defer(cudaFree(ptr3)); 
-  if (PRINT_IF_ERROR(cudaMemset(ptr3, 0, bytes))) {
-    state.SkipWithError(NAME " failed to perform src cudaMemset");
-    return;
-  }
-  // destination
-  char *ptr4;
+  // host destination
+  char *ptr2;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
     state.SkipWithError(NAME " failed to set device");
     return;
   }
-
-  ptr4 = (char*) malloc(bytes);
-  if(NULL == ptr4){
-    state.SkipWithError(NAME " ptr is null");
+  if (PRINT_IF_ERROR(cudaMallocHost(&ptr2, bytes))){
+    state.SkipWithError(NAME " failed to perform cudaMallocHost");
     return;
   }
-  dsts.push_back(ptr4);
-  defer(free(ptr4));
+  srcs.push_back(ptr2);
+  defer(cudaFree(ptr2));
 
+  // create a source and destination for second copy: host -> gpu
+  // host source
+  char *ptr3;
+  if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMallocHost(&ptr3, bytes))){
+    state.SkipWithError(NAME "failed to perform cudaMallocHost");
+    return;
+  }
+
+  dsts.push_back(ptr3);
+  defer(cudaFree(ptr3));
+
+  // gpu destination
+  char *ptr4;
+  if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
+    state.SkipWithError(NAME " failed to set device");
+    return;
+  }
+  if (PRINT_IF_ERROR(cudaMalloc(&ptr4, bytes))) {
+    state.SkipWithError(NAME " failed to perform cudaMalloc");
+    return;
+  }
+  srcs.push_back(ptr4);
+  defer(cudaFree(ptr4)); 
+  if (PRINT_IF_ERROR(cudaMemset(ptr4, 0, bytes))) {
+    state.SkipWithError(NAME " failed to perform src cudaMemset");
+    return;
+  }
 
   assert(starts.size() == stops.size());
   assert(streams.size() == starts.size());
@@ -159,7 +157,7 @@ cudaProfilerStart();
     for (const auto start : starts) {
       for (const auto stop : stops) {
         float millis;
-
+  
         if (PRINT_IF_ERROR(cudaEventElapsedTime(&millis, start, stop))) {
           state.SkipWithError(NAME " failed to synchronize");
           return;
@@ -168,11 +166,12 @@ cudaProfilerStart();
         maxMillis = std::max(millis, maxMillis);
       }
     }
-
     state.SetIterationTime(maxMillis / 1000);
   }
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
+  
+  // find the longest time between any stops/starts
   
   float stopSum = 0;
   float startSum = 0;
@@ -204,9 +203,9 @@ cudaProfilerStart();
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-  
+
   cudaProfilerStop();
 }
 // need to fix args count
-BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
+BENCHMARK(DUPLEX_Memcpy_GPUToPinned)->Apply(ArgsCountNumaGpu)->UseManualTime();
 
