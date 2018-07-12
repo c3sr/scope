@@ -26,6 +26,7 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
 
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnPoolingForward
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnGetPooling2dForwardOutputDim
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnSetPooling2dDescriptor
 template <typename T>
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
@@ -46,21 +47,21 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto win_h, win_w;
-  const auto vert_padding, hori_padding;
-  const auto vert_stride, hori_stride;
+  const auto win_h = 50, win_w = 50;
+  const auto vert_padding = 0, hori_padding = 0;
+  const auto vert_stride = 2, hori_stride = 2;
   const float alpha = 1, beta = 0;
 
-  const auto out_n = batch_size;
-  const auto out_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
-  const auto out_c = num_filters;
+  const auto in_n = batch_size;
+  const auto in_c = num_filters;
+  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
   auto x_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
+                            {/*batch_size=*/in_n,
+                             /*channels=*/in_c,
+                             /*image_height=*/in_h,
+                             /*image_width=*/in_w});
   if (!x_tensor.is_valid) {
     return;
   }
@@ -81,7 +82,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                  hori_padding,
                                                  vert_stride,
                                                  heri_stride))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetActivationDescriptor");
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetPooling2dDescriptor");
     return;
   }
   defer(cudnnDestroyPoolingDescriptor(pooling_descriptor));
@@ -153,54 +154,54 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"input_size", batch_size * channels * height * width},
-                         {"input_height", height},
-                         {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
-                         {"num_filters", num_filters},
-                         {"filter_height", filter_height},
-                         {"filter_width", filter_width},
-                         {"pad_height", pad_height},
-                         {"pad_width", pad_width},
-                         {"stride_height", stride_height},
-                         {"stride_width", stride_width},
+  state.counters.insert({{"input_size", in_n * in_c * in_h * in_w},
+                         {"input_batch_size", in_n},
+                         {"input_channels", in_c},
+                         {"input_height", in_h},
+                         {"input_width", in_w},
                          {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_batch_size", out_n},
+                         {"output_channels", out_c},
                          {"output_height", out_h},
                          {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n}});
+                         {"window_height", win_h},
+                         {"window_width", win_w},
+                         {"vertical_padding", vert_padding},
+                         {"horizontal_padding", hori_padding},
+                         {"vertical_stride", vert_stride},
+                         {"horizontal_stride", hori_stride},
+                         {"pooling_mode", (int) pooling_mode}});
 
   const double predicted_flops = in_n * in_c * in_h * in_w;
   state.counters.insert(
       {{"predicted_flops_count", predicted_flops},
        {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+  state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_FORWARD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_FORWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_FORWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_FORWARD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_FORWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, pooling_mode>(state);
 }
 
@@ -212,8 +213,8 @@ static void LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING)->CONV_PROBLEMS()->UseManualTime();                \
   BENCHMARK_TEMPLATE(b, CUDNN_POOLING_MAX_DETERMINISTIC)->CONV_PROBLEMS()->UseManualTime();
 
-/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_FORWARD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_FORWARD_INT32); */
+BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_FORWARD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_FORWARD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_FORWARD_DOUBLE);

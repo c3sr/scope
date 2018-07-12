@@ -51,8 +51,6 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto out_c = num_filters;
 
-  const auto N = batch_size, K = num_filters, C = channels, H = height, W = width, R = filter_height, S = filter_width;
-
   const int bias_bytes = batch_size * channels * 1 * 1 * sizeof(T);
   auto bias            = std::vector<T>(bias_bytes / sizeof(T));
   std::fill(bias.begin(), bias.end(), detail::one<T>());
@@ -142,6 +140,9 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"output_width", out_w},
                          {"output_channels", out_c},
                          {"output_batch_size", out_n}});
+
+  const auto N = batch_size, K = num_filters, C = channels, H = height, W = width, R = filter_height, S = filter_width;
+
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 

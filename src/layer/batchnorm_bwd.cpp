@@ -47,11 +47,11 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_height = state.range(10);
 
   const auto in_n = batch_size;
-  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_c = num_filters;
+  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
-  const float one = 1, zero = 0;
+  const float alpha = 1, beta = 0;
   const double epsilon = 1e-5; // CUDNN_BN_MIN_EPSILON
 
   auto x_tensor = Tensor<T>(state,
@@ -139,9 +139,9 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
-    cudnn_err = cudnnBatchNormalizationBackward(cudnn_handle, batchnorm_mode, &one, &zero, &one, &zero, x_descriptor,
-                                                d_x, x_descriptor, d_dy, x_descriptor, d_dx, scale_bias_descriptor,
-                                                d_scale, d_dscale, d_dbias, epsilon, d_saved_mean, d_saved_in_var);
+    cudnn_err = cudnnBatchNormalizationBackward(
+        cudnn_handle, batchnorm_mode, &alpha, &beta, &alpha, &beta, x_descriptor, d_x, x_descriptor, d_dy, x_descriptor,
+        d_dx, scale_bias_descriptor, d_scale, d_dscale, d_dbias, epsilon, d_saved_mean, d_saved_in_var);
 
     cudaEventRecord(stop, NULL);
     state.PauseTiming();

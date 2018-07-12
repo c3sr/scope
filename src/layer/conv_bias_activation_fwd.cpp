@@ -46,9 +46,6 @@ static void CUDNN_Impl(benchmark::State& state) {
   int math_type = 0;
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
 
-  const float alpha = 1, beta = 1;
-  const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
-
   //  w, h, c, n, k, filter_w(s), filter_h(r), pad_w, pad_h, wstride, hstride
   const auto width         = state.range(0);
   const auto height        = state.range(1);
@@ -62,15 +59,8 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto N = batch_size, K = num_filters, C = channels, H = height, W = width, R = filter_height, S = filter_width;
-
-  const int input_bytes  = batch_size * channels * height * width * sizeof(T);
-  const int kernel_bytes = num_filters * channels * filter_height * filter_width * sizeof(T);
-  auto input             = std::vector<T>(input_bytes / sizeof(T));
-  auto kernel            = std::vector<T>(kernel_bytes / sizeof(T));
-
-  std::fill(input.begin(), input.end(), detail::one<T>());
-  std::fill(kernel.begin(), kernel.end(), detail::one<T>());
+  const float alpha = 1, beta = 1;
+  const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -171,6 +161,13 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
 
+  const int input_bytes  = batch_size * channels * height * width * sizeof(T);
+  const int kernel_bytes = num_filters * channels * filter_height * filter_width * sizeof(T);
+  auto input             = std::vector<T>(input_bytes / sizeof(T));
+  auto kernel            = std::vector<T>(kernel_bytes / sizeof(T));
+  std::fill(input.begin(), input.end(), detail::one<T>());
+  std::fill(kernel.begin(), kernel.end(), detail::one<T>());
+
   const auto output_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
   auto output             = std::vector<T>(output_bytes / sizeof(T));
   std::fill(output.begin(), output.end(), detail::one<T>());
@@ -246,10 +243,10 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   state.counters.insert({{"input_size", batch_size * channels * height * width},
+                         {"input_batch_size", batch_size},
+                         {"input_channels", channels},
                          {"input_height", height},
                          {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
                          {"num_filters", num_filters},
                          {"filter_height", filter_height},
                          {"filter_width", filter_width},
@@ -258,10 +255,10 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"stride_height", stride_height},
                          {"stride_width", stride_width},
                          {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_batch_size", out_n},
+                         {"output_channels", out_c},
                          {"output_height", out_h},
                          {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
                          {"workspace_bytes", workspace_bytes},
                          {"workspace_megabytes", workspace_bytes / 1048576.0},
                          {"convolution_algorithm", (int) convolution_algorithm},
@@ -292,6 +289,8 @@ static void CUDNN_Impl(benchmark::State& state) {
                              {"advised_determinism", (int) perfResult.determinism}});
     }
   }
+
+  const auto N = batch_size, K = num_filters, C = channels, H = height, W = width, R = filter_height, S = filter_width;
 
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }

@@ -48,11 +48,11 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_height = state.range(10);
 
   const auto in_n = batch_size;
-  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_c = num_filters;
+  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
-  const float one = 1, zero = 0;
+  const float alpha = 1, beta = 0;
   const double exponential_average_factor = 1.0;  // exponentialAverageFactor
   const double epsilon                    = 1e-5; // CUDNN_BN_MIN_EPSILON
 
@@ -156,8 +156,8 @@ static void CUDNN_Impl(benchmark::State& state) {
     if (is_training) {
       cudnn_err = cudnnBatchNormalizationForwardTraining(cudnn_handle,
                                                          batchnorm_mode,
-                                                         &one,
-                                                         &zero,
+                                                         &alpha,
+                                                         &beta,
                                                          x_descriptor,
                                                          d_x,
                                                          x_descriptor,
