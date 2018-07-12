@@ -31,9 +31,7 @@ sugar_files(
     mpl.hpp
     nccl.hpp
     nocopy.hpp
-    numa.hpp
     nvptx.hpp
-    omp.hpp
     page.hpp
     timer.hpp
     transwarp.h
@@ -43,6 +41,5 @@ sugar_files(
 sugar_files(
     BENCHMARK_SOURCES
     commandlineflags.cpp
-    omp.cpp
 )
 

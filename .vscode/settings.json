@@ -8,7 +8,9 @@
     "vector": "cpp",
     "map": "cpp",
     "set": "cpp",
-    "ios": "cpp"
+    "ios": "cpp",
+    "*.ipp": "cpp",
+    "*.tcc": "cpp"
   },
   // Configure glob patterns for excluding files and folders.
   "files.exclude": {

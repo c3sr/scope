@@ -19,7 +19,6 @@ sugar_files(
     flags.hpp
     init.hpp
     logger.hpp
-    numa.hpp
 )
 
 sugar_files(
@@ -30,6 +29,5 @@ sugar_files(
     flags.cpp
     init.cpp
     logger.cpp
-    numa.cpp
 )
 

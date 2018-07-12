@@ -200,7 +200,7 @@ add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 if (ENABLE_COMM)
   message(STATUS "Enabling COMM submodule...")
   add_subdirectory(${TOP_DIR}/comm_scope)
-  target_link_libraries(bench comm_scope)
+  target_link_libraries(bench -Wl,--whole-archive comm_scope -Wl,--no-whole-archive)
 endif(ENABLE_COMM)
 
 include_directories(bench
@@ -215,8 +215,6 @@ include_directories(bench
 )
 
 add_definitions(-DPROJECT_NAME=microbench)
-add_definitions(-DCUDA_VERSION_MAJOR=${CUDA_VERSION_MAJOR})
-add_definitions(-DCUDA_VERSION_MINOR=${CUDA_VERSION_MINOR})
 
 set_target_properties(bench PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON
