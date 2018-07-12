@@ -199,7 +199,6 @@ static void DUPLEX_Memcpy_GPUToPinned(benchmark::State &state) {
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-
   cudaProfilerStop();
 }
 

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <cuda_profiler_api.h>
 #include <cuda_runtime.h>
 
 #include "init/init.hpp"
@@ -13,7 +14,10 @@
 #define NAME "DUPLEX/Memcpy/HostToGPU" 
 
 static void DUPLEX_Memcpy_HostToGPU(benchmark::State &state) {
-cudaProfilerStart();
+
+  const int startIteration = 1;
+  const int stopIteration = 10;
+   
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
     return;
@@ -53,7 +57,7 @@ cudaProfilerStart();
   // Source and destination for each copy
   std::vector<char *> srcs;
   std::vector<char *> dsts;
-
+//  cudaProfilerStart();
   // create a source and destination allocation for first copy: host -> gpu1
   char *ptr;
   if (PRINT_IF_ERROR(cudaSetDevice(numa))) {
@@ -83,6 +87,7 @@ cudaProfilerStart();
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
     return;
   }
+//  cudaProfilerStop();
   // create a source and destination for second copy: gpu -> host
   char *ptr3;
   if (PRINT_IF_ERROR(cudaSetDevice(gpu))) {
@@ -118,8 +123,10 @@ cudaProfilerStart();
   assert(streams.size() == starts.size());
   assert(srcs.size() == dsts.size());
   assert(streams.size() == srcs.size());
-
   for (auto _ : state) {
+    if(state.iterations() == startIteration){
+          cudaProfilerStart(); 
+    }
 
     // Start all copies
     for (size_t i = 0; i < streams.size(); ++i) {
@@ -140,6 +147,7 @@ cudaProfilerStart();
         state.SkipWithError(NAME " failed to record stop event");
         return;
       }
+
     }
 
     // Wait for all copies to finish
@@ -165,8 +173,14 @@ cudaProfilerStart();
       }
     }
 
+    if(state.iterations() == stopIteration){
+      cudaProfilerStop();
+    }
+
     state.SetIterationTime(maxMillis / 1000);
   }
+cudaProfilerStop();
+
   state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(bytes) * 2);
   state.counters.insert({{"bytes", bytes}});
   
@@ -198,7 +212,9 @@ cudaProfilerStart();
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-  cudaProfilerStop();
+
+  double i = 22;
+  state.counters["iterations"] = i;
 }
 
 BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();

@@ -13,7 +13,7 @@
 #define NAME "DUPLEX/Memcpy/PinnedToGPU" 
 
 static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
-  cudaProfilerStart();
+//  cudaProfilerStart();
   if (!has_cuda) {
     state.SkipWithError(NAME " no CUDA device found");
     return;
@@ -118,7 +118,7 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
   assert(streams.size() == starts.size());
   assert(srcs.size() == dsts.size());
   assert(streams.size() == srcs.size());
-
+  cudaProfilerStart();
   for (auto _ : state) {
 
     // Start all copies
@@ -141,7 +141,7 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
         return;
       }
     }
-
+    cudaProfilerStop();
     // Wait for all copies to finish
     for (auto s : stops) {
       if (PRINT_IF_ERROR(cudaEventSynchronize(s))) {
@@ -149,7 +149,7 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
         return;
       }
     }
-
+    
     // Find the longest time between any start and stop
     float maxMillis = 0;
     for (const auto start : starts) {
@@ -197,7 +197,7 @@ static void DUPLEX_Memcpy_PinnedToGPU(benchmark::State &state) {
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-  cudaProfilerStop();
+  //cudaProfilerStop();
 }
 
 BENCHMARK(DUPLEX_Memcpy_PinnedToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
