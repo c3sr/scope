@@ -212,9 +212,6 @@ cudaProfilerStop();
 
   state.counters["start_spread"] = startSum/state.iterations();
   state.counters["stop_spread"] = stopSum/state.iterations();
-
-  double i = 22;
-  state.counters["iterations"] = i;
 }
 
 BENCHMARK(DUPLEX_Memcpy_HostToGPU)->Apply(ArgsCountNumaGpu)->UseManualTime();
