@@ -1,4 +1,4 @@
-#define BENCHMARK_NAME "CUDNN/ACTIVATION_FWD"
+#define BENCHMARK_NAME "CUDNN/POOLING_FWD"
 
 #include <benchmark/benchmark.h>
 
@@ -25,8 +25,7 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
 }
 
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationMode_t
-// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationBackward
-template <typename T, cudnnActivationMode_t activation_mode>
+template <typename T>
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
@@ -49,25 +48,31 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto in_n = batch_size;
-  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
-  const auto in_c = num_filters;
-
-  const float alpha = 1, beta = 0;
-  const double coef = 1;
+  const auto out_n = batch_size;
+  const auto out_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
+  const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto out_c = num_filters;
 
   auto x_tensor = Tensor<T>(state,
-                            {/*batch_size=*/in_n,
-                             /*channels=*/in_c,
-                             /*image_height=*/in_h,
-                             /*image_width=*/in_w});
+                            {/*batch_size=*/out_n,
+                             /*channels=*/out_c,
+                             /*image_height=*/out_h,
+                             /*image_width=*/out_w});
   if (!x_tensor.is_valid) {
     return;
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
+  auto y_tensor                        = Tensor<T>(state,
+                            {/*batch_size=*/out_n,
+                             /*channels=*/out_c,
+                             /*image_height=*/out_h,
+                             /*image_width=*/out_w});
+  if (!y_tensor.is_valid) {
+    return;
+  }
+  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
-  const auto input_bytes = in_n * in_c * in_w * in_h * sizeof(T);
+  const auto input_bytes = out_n * out_w * out_h * out_c * sizeof(T);
   auto input             = std::vector<T>(input_bytes / sizeof(T));
   std::fill(input.begin(), input.end(), detail::one<T>());
 
@@ -77,23 +82,11 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_x = x_memory.get();
 
-  DeviceMemory<T> dx_memory(state, input_bytes);
-  if (!dx_memory.is_valid) {
-    return;
-  }
-  const auto d_dx = dx_memory.get();
-
-  DeviceMemory<T> y_memory(state, input.data(), input_bytes);
+  DeviceMemory<T> y_memory(state, input_bytes);
   if (!y_memory.is_valid) {
     return;
   }
   const auto d_y = y_memory.get();
-
-  DeviceMemory<T> dy_memory(state, input.data(), input_bytes);
-  if (!dy_memory.is_valid) {
-    return;
-  }
-  const auto d_dy = dy_memory.get();
 
   cudnnActivationDescriptor_t activation_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateActivationDescriptor(&activation_descriptor))) {
@@ -106,6 +99,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetActivationDescriptor");
     return;
   }
+  defer(cudnnDestroyActivationDescriptor(activation_descriptor));
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -114,18 +108,8 @@ static void CUDNN_Impl(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const cudnnStatus_t cudnn_err = cudnnActivationBackward(cudnn_handle,
-                                                            activation_descriptor,
-                                                            &alpha,
-                                                            x_descriptor,
-                                                            d_y,
-                                                            x_descriptor,
-                                                            d_dy,
-                                                            x_descriptor,
-                                                            d_x,
-                                                            &beta,
-                                                            x_descriptor,
-                                                            d_dx);
+    const cudnnStatus_t cudnn_err = cudnnActivationForward(
+        cudnn_handle, activation_descriptor, &alpha, x_descriptor, d_x, &beta, y_descriptor, d_y);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -149,16 +133,23 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"input_size", in_n * in_c * in_h * in_w},
-                         {"input_batch_size", in_n},
-                         {"input_channels", in_c},
-                         {"input_height", in_h},
-                         {"input_width", in_w},
+  state.counters.insert({{"input_size", batch_size * channels * height * width},
+                         {"input_height", height},
+                         {"input_width", width},
+                         {"input_channels", channels},
+                         {"input_batch_size", batch_size},
+                         {"num_filters", num_filters},
+                         {"filter_height", filter_height},
+                         {"filter_width", filter_width},
+                         {"pad_height", pad_height},
+                         {"pad_width", pad_width},
+                         {"stride_height", stride_height},
+                         {"stride_width", stride_width},
                          {"output_size", out_n * out_c * out_h * out_w},
-                         {"output_batch_size", out_n},
-                         {"output_channels", out_c},
                          {"output_height", out_h},
                          {"output_width", out_w},
+                         {"output_channels", out_c},
+                         {"output_batch_size", out_n},
                          {"activation_mode", (int) activation_mode}});
 
   const auto compute_flops = [&](cudnnActivationMode_t mode) {
@@ -169,7 +160,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
       case CUDNN_ACTIVATION_IDENTITY:
-        return in_n * in_c * in_h * in_w;
+        return out_n * out_c * out_h * out_w;
       default:
         return static_cast<double>(-1);
     }
@@ -180,31 +171,31 @@ static void CUDNN_Impl(benchmark::State& state) {
       {{"predicted_flops_count", predicted_flops},
        {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-  state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
+  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
 template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_BACKWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_ACTIVATION_FORWARD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_BACKWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_ACTIVATION_FORWARD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_BACKWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_ACTIVATION_FORWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_BACKWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_ACTIVATION_FORWARD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_BACKWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, activation_mode>(state);
 }
 
@@ -218,8 +209,8 @@ static void LAYER_CUDNN_ACTIVATION_BACKWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_ELU)->CONV_PROBLEMS()->UseManualTime();                                       \
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_IDENTITY)->CONV_PROBLEMS()->UseManualTime()
 
-/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BACKWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BACKWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BACKWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BACKWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BACKWARD_DOUBLE);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_INT32); */
+BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE);

@@ -25,6 +25,7 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
 }
 
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormMode_t
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormalizationForwardTraining
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormalizationForwardInference
 template <typename T, cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void CUDNN_Impl(benchmark::State& state) {
@@ -32,10 +33,6 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
   }
-
-  const float alpha = 1, beta = 0;
-  const double exponential_average_factor = 1.0;  // exponentialAverageFactor
-  const double epsilon                    = 1e-5; // CUDNN_BN_MIN_EPSILON
 
   //  w, h, c, n, k, filter_w(s), filter_h(r), pad_w, pad_h, wstride, hstride
   const auto width         = state.range(0);
@@ -50,30 +47,24 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto out_n = batch_size;
-  const auto out_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
-  const auto out_c = num_filters;
+  const auto in_n = batch_size;
+  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
+  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto in_c = num_filters;
+
+  const float one = 1, zero = 0;
+  const double exponential_average_factor = 1.0;  // exponentialAverageFactor
+  const double epsilon                    = 1e-5; // CUDNN_BN_MIN_EPSILON
 
   auto x_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
+                            {/*batch_size=*/in_n,
+                             /*channels=*/in_c,
+                             /*image_height=*/in_h,
+                             /*image_width=*/in_w});
   if (!x_tensor.is_valid) {
     return;
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
-
-  auto y_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
-  if (!y_tensor.is_valid) {
-    return;
-  }
-  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
   cudnnTensorDescriptor_t scale_bias_descriptor;
   if (PRINT_IF_ERROR(cudnnDeriveBNTensorDescriptor(scale_bias_descriptor, x_descriptor, batchnorm_mode))) {
@@ -86,10 +77,11 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetTensorSizeInBytes");
     return;
   }
+
   auto scale_bias = std::vector<T>(scale_bias_bytes / sizeof(T));
   std::fill(scale_bias.begin(), scale_bias.end(), detail::one<T>());
 
-  const auto input_bytes = out_n * out_w * out_h * out_c * sizeof(T);
+  const auto input_bytes = in_n * in_c * in_w * in_h * sizeof(T);
   auto input             = std::vector<T>(input_bytes / sizeof(T));
   std::fill(input.begin(), input.end(), detail::one<T>());
 
@@ -141,13 +133,13 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_saved_in_var = saved_in_var_memory.get();
 
-  DeviceMemory<T> estimated_mean_memory(state, scale_bias_bytes);
+  DeviceMemory<T> estimated_mean_memory(state, scale_bias.data(), scale_bias_bytes);
   if (!estimated_mean_memory.is_valid) {
     return;
   }
   const auto d_estimated_mean = estimated_mean_memory.get();
 
-  DeviceMemory<T> estimated_var_memory(state, scale_bias_bytes);
+  DeviceMemory<T> estimated_var_memory(state, scale_bias.data(), scale_bias_bytes);
   if (!estimated_var_memory.is_valid) {
     return;
   }
@@ -164,11 +156,11 @@ static void CUDNN_Impl(benchmark::State& state) {
     if (is_training) {
       cudnn_err = cudnnBatchNormalizationForwardTraining(cudnn_handle,
                                                          batchnorm_mode,
-                                                         &alpha,
-                                                         &beta,
+                                                         &one,
+                                                         &zero,
                                                          x_descriptor,
                                                          d_x,
-                                                         y_descriptor,
+                                                         x_descriptor,
                                                          d_y,
                                                          scale_bias_descriptor,
                                                          d_scale,
@@ -186,7 +178,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                           &beta,
                                                           x_descriptor,
                                                           d_x,
-                                                          y_descriptor,
+                                                          x_descriptor,
                                                           d_y,
                                                           scale_bias_descriptor,
                                                           d_scale,
@@ -218,32 +210,24 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"input_size", batch_size * channels * height * width},
-                         {"input_height", height},
-                         {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
-                         {"num_filters", num_filters},
-                         {"filter_height", filter_height},
-                         {"filter_width", filter_width},
-                         {"pad_height", pad_height},
-                         {"pad_width", pad_width},
-                         {"stride_height", stride_height},
-                         {"stride_width", stride_width},
+  state.counters.insert({{"input_size", in_n * in_c * in_h * in_w},
+                         {"input_batch_size", in_n},
+                         {"input_channels", in_c},
+                         {"input_height", in_h},
+                         {"input_width", in_w},
                          {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_batch_size", out_n},
+                         {"output_channels", out_c},
                          {"output_height", out_h},
                          {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
-                         {"batchnorm_mode", (int) batchnorm_mode},
-                         {"is_training", is_training}});
+                         {"batchnorm_mode", (int) batchnorm_mode}});
 
   const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
     switch (mode) {
       case CUDNN_BATCHNORM_PER_ACTIVATION:
       case CUDNN_BATCHNORM_SPATIAL:
       case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
-        return out_n * out_c * out_h * out_w;
+        return in_n * in_c * in_h * in_w;
       default:
         return static_cast<double>(-1);
     }
@@ -254,32 +238,32 @@ static void CUDNN_Impl(benchmark::State& state) {
       {{"predicted_flops_count", predicted_flops},
        {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+  state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void LAYER_CUDNN_BATCHNORM_FORWARD_INT8(benchmark::State& state) {
-  CUDNN_Impl<int8_t, batchnorm_mode>(state);
+  CUDNN_Impl<int8_t, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void LAYER_CUDNN_BATCHNORM_FORWARD_INT32(benchmark::State& state) {
-  CUDNN_Impl<int32_t, batchnorm_mode>(state);
+  CUDNN_Impl<int32_t, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void LAYER_CUDNN_BATCHNORM_FORWARD_HALF(benchmark::State& state) {
-  CUDNN_Impl<__half, batchnorm_mode>(state);
+  CUDNN_Impl<__half, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void LAYER_CUDNN_BATCHNORM_FORWARD_FLOAT(benchmark::State& state) {
-  CUDNN_Impl<float, batchnorm_mode>(state);
+  CUDNN_Impl<float, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void LAYER_CUDNN_BATCHNORM_FORWARD_DOUBLE(benchmark::State& state) {
-  CUDNN_Impl<double, batchnorm_mode>(state);
+  CUDNN_Impl<double, batchnorm_mode, is_training>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS

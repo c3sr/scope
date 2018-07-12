@@ -46,25 +46,25 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const float alpha = 1, beta = 0;
-  const double coef = 1;
-
   const auto in_n = batch_size;
   const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
   const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_c = num_filters;
 
+  const float alpha = 1, beta = 0;
+  const double coef = 1;
+
   auto x_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
+                            {/*batch_size=*/in_n,
+                             /*channels=*/in_c,
+                             /*image_height=*/in_h,
+                             /*image_width=*/in_w});
   if (!x_tensor.is_valid) {
     return;
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
 
-  const auto input_bytes = out_n * out_w * out_h * out_c * sizeof(T);
+  const auto input_bytes = in_n * in_c * in_w * in_h * sizeof(T);
   auto input             = std::vector<T>(input_bytes / sizeof(T));
   std::fill(input.begin(), input.end(), detail::one<T>());
 
@@ -101,7 +101,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     cudaEventRecord(start, NULL);
 
     const cudnnStatus_t cudnn_err = cudnnActivationForward(
-        cudnn_handle, activation_descriptor, &alpha, x_descriptor, d_x, &beta, y_descriptor, d_y);
+        cudnn_handle, activation_descriptor, &alpha, x_descriptor, d_x, &beta, x_descriptor, d_y);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
@@ -125,23 +125,16 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"input_size", batch_size * channels * height * width},
-                         {"input_height", height},
-                         {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
-                         {"num_filters", num_filters},
-                         {"filter_height", filter_height},
-                         {"filter_width", filter_width},
-                         {"pad_height", pad_height},
-                         {"pad_width", pad_width},
-                         {"stride_height", stride_height},
-                         {"stride_width", stride_width},
+  state.counters.insert({{"input_size", in_n * in_c * in_h * in_w},
+                         {"input_batch_size", in_n},
+                         {"input_channels", in_c},
+                         {"input_height", in_h},
+                         {"input_width", in_w},
                          {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_batch_size", out_n},
+                         {"output_channels", out_c},
                          {"output_height", out_h},
                          {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
                          {"activation_mode", (int) activation_mode}});
 
   const auto compute_flops = [&](cudnnActivationMode_t mode) {
@@ -152,7 +145,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
       case CUDNN_ACTIVATION_IDENTITY:
-        return out_n * out_c * out_h * out_w;
+        return in_n * in_c * in_h * in_w;
       default:
         return static_cast<double>(-1);
     }
@@ -163,7 +156,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       {{"predicted_flops_count", predicted_flops},
        {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+  state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
 template <cudnnActivationMode_t activation_mode>
