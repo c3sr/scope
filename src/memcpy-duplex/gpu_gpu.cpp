@@ -69,6 +69,11 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
+  cudaError_t err = cudaDeviceEnablePeerAccess(gpu1, 0);
+  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
+    state.SkipWithError(NAME " failed to ensure peer access");
+    return;
+  }
   if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
     state.SkipWithError(NAME " failed to set device");
     return;
@@ -80,6 +85,11 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   dsts.push_back(ptr);
   if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
+  err = cudaDeviceEnablePeerAccess(gpu0, 0);
+  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
+    state.SkipWithError(NAME " failed to ensure peer access");
     return;
   }
   // create a source and destination for second copy
@@ -96,6 +106,11 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
+  err = cudaDeviceEnablePeerAccess(gpu0, 0);
+  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
+    state.SkipWithError(NAME " failed to ensure peer access");
+    return;
+  }
   if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
     state.SkipWithError(NAME " failed to set device");
     return;
@@ -107,6 +122,11 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
   dsts.push_back(ptr);
   if(PRINT_IF_ERROR(cudaMemset(ptr, 0, bytes))){
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
+    return;
+  }
+  err = cudaDeviceEnablePeerAccess(gpu1, 0);
+  if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
+    state.SkipWithError(NAME " failed to ensure peer access");
     return;
   }
 
