@@ -94,9 +94,9 @@ else()
 endif (CONFIG_USE_HUNTER)
 
 
-if (USE_OPENMP)
-  find_package(OpenMP)
-endif(USE_OPENMP)
+# if (USE_OPENMP)
+#   find_package(OpenMP)
+# endif(USE_OPENMP)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
@@ -195,31 +195,13 @@ set(SRC_DIR "${TOP_DIR}/src")
 sugar_include("./src")
 
 
-if (ENABLE_COMM)
-  message(STATUS "Enabling COMM submodule...")
-
-  git_clone(
-    PROJECT_NAME comm_scope
-    GIT_URL "https://github.com/rai-project/comm_scope"
-    GIT_BRANCH "master"
-  )
-  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${comm_scope_SOURCE_DIR})
-  # set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "/home/pearson/repos/comm_scope")
-
-  find_package(comm_scope CONFIG REQUIRED)
-  include_directories(${comm_scope_INCLUDE_DIRS})
-  set(BENCHMARK_SOURCES ${BENCHMARK_SOURCES} ${comm_scope_BENCHMARK_SOURCES})
-  foreach(pkg ${comm_scope_OPTIONAL_PACKAGES})
-    find_package(${pkg})
-  endforeach(pkg)
-  foreach(pkg ${comm_scope_REQUIRED_PACKAGES})
-    find_package(${pkg} REQUIRED)
-  endforeach(pkg)
-endif(ENABLE_COMM)
-
-
 add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
+if (ENABLE_COMM)
+  message(STATUS "Enabling COMM submodule...")
+  add_subdirectory(${TOP_DIR}/comm_scope)
+  target_link_libraries(bench comm_scope)
+endif(ENABLE_COMM)
 
 include_directories(bench
   ${SRC_DIR}
@@ -255,38 +237,38 @@ target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
-if(numa_FOUND)
-  add_definitions(-DUSE_NUMA=1)
-  target_link_libraries(bench numa)
-else()
-  add_definitions(-DUSE_NUMA=0)
-  message(WARNING "didn't find NUMA, some benchmarks will be unavailable.")
-endif(numa_FOUND)
+# if(numa_FOUND)
+#   add_definitions(-DUSE_NUMA=1)
+#   target_link_libraries(bench numa)
+# else()
+#   add_definitions(-DUSE_NUMA=0)
+#   message(WARNING "didn't find NUMA, some benchmarks will be unavailable.")
+# endif(numa_FOUND)
 
 # Compile with OpenMP
-if (OpenMP_FOUND)
-  target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
-  if (OpenMP_C_FLAGS)
-    string(REPLACE ";" " " OpenMP_C_FLAGS ${OpenMP_C_FLAGS})
-  endif()
-  if (OpenMP_CXX_FLAGS)
-    string(REPLACE ";" " " OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS})
-  endif()
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+# if (OpenMP_FOUND)
+#   target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
+#   if (OpenMP_C_FLAGS)
+#     string(REPLACE ";" " " OpenMP_C_FLAGS ${OpenMP_C_FLAGS})
+#   endif()
+#   if (OpenMP_CXX_FLAGS)
+#     string(REPLACE ";" " " OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS})
+#   endif()
+#   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+#   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-  foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
-  LIST(APPEND CMAKE_CUDA_FLAGS
-    -Xcompiler
-    ${flag}
-  )
-  endforeach(flag)
+#   foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
+#   LIST(APPEND CMAKE_CUDA_FLAGS
+#     -Xcompiler
+#     ${flag}
+#   )
+#   endforeach(flag)
 
-  add_definitions(-DUSE_OPENMP=1)
-else(OpenMP_FOUND)
-  add_definitions(-DUSE_OPENMP=0)
-  message(WARNING "didn't find OpenMP, some benchmarks will be unavailable.")
-endif(OpenMP_FOUND)
+#   add_definitions(-DUSE_OPENMP=1)
+# else(OpenMP_FOUND)
+#   add_definitions(-DUSE_OPENMP=0)
+#   message(WARNING "didn't find OpenMP, some benchmarks will be unavailable.")
+# endif(OpenMP_FOUND)
 
 # Request that bench be built with -std=c++11
 # As this is a public compile feature anything that links to
