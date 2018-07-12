@@ -25,15 +25,13 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
 }
 
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationMode_t
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationForward
 template <typename T, cudnnActivationMode_t activation_mode>
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
   }
-
-  const float alpha = 1, beta = 0;
-  const double coef = 1;
 
   //  w, h, c, n, k, filter_w(s), filter_h(r), pad_w, pad_h, wstride, hstride
   const auto width         = state.range(0);
@@ -48,10 +46,13 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto out_n = batch_size;
-  const auto out_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
-  const auto out_c = num_filters;
+  const float alpha = 1, beta = 0;
+  const double coef = 1;
+
+  const auto in_n = batch_size;
+  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
+  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto in_c = num_filters;
 
   auto x_tensor = Tensor<T>(state,
                             {/*batch_size=*/out_n,
@@ -62,15 +63,6 @@ static void CUDNN_Impl(benchmark::State& state) {
     return;
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
-  auto y_tensor                        = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
-  if (!y_tensor.is_valid) {
-    return;
-  }
-  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
   const auto input_bytes = out_n * out_w * out_h * out_c * sizeof(T);
   auto input             = std::vector<T>(input_bytes / sizeof(T));

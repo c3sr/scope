@@ -73,16 +73,6 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t dx_descriptor = dx_tensor.get();
 
-  auto y_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
-  if (!y_tensor.is_valid) {
-    return;
-  }
-  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
-
   auto dy_tensor = Tensor<T>(state,
                              {/*batch_size=*/out_n,
                               /*channels=*/out_c,
@@ -145,7 +135,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                             &alpha,
                                                             y_descriptor,
                                                             d_y,
-                                                            dy_descriptor,
+                                                            dx_descriptor,
                                                             d_dy,
                                                             x_descriptor,
                                                             d_x,
