@@ -242,12 +242,9 @@ const auto P = out_h, Q = out_w;
 
 const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
   switch (mode) {
-    case CUDNN_ACTIVATION_SIGMOID:
-    case CUDNN_ACTIVATION_RELU:
-    case CUDNN_ACTIVATION_TANH:
-    case CUDNN_ACTIVATION_CLIPPED_RELU:
-    case CUDNN_ACTIVATION_ELU:
-    case CUDNN_ACTIVATION_IDENTITY:
+    case CUDNN_BATCHNORM_PER_ACTIVATION:
+    case CUDNN_BATCHNORM_SPATIAL:
+    case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
       return out_n * out_c * out_h * out_w;
     default:
       return static_cast<double>(-1);
