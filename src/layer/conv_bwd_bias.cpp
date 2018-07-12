@@ -1,4 +1,4 @@
-#define BENCHMARK_NAME "CUDNN/CONV_BWD_DATA"
+#define BENCHMARK_NAME "CUDNN/CONV_BWD_BIAS"
 
 #include <benchmark/benchmark.h>
 

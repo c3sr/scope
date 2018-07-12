@@ -194,8 +194,6 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"output_batch_size", out_n},
                          {"activation_mode", (int) activation_mode}});
 
-  const auto P = out_h, Q = out_w;
-
   const auto compute_flops = [&](cudnnActivationMode_t mode) {
     switch (mode) {
       case CUDNN_ACTIVATION_SIGMOID:

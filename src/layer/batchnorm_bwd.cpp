@@ -191,27 +191,24 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"output_channels", out_c},
                          {"output_batch_size", out_n},
                          {"batchnorm_mode", (int) batchnorm_mode}});
-});
 
-const auto P = out_h, Q = out_w;
+  const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
+    switch (mode) {
+      case CUDNN_BATCHNORM_PER_ACTIVATION:
+      case CUDNN_BATCHNORM_SPATIAL:
+      case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
+        return out_n * out_c * out_h * out_w;
+      default:
+        return static_cast<double>(-1);
+    }
+  };
 
-const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
-  switch (mode) {
-    case CUDNN_BATCHNORM_PER_ACTIVATION:
-    case CUDNN_BATCHNORM_SPATIAL:
-    case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
-      return out_n * out_c * out_h * out_w;
-    default:
-      return static_cast<double>(-1);
-  }
-};
+  const double predicted_flops = compute_flops(batchnorm_mode);
+  state.counters.insert(
+      {{"predicted_flops_count", predicted_flops},
+       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-const double predicted_flops = compute_flops(batchnorm_mode);
-state.counters.insert({{"predicted_flops_count", predicted_flops},
-                       {"predicted_flops",
-                        {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
-
-state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode>

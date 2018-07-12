@@ -25,6 +25,7 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
 }
 
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormMode_t
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormalizationForwardInference
 template <typename T, cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
@@ -179,20 +180,20 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                          d_saved_mean,
                                                          d_saved_in_var);
     } else {
-      cudnn_err = cudnnBatchNormalizationForwardTraining(cudnn_handle,
-                                                         batchnorm_mode,
-                                                         &alpha,
-                                                         &beta,
-                                                         x_descriptor,
-                                                         d_x,
-                                                         y_descriptor,
-                                                         d_y,
-                                                         scale_bias_descriptor,
-                                                         d_scale,
-                                                         d_bias,
-                                                         d_estimated_mean,
-                                                         d_estimated_var,
-                                                         epsilon);
+      cudnn_err = cudnnBatchNormalizationForwardInference(cudnn_handle,
+                                                          batchnorm_mode,
+                                                          &alpha,
+                                                          &beta,
+                                                          x_descriptor,
+                                                          d_x,
+                                                          y_descriptor,
+                                                          d_y,
+                                                          scale_bias_descriptor,
+                                                          d_scale,
+                                                          d_bias,
+                                                          d_estimated_mean,
+                                                          d_estimated_var,
+                                                          epsilon);
     }
 
     cudaEventRecord(stop, NULL);
@@ -236,27 +237,24 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"output_batch_size", out_n},
                          {"batchnorm_mode", (int) batchnorm_mode},
                          {"is_training", is_training}});
-});
 
-const auto P = out_h, Q = out_w;
+  const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
+    switch (mode) {
+      case CUDNN_BATCHNORM_PER_ACTIVATION:
+      case CUDNN_BATCHNORM_SPATIAL:
+      case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
+        return out_n * out_c * out_h * out_w;
+      default:
+        return static_cast<double>(-1);
+    }
+  };
 
-const auto compute_flops = [&](cudnnBatchNormMode_t mode) {
-  switch (mode) {
-    case CUDNN_BATCHNORM_PER_ACTIVATION:
-    case CUDNN_BATCHNORM_SPATIAL:
-    case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
-      return out_n * out_c * out_h * out_w;
-    default:
-      return static_cast<double>(-1);
-  }
-};
+  const double predicted_flops = compute_flops(batchnorm_mode);
+  state.counters.insert(
+      {{"predicted_flops_count", predicted_flops},
+       {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-const double predicted_flops = compute_flops(batchnorm_mode);
-state.counters.insert({{"predicted_flops_count", predicted_flops},
-                       {"predicted_flops",
-                        {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
-
-state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>

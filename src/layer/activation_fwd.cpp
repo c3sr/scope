@@ -99,6 +99,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetActivationDescriptor");
     return;
   }
+  defer(cudnnDestroyActivationDescriptor(activation_descriptor));
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -150,8 +151,6 @@ static void CUDNN_Impl(benchmark::State& state) {
                          {"output_channels", out_c},
                          {"output_batch_size", out_n},
                          {"activation_mode", (int) activation_mode}});
-
-  const auto P = out_h, Q = out_w;
 
   const auto compute_flops = [&](cudnnActivationMode_t mode) {
     switch (mode) {
