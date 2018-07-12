@@ -20,7 +20,7 @@
 #include "layer/utils.hpp"
 
 // calculates convolution output dimension
-static inline int calc_out_dim(int input_dim, int filter_dim, int padd, int stride) {
+static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int stride) {
   return (input_dim - filter_dim + 2 * padd) / stride + 1;
 }
 
@@ -157,7 +157,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     }
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
-  
+
   const auto output_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
 
   DeviceMemory<T> workspace_memory(state, workspace_bytes);
@@ -298,9 +298,8 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   cudnnConvolutionFwdAlgoPerf_t perfResults[max_count];
   int returned_count;
-  cudnn_err =
-      cudnnFindConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
-                                           y_descriptor, max_count, &returned_count, perfResults);
+  cudnn_err = cudnnFindConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
+                                                   y_descriptor, max_count, &returned_count, perfResults);
   if (PRINT_IF_ERROR(cudnn_err)) {
     state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionForwardAlgorithm");
   }
