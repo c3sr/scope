@@ -60,6 +60,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_height = state.range(10);
 
   const float alpha = 1, beta = 1;
+  const double coef = 1;
   const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
@@ -202,7 +203,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_z = z_memory.get();
 
-  DeviceMemory<T> bias_memory(state, output.data(), scale_bias_bytes);
+  DeviceMemory<T> bias_memory(state, output.data(), output_bytes);
   if (!bias_memory.is_valid) {
     return;
   }
@@ -313,7 +314,7 @@ static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm, cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
-  CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
+  CUDNN_Impl<__half, convolution_algorithm, activation_mode, CUDNN_TENSOR_OP_MATH>(state);
 }
 #endif
 

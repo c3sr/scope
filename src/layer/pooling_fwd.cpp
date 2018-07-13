@@ -81,7 +81,7 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                  vert_padding,
                                                  hori_padding,
                                                  vert_stride,
-                                                 heri_stride))) {
+                                                 hori_stride))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetPooling2dDescriptor");
     return;
   }
@@ -89,7 +89,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   int out_n, out_c, out_h, out_w;
   if (PRINT_IF_ERROR(
-          cudnnGetPooling2dForwardOutputDim(&pooling_descriptor, x_descriptor, &out_n, &out_c, &out_h, &out_w))) {
+          cudnnGetPooling2dForwardOutputDim(pooling_descriptor, x_descriptor, &out_n, &out_c, &out_h, &out_w))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetPooling2dForwardOutputDim");
     return;
   }

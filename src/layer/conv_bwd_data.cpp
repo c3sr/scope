@@ -165,7 +165,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_w = w_memory.get();
 
-  DeviceMemory<T> dy_memory(state, output.get(), output_bytes);
+  DeviceMemory<T> dy_memory(state, output.data(), output_bytes);
   if (!dy_memory.is_valid) {
     return;
   }
@@ -283,7 +283,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   int returned_count;
   cudnn_err =
       cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, w_descriptor, dy_descriptor, convolution_descriptor,
-                                                x_descriptor, max_count, &returned_count, perfResults);
+                                                dx_descriptor, max_count, &returned_count, perfResults);
   if (PRINT_IF_ERROR(cudnn_err)) {
     state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionBackwardDataAlgorithm");
   }

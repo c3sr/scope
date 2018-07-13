@@ -100,13 +100,13 @@ static void CUDNN_Impl(benchmark::State& state) {
   cudnnFilterDescriptor_t dw_descriptor = dw_filter.get();
 
   int out_n, out_c, out_h, out_w;
-  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, input_descriptor, kernel_descriptor,
+  if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, x_descriptor, dw_descriptor,
                                                            &out_n, &out_c, &out_h, &out_w))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolution2dForwardOutputDim");
     return;
   }
 
-  auto dy_tensor Tensor<T>(state,
+  auto dy_tensor = Tensor<T>(state,
                            {/*batch_size=*/out_n,
                             /*channels=*/out_c,
                             /*image_height=*/out_h,
@@ -165,7 +165,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_x = x_memory.get();
 
-  DeviceMemory<T> dy_memory(state, output.get(), output_bytes);
+  DeviceMemory<T> dy_memory(state, output.data(), output_bytes);
   if (!dy_memory.is_valid) {
     return;
   }
