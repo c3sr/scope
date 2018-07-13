@@ -30,7 +30,13 @@
     "__split_buffer": "cpp",
     "__tree": "cpp",
     "limits": "cpp",
-    "chrono": "cpp"
+    "chrono": "cpp",
+    "__functional_base": "cpp",
+    "future": "cpp",
+    "istream": "cpp",
+    "thread": "cpp",
+    "tuple": "cpp",
+    "utility": "cpp"
   },
   // Configure glob patterns for excluding files and folders.
   "files.exclude": {
