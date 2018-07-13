@@ -5,8 +5,11 @@ pushd build
 make -j
 
 CUDA_DEVICE=1
+OUT_DIR="../results/cudnn/"`hostname`
 
-rm -fr run.log
+echo $OUT_DIR
+mkdir -p $OUT_DIR
+
 
 cudnn_bmarks=(
   CUDNN_ACTIVATION_BWD
@@ -27,6 +30,6 @@ cudnn_bmarks=(
 )
 
 for b in "${cudnn_bmarks[@]}"; do
-  CUDA_VISIBLE_DEVICES=$CUDA_DEVICE ./bench --benchmark_filter="$b.*" --benchmark_out_format=json --benchmark_out=../results/cudnn/`hostname`/`hostname`_"${b,,}".json
-  CUDA_VISIBLE_DEVICES=$CUDA_DEVICE ./bench --benchmark_filter="$b.*" --benchmark_out_format=csv --benchmark_out=../results/cudnn/`hostname`/`hostname`_"${b,,}".csv
+  CUDA_VISIBLE_DEVICES=$CUDA_DEVICE ./bench --benchmark_filter="$b.*" --benchmark_out_format=json --benchmark_out=$OUT_DIR/`hostname`_"${b,,}".json
+  CUDA_VISIBLE_DEVICES=$CUDA_DEVICE ./bench --benchmark_filter="$b.*" --benchmark_out_format=csv --benchmark_out=$OUT_DIR/`hostname`_"${b,,}".csv
 done
