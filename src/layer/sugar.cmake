@@ -20,23 +20,27 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
+    conv_bwd_bias.cpp
     batchnorm_bwd.cpp
     softmax_bwd.cpp
     ctc_loss.cpp
     softmax_fwd.cpp
     batchnorm_fwd.cpp
     element_wise.cpp
-    pooling.cpp
+    dropout_bwd..cpp
     find_conv_alg.cpp
     activation_fwd.cpp
+    conv_bwd_data.cpp
     activation_bwd.cpp
+    pooling_bwd.cpp
+    dropout_fwd.cpp
+    conv_bias_activation_fwd.cpp
     scale.cpp
     reduce.cpp
     conv_fwd.cpp
-    conv_fwd_get_algo
-    conv_bwd_data.cpp
     conv_bwd_filter.cpp
     find_rnn_alg.cpp
+    pooling_fwd.cpp
 )
 
 sugar_files(
