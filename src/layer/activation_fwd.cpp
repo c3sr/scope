@@ -54,6 +54,8 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
+  const auto out_n = in_n, out_c = in_c, out_h = in_h, out_w = in_w;
+
   auto x_tensor = Tensor<T>(state,
                             {/*batch_size=*/in_n,
                              /*channels=*/in_c,

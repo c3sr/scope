@@ -193,7 +193,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     const auto cuda_err = cudaEventSynchronize(stop);
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnActivationForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnBatchNormalizationForward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {

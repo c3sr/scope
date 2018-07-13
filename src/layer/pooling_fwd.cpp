@@ -27,7 +27,7 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnPoolingForward
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnGetPooling2dForwardOutputDim
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnSetPooling2dDescriptor
-template <typename T>
+template <typename T, cudnnPoolingMode_t pooling_mode>
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
@@ -137,7 +137,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnActivationForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnPoolingForward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {

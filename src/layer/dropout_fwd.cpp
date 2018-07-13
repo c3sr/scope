@@ -1,4 +1,4 @@
-#define BENCHMARK_NAME "CUDNN/POOLING_FWD"
+#define BENCHMARK_NAME "CUDNN/DROPOUT_FWD"
 
 #include <benchmark/benchmark.h>
 
@@ -24,16 +24,14 @@ static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int
   return (input_dim - filter_dim + 2 * padd) / stride + 1;
 }
 
-// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationMode_t
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnDropoutForward
+// https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnDropoutGetReserveSpaceSize
 template <typename T>
 static void CUDNN_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
   }
-
-  const float alpha = 1, beta = 0;
-  const double coef = 1;
 
   //  w, h, c, n, k, filter_w(s), filter_h(r), pad_w, pad_h, wstride, hstride
   const auto width         = state.range(0);
@@ -48,31 +46,64 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto out_n = batch_size;
-  const auto out_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
-  const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
-  const auto out_c = num_filters;
+  const float dropout = 0.5;
+  const uint64 seed   = 0;
+
+  const auto in_n = batch_size;
+  const auto in_c = num_filters;
+  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
+  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
+
+  const auto out_n = in_n, out_c = in_c, out_h = in_h, out_w = in_w;
 
   auto x_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
+                            {/*batch_size=*/in_n,
+                             /*channels=*/in_c,
+                             /*image_height=*/in_h,
+                             /*image_width=*/in_w});
   if (!x_tensor.is_valid) {
     return;
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
-  auto y_tensor                        = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
-  if (!y_tensor.is_valid) {
+
+  cudnnDropoutDescriptor_t dropout_descriptor;
+  if (PRINT_IF_ERROR(cudnnCreateDropoutDescriptor(&dropout_descriptor))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateDropoutDescriptor");
     return;
   }
-  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
-  const auto input_bytes = out_n * out_w * out_h * out_c * sizeof(T);
+  size_t states_bytes = 0;
+  if (PRINT_IF_ERROR(cudnnDropoutGetStatesSize(cudnn_handle, &states_bytes))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnDropoutGetStatesSize");
+    return;
+  }
+
+  DeviceMemory<T> states_memory(state, states_bytes);
+  if (!states_memory.is_valid) {
+    return;
+  }
+  const auto d_states = states_memory.get();
+
+  if (PRINT_IF_ERROR(
+          cudnnSetDropoutDescriptor(dropout_descriptor, cudnn_handle, dropout, d_states, states_bytes, seed))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetDropoutDescriptor");
+    return;
+  }
+  defer(cudnnDestroyDropoutDescriptor(dropout_descriptor));
+
+  size_t reserve_space_bytes = 0;
+  if (PRINT_IF_ERROR(cudnnDropoutGetReserveSpaceSize(x_descriptor, &reserve_space_bytes))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnDropoutGetStatesSize");
+    return;
+  }
+
+  DeviceMemory<T> reserve_space_memory(state, reserve_space_bytes);
+  if (!reserve_space_memory.is_valid) {
+    return;
+  }
+  const auto d_reserve_space = reserve_space_memory.get();
+
+  const auto input_bytes = in_n * in_w * in_h * in_c * sizeof(T);
   auto input             = std::vector<T>(input_bytes / sizeof(T));
   std::fill(input.begin(), input.end(), detail::one<T>());
 
@@ -88,19 +119,6 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_y = y_memory.get();
 
-  cudnnActivationDescriptor_t activation_descriptor;
-  if (PRINT_IF_ERROR(cudnnCreateActivationDescriptor(&activation_descriptor))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateActivationDescriptor");
-    return;
-  }
-
-  if (PRINT_IF_ERROR(
-          cudnnSetActivationDescriptor(activation_descriptor, activation_mode, CUDNN_NOT_PROPAGATE_NAN, coef))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetActivationDescriptor");
-    return;
-  }
-  defer(cudnnDestroyActivationDescriptor(activation_descriptor));
-
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
@@ -108,15 +126,15 @@ static void CUDNN_Impl(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
 
-    const cudnnStatus_t cudnn_err = cudnnActivationForward(
-        cudnn_handle, activation_descriptor, &alpha, x_descriptor, d_x, &beta, y_descriptor, d_y);
+    const cudnnStatus_t cudnn_err = cudnnDropoutForward(
+        cudnn_handle, dropout_descriptor, x_descriptor, d_x, x_descriptor, d_y, d_reserve_space, reserve_space_bytes);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnActivationForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnDropoutForward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {
@@ -133,84 +151,50 @@ static void CUDNN_Impl(benchmark::State& state) {
     state.ResumeTiming();
   }
 
-  state.counters.insert({{"input_size", batch_size * channels * height * width},
-                         {"input_height", height},
-                         {"input_width", width},
-                         {"input_channels", channels},
-                         {"input_batch_size", batch_size},
-                         {"num_filters", num_filters},
-                         {"filter_height", filter_height},
-                         {"filter_width", filter_width},
-                         {"pad_height", pad_height},
-                         {"pad_width", pad_width},
-                         {"stride_height", stride_height},
-                         {"stride_width", stride_width},
+  state.counters.insert({{"input_size", in_n * in_c * in_h * in_w},
+                         {"input_batch_size", in_n},
+                         {"input_channels", in_c},
+                         {"input_height", in_h},
+                         {"input_width", in_w},
                          {"output_size", out_n * out_c * out_h * out_w},
+                         {"output_batch_size", out_n},
+                         {"output_channels", out_c},
                          {"output_height", out_h},
                          {"output_width", out_w},
-                         {"output_channels", out_c},
-                         {"output_batch_size", out_n},
-                         {"activation_mode", (int) activation_mode}});
+                         {"dropout", dropout}});
 
-  const auto compute_flops = [&](cudnnActivationMode_t mode) {
-    switch (mode) {
-      case CUDNN_ACTIVATION_SIGMOID:
-      case CUDNN_ACTIVATION_RELU:
-      case CUDNN_ACTIVATION_TANH:
-      case CUDNN_ACTIVATION_CLIPPED_RELU:
-      case CUDNN_ACTIVATION_ELU:
-      case CUDNN_ACTIVATION_IDENTITY:
-        return out_n * out_c * out_h * out_w;
-      default:
-        return static_cast<double>(-1);
-    }
-  };
-
-  const double predicted_flops = compute_flops(activation_mode);
+  const double predicted_flops = in_n * in_c * in_h * in_w;
   state.counters.insert(
       {{"predicted_flops_count", predicted_flops},
        {"predicted_flops", {predicted_flops * state.iterations(), benchmark::Counter::kAvgThreadsRate}}});
 
-  state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
+  state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
-template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_INT8(benchmark::State& state) {
-  CUDNN_Impl<int8_t, activation_mode>(state);
+static void LAYER_CUDNN_DROPOUT_FORWARD_INT8(benchmark::State& state) {
+  CUDNN_Impl<int8_t>(state);
 }
 
-template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_INT32(benchmark::State& state) {
-  CUDNN_Impl<int32_t, activation_mode>(state);
+static void LAYER_CUDNN_DROPOUT_FORWARD_INT32(benchmark::State& state) {
+  CUDNN_Impl<int32_t>(state);
 }
 
-template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_HALF(benchmark::State& state) {
-  CUDNN_Impl<__half, activation_mode>(state);
+static void LAYER_CUDNN_DROPOUT_FORWARD_HALF(benchmark::State& state) {
+  CUDNN_Impl<__half>(state);
 }
 
-template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_FLOAT(benchmark::State& state) {
-  CUDNN_Impl<float, activation_mode>(state);
+static void LAYER_CUDNN_DROPOUT_FORWARD_FLOAT(benchmark::State& state) {
+  CUDNN_Impl<float>(state);
 }
 
-template <cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE(benchmark::State& state) {
-  CUDNN_Impl<double, activation_mode>(state);
+static void LAYER_CUDNN_DROPOUT_FORWARD_DOUBLE(benchmark::State& state) {
+  CUDNN_Impl<double>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
 
-#define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_SIGMOID)->CONV_PROBLEMS()->UseManualTime();                                   \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_RELU)->CONV_PROBLEMS()->UseManualTime();                                      \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_TANH)->CONV_PROBLEMS()->UseManualTime();                                      \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_CLIPPED_RELU)->CONV_PROBLEMS()->UseManualTime();                              \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_ELU)->CONV_PROBLEMS()->UseManualTime();                                       \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_IDENTITY)->CONV_PROBLEMS()->UseManualTime()
-
-/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FORWARD_DOUBLE);
+BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_INT8)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_INT32)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_HALF)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_FLOAT)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_DOUBLE)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();

@@ -225,7 +225,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     state.PauseTiming();
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnConvolutionForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnConvolutionBiasActivationForward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {

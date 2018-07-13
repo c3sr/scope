@@ -51,6 +51,8 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
+  const auto out_n = in_n, out_c = in_c, out_h = in_h, out_w = in_w;
+
   const float alpha = 1, beta = 0;
   const double epsilon = 1e-5; // CUDNN_BN_MIN_EPSILON
 
@@ -148,7 +150,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     const auto cuda_err = cudaEventSynchronize(stop);
     if (PRINT_IF_ERROR(cudnn_err)) {
-      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnActivationForward");
+      state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnBatchNormalizationBackward");
       break;
     }
     if (PRINT_IF_ERROR(cuda_err)) {
