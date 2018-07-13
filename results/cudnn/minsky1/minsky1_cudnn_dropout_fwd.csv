@@ -1,0 +1,538 @@
+Run on (160 X 4023 MHz CPU s)
+2018-07-13 08:09:19
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:700/H:161/C:1/N:2/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:700/H:161/C:1/N:4/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:341/H:79/C:32/N:1/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:341/H:79/C:32/N:2/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:341/H:79/C:32/N:4/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:480/H:48/C:1/N:1/K:16/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:240/H:24/C:16/N:1/K:32/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:120/H:12/C:32/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:60/H:6/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:108/H:108/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:54/H:54/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:27/H:27/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:224/H:224/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:112/H:112/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:224/H:224/C:3/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:112/H:112/C:64/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:128/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:256/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:224/H:224/C:3/N:1/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:192/N:1/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:192/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:512/N:1/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:512/N:1/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:832/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:832/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:224/H:224/C:3/N:2/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:192/N:2/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:192/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:512/N:2/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:512/N:2/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:832/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:832/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:700/H:161/C:1/N:1/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:350/H:80/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:350/H:80/C:64/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:175/H:40/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:175/H:40/C:128/N:1/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:84/H:20/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:84/H:20/C:256/N:1/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:42/H:10/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:700/H:161/C:1/N:2/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:350/H:80/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:350/H:80/C:64/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:175/H:40/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:175/H:40/C:128/N:2/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:84/H:20/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:84/H:20/C:256/N:2/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:42/H:10/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:112/H:112/C:64/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:256/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:256/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:512/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:512/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:512/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:1024/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:1024/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:1024/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:112/H:112/C:64/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:256/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:56/H:56/C:256/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:512/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:512/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:28/H:28/C:512/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:1024/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:1024/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:512/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:14/H:14/C:1024/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT8/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to cudnnDropoutGetStatesSize"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:700/H:161/C:1/N:2/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:700/H:161/C:1/N:4/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:341/H:79/C:32/N:1/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:341/H:79/C:32/N:2/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:341/H:79/C:32/N:4/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:480/H:48/C:1/N:1/K:16/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:240/H:24/C:16/N:1/K:32/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:120/H:12/C:32/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:60/H:6/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:108/H:108/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:54/H:54/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:27/H:27/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:224/H:224/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:112/H:112/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:224/H:224/C:3/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:112/H:112/C:64/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:128/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:256/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:224/H:224/C:3/N:1/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:192/N:1/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:192/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:512/N:1/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:512/N:1/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:832/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:832/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:224/H:224/C:3/N:2/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:192/N:2/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:192/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:512/N:2/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:512/N:2/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:832/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:832/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:700/H:161/C:1/N:1/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:350/H:80/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:350/H:80/C:64/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:175/H:40/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:175/H:40/C:128/N:1/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:84/H:20/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:84/H:20/C:256/N:1/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:42/H:10/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:700/H:161/C:1/N:2/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:350/H:80/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:350/H:80/C:64/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:175/H:40/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:175/H:40/C:128/N:2/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:84/H:20/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:84/H:20/C:256/N:2/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:42/H:10/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:112/H:112/C:64/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:256/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:256/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:512/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:512/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:512/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:1024/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:1024/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:1024/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:112/H:112/C:64/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:256/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:56/H:56/C:256/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:512/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:512/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:28/H:28/C:512/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:1024/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:1024/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:512/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:14/H:14/C:1024/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_INT32/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",,,,,,,,true,"CUDNN/DROPOUT_FWD failed to perform cudnnDropoutForward"
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",18883,37060.8,44147.4,ns,,2.32604e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:700/H:161/C:1/N:2/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",14219,49225.5,56332.6,ns,,3.50244e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:700/H:161/C:1/N:4/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",9516,73544.1,80653,ns,,4.6886e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:341/H:79/C:32/N:1/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25823,27088.1,34271,ns,,7.45182e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:341/H:79/C:32/N:2/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",22593,30776.9,37802.9,ns,,1.31174e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:341/H:79/C:32/N:4/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",19272,36321.7,43352,ns,,2.22298e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:480/H:48/C:1/N:1/K:16/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",23139,30226.5,37260.3,ns,,1.21959e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:240/H:24/C:16/N:1/K:32/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25889,27014.7,34296.6,ns,,6.82296e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:120/H:12/C:32/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26859,26048.5,33268.4,ns,,3.53802e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:60/H:6/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",30080,23264.2,30384.6,ns,,1.98073e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:108/H:108/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",25840,27179.2,34238.7,ns,,6.86644e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:54/H:54/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25886,27006.3,34171.8,ns,,6.91039e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:27/H:27/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26840,26060.7,33324.4,ns,,3.58056e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29775,23491.6,30604.7,ns,,2.13591e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",40762,17144.9,24270.3,ns,,1.4633e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:224/H:224/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",9982,70074.5,77112.6,ns,,4.58264e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:112/H:112/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14857,47118.8,54206.7,ns,,3.40763e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19308,36248.1,43319,ns,,2.21478e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",22665,30767.1,37789.6,ns,,1.30467e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26694,26240.4,33454.6,ns,,3.82434e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",40891,17117.6,24310.9,ns,,1.46563e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:224/H:224/C:3/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",6214,112602,119646,ns,,5.70375e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:112/H:112/C:64/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",10002,70048.7,77113.2,ns,,4.58433e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:128/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14861,47105.9,54222.3,ns,,3.40856e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:256/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19312,36272.9,43353,ns,,2.21327e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25716,27050.5,34220.8,ns,,7.4196e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29815,23472.8,30615,ns,,2.13762e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:224/H:224/C:3/N:1/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",19306,36262.5,43299.4,ns,,2.2139e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:192/N:1/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",40907,17109.6,24249.5,ns,,1.46631e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:192/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29807,23479.9,30670,ns,,2.13698e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:512/N:1/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",53795,13004.1,20138.6,ns,,7.23466e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:512/N:1/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",33187,21061.7,28240.1,ns,,1.78675e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:832/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",52730,13267,20456.3,ns,,9.45503e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:832/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",61184,11388.2,18442.5,ns,,5.50746e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:224/H:224/C:3/N:2/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",14862,47075.9,54166.4,ns,,3.41073e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:192/N:2/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",29833,23462.2,30578.1,ns,,2.13859e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:192/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26708,26217.1,33387.1,ns,,3.82773e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:512/N:2/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",45848,15235.5,22305.4,ns,,1.23501e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:512/N:2/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",27178,25738,32858.5,ns,,2.92423e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:832/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",40944,17100.2,24277.4,ns,,1.46712e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:832/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",53118,13169.6,20388.7,ns,,9.52497e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25731,27049.3,34230.9,ns,,7.41994e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25828,27069,34235.9,ns,,7.41452e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26640,26255.5,33438.5,ns,,3.82214e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26705,26227,33442.7,ns,,3.82629e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29811,23500.1,30606.5,ns,,2.13514e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29825,23496.5,30596.4,ns,,2.13546e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29819,23489.8,30597.9,ns,,2.13608e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",40935,17097.8,24316.9,ns,,1.46732e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",40928,17103,24293,ns,,1.46687e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",22744,30766.2,37828.6,ns,,1.30471e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",22725,30768.8,37788.2,ns,,1.3046e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25852,27050.4,34218.4,ns,,7.41964e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25857,27031.1,34266.4,ns,,7.42494e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26691,26210.1,33424.5,ns,,3.82875e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26693,26203.8,33385.3,ns,,3.82967e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26673,26210.1,33412.5,ns,,3.82875e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29836,23472.4,30587.5,ns,,2.13766e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",29824,23459.5,30560.7,ns,,2.13884e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:700/H:161/C:1/N:1/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",14039,49853.4,56926.1,ns,,3.58427e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:350/H:80/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14026,49894,56943,ns,,3.59161e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:350/H:80/C:64/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",18975,36912.7,43957.5,ns,,2.35314e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:175/H:40/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",18772,37299.1,44335.1,ns,,2.4022e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:175/H:40/C:128/N:1/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",22678,30848.8,37944.9,ns,,1.37175e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:84/H:20/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",22614,30923.6,37993.1,ns,,1.39078e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:84/H:20/C:256/N:1/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",25879,27007,34174.8,ns,,6.99553e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:42/H:10/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25742,27185.8,34324.9,ns,,7.91002e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:700/H:161/C:1/N:2/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",9186,76198.3,83230.9,ns,,4.69008e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:350/H:80/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",9196,76158.8,83196.5,ns,,4.70596e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:350/H:80/C:64/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",14116,49573,56681.3,ns,,3.50436e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:175/H:40/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14039,49880.4,56933.7,ns,,3.5926e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:175/H:40/C:128/N:2/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",19101,36635.9,43737.4,ns,,2.31013e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:84/H:20/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",18887,37063.7,44216.2,ns,,2.32076e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:84/H:20/C:256/N:2/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",23061,30347.9,37364.5,ns,,1.24508e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:42/H:10/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",22642,30886.8,37938.7,ns,,1.39244e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:112/H:112/C:64/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19318,36237,43293.5,ns,,2.21546e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19300,36235.8,43267.4,ns,,2.21553e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:256/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25850,27051.8,34278.8,ns,,7.41925e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:256/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26678,26223.3,33396.2,ns,,3.82682e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22727,30773.6,37826.6,ns,,1.30439e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:512/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26675,26274.5,33444.7,ns,,3.81937e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:512/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29802,23483.3,30571,ns,,2.13666e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25843,27067,34219.7,ns,,7.41507e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:512/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25847,27070.9,34227.1,ns,,7.41402e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:1024/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29800,23493.2,30608.6,ns,,2.13576e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25843,27061.5,34278.3,ns,,7.4166e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:1024/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",40809,17153,24274.1,ns,,1.46261e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",40758,17185.5,24372.6,ns,,1.45984e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26665,26225.2,33407.2,ns,,3.82655e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:1024/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26672,26238.9,33411.7,ns,,3.82456e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",40813,17138,24268.9,ns,,1.46389e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:112/H:112/C:64/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14869,47086.2,54187.9,ns,,3.40998e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14865,47097.4,54134.6,ns,,3.40917e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:256/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22721,30769.6,37830.2,ns,,1.30456e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:56/H:56/C:256/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25843,27043.6,34297,ns,,7.42149e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19319,36232.5,43318.2,ns,,2.21574e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:512/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25868,27033.9,34200.1,ns,,7.42416e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:512/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26714,26213.1,33380.8,ns,,3.82832e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22732,30743.7,37808.8,ns,,1.30566e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:28/H:28/C:512/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",22758,30749.1,37843.4,ns,,1.30543e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:1024/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26706,26207.9,33423.3,ns,,3.82908e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22749,30762.3,37793.6,ns,,1.30487e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:1024/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29838,23464.8,30580.5,ns,,2.13835e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29806,23489.3,30580.3,ns,,2.13612e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:512/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25820,27046.3,34214.3,ns,,7.42075e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:14/H:14/C:1024/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25855,27039.5,34191.8,ns,,7.42262e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_HALF/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29851,23467.5,30640.7,ns,,2.13811e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",19180,36539.7,43615.5,ns,,2.35921e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:700/H:161/C:1/N:2/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",13845,50565.3,57634,ns,,3.40965e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:700/H:161/C:1/N:4/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",8974,77957.7,85007.4,ns,,4.42316e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:341/H:79/C:32/N:1/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25409,27512.6,34547.2,ns,,7.33684e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:341/H:79/C:32/N:2/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",22912,30547.5,37576.6,ns,,1.32159e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:341/H:79/C:32/N:4/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",19622,35685.8,42740.8,ns,,2.26259e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:480/H:48/C:1/N:1/K:16/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",23205,30133.7,37190.9,ns,,1.22335e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:240/H:24/C:16/N:1/K:32/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25502,27425.1,34449.4,ns,,6.72085e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:120/H:12/C:32/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26932,25985.1,33159,ns,,3.54665e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:60/H:6/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",30031,23307,30486.2,ns,,1.97709e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:108/H:108/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",25551,27406.1,34441,ns,,6.80959e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:54/H:54/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25555,27381.6,34405.6,ns,,6.81567e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:27/H:27/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26935,25989.1,33156.7,ns,,3.59042e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29730,23575.4,30708.6,ns,,2.12832e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",41219,17007.9,24190.3,ns,,1.47508e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:224/H:224/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",9433,74237.2,81294,ns,,4.32568e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:112/H:112/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14546,48095.1,55140.2,ns,,3.33845e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19702,35544.7,42590.9,ns,,2.25861e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",22866,30567.2,37667.2,ns,,1.3132e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26759,26127.2,33399.3,ns,,3.8409e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",41124,17017.1,24215.2,ns,,1.47428e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:224/H:224/C:3/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",5525,126622,133678,ns,,5.07222e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:112/H:112/C:64/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",9434,74198.4,81300.2,ns,,4.32794e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:128/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14559,48104.4,55144.9,ns,,3.33781e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:256/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19715,35514.3,42633.1,ns,,2.26054e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25426,27512.2,34527.4,ns,,7.29509e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29738,23540.2,30718.8,ns,,2.1315e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:224/H:224/C:3/N:1/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",19708,35518.8,42573.7,ns,,2.26025e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:192/N:1/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",41198,17074,24290.7,ns,,1.46936e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:192/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29715,23541.1,30746.6,ns,,2.13142e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:512/N:1/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",54391,12867.8,19890.4,ns,,7.3113e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:512/N:1/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",33162,21119.9,28225.7,ns,,1.78183e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:832/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",53489,13098.9,20256.2,ns,,9.5764e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:832/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",61907,11308.9,18325.2,ns,,5.54609e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:224/H:224/C:3/N:2/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",14548,48120,55179.8,ns,,3.33673e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:192/N:2/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",29772,23556.4,30732.1,ns,,2.13004e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:192/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26806,26130.3,33322.4,ns,,3.84045e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:512/N:2/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",45706,15387.3,22564.2,ns,,1.22283e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:512/N:2/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",27207,25699.7,32889.8,ns,,2.92859e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:832/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",41245,16973,24170.5,ns,,1.47811e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:832/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",53472,13094.7,20313.5,ns,,9.57941e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25414,27512.2,34534.3,ns,,7.29508e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25416,27525.2,34568.9,ns,,7.29166e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26782,26152.9,33407.6,ns,,3.83712e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26778,26144.3,33346.7,ns,,3.83838e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29748,23556,30680.3,ns,,2.13007e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29743,23521.6,30719.1,ns,,2.13319e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29679,23532,30645.1,ns,,2.13224e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",41109,17006.6,24168,ns,,1.47519e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",41174,16971.1,24164.2,ns,,1.47828e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",22896,30568.3,37633.6,ns,,1.31315e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",22879,30570.7,37599.9,ns,,1.31305e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25414,27502.3,34555.3,ns,,7.29772e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25421,27493.8,34570.7,ns,,7.29997e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26809,26134.3,33352.9,ns,,3.83985e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26817,26118.7,33301.4,ns,,3.84216e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26797,26116.9,33392.5,ns,,3.84242e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29749,23532.1,30723.5,ns,,2.13224e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",29731,23567.9,30717.3,ns,,2.129e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:700/H:161/C:1/N:1/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",13636,51261.7,58353.6,ns,,3.4858e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:350/H:80/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",13641,51249.8,58326.3,ns,,3.4966e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:350/H:80/C:64/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",19300,36248.2,43296.8,ns,,2.39628e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:175/H:40/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",18991,36879.8,43949.3,ns,,2.42952e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:175/H:40/C:128/N:1/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",23088,30266,37317.3,ns,,1.39816e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:84/H:20/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",23092,30293.3,37405.4,ns,,1.41972e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:84/H:20/C:256/N:1/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",25514,27404.7,34460.7,ns,,6.89399e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:42/H:10/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",25444,27491.2,34510.4,ns,,7.82215e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:700/H:161/C:1/N:2/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",8723,80247.3,87280.6,ns,,4.45344e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:350/H:80/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",8676,80665.3,87713.6,ns,,4.44305e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:350/H:80/C:64/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",13744,50972.9,58048.3,ns,,3.40811e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:175/H:40/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",13645,51258.2,58310.8,ns,,3.49603e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:175/H:40/C:128/N:2/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",19316,36248.8,43375.4,ns,,2.3348e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:84/H:20/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19157,36534.3,43651.3,ns,,2.35439e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:84/H:20/C:256/N:2/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",23080,30327.1,37367.4,ns,,1.24593e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:42/H:10/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",23078,30277.9,37310.8,ns,,1.42044e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:112/H:112/C:64/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19710,35518.7,42572.8,ns,,2.26026e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19689,35524.7,42661.4,ns,,2.25988e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:256/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25432,27513.7,34618.6,ns,,7.29469e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:256/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26794,26124.6,33326.2,ns,,3.84128e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22884,30568.3,37712.2,ns,,1.31315e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:512/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26806,26128.7,33354.4,ns,,3.84068e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:512/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29721,23519.8,30722.2,ns,,2.13336e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25434,27508.4,34534,ns,,7.2961e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:512/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25405,27504.1,34533.2,ns,,7.29723e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:1024/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29718,23566.1,30764.8,ns,,2.12916e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25427,27516.2,34561.4,ns,,7.29402e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:1024/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",41063,17030.3,24275.9,ns,,1.47314e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",41096,16993.7,24250.5,ns,,1.47631e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26802,26131.8,33379.9,ns,,3.84023e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:1024/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26689,26114.5,33290.3,ns,,3.84277e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",41087,16999,24191.3,ns,,1.47585e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:112/H:112/C:64/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14559,48082.1,55185.6,ns,,3.33936e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14553,48091.4,55174.7,ns,,3.33871e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:256/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22897,30555.3,37582.1,ns,,1.31371e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:56/H:56/C:256/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25428,27493.2,34580.3,ns,,7.30013e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19715,35503.1,42571.2,ns,,2.26126e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:512/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25440,27493.6,34590.7,ns,,7.30003e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:512/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26812,26101.3,33275.4,ns,,3.84471e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22889,30579.4,37622.5,ns,,1.31268e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:28/H:28/C:512/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",22892,30537.6,37605.4,ns,,1.31447e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:1024/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26779,26143.8,33333.8,ns,,3.83847e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",22902,30550.2,37631.1,ns,,1.31393e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:1024/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29771,23548,30752.4,ns,,2.13079e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29748,23549,30665.3,ns,,2.13071e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:512/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",25434,27502,34530.4,ns,,7.2978e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:14/H:14/C:1024/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",25433,27511.2,34593.5,ns,,7.29536e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_FLOAT/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29742,23531.2,30674.8,ns,,2.13232e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",13874,50418.5,57555,ns,,1.70979e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:700/H:161/C:1/N:2/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",9093,76932.7,84113.2,ns,,2.24104e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:700/H:161/C:1/N:4/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",5372,130312,137366,ns,,2.6461e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:341/H:79/C:32/N:1/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",24161,28942.6,36055.4,ns,,6.97435e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:341/H:79/C:32/N:2/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",19600,35733.6,42786.2,ns,,1.12978e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:341/H:79/C:32/N:4/K:32/filter_w(s):10/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",14297,48989.6,56023.7,ns,,1.64815e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:480/H:48/C:1/N:1/K:16/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",20048,34939.3,41963.9,ns,,1.05509e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:240/H:24/C:16/N:1/K:32/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",24749,28306.4,35349,ns,,6.5116e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:120/H:12/C:32/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26436,26505.2,33508.2,ns,,3.47705e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:60/H:6/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",30015,23408.7,30557.9,ns,,1.9685e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:108/H:108/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",24699,28285.9,35312.7,ns,,6.59777e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:54/H:54/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",24719,28286.9,35318.4,ns,,6.59755e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:27/H:27/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26378,26475.1,33510.7,ns,,3.52452e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29644,23644,30776,ns,,2.12214e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",41350,16918.8,24080.3,ns,,1.48285e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:224/H:224/C:3/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",5691,122961,130012,ns,,2.61161e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:112/H:112/C:64/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",9557,73259.7,80336.2,ns,,2.1917e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:128/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14318,48909.6,56031.3,ns,,1.64143e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:256/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19609,35680.8,42702.8,ns,,1.125e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26228,26691.4,33757.9,ns,,3.75971e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",41289,16956.8,24132.2,ns,,1.47952e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:224/H:224/C:3/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",3123,224130,231392,ns,,2.86554e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:112/H:112/C:64/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",5692,122918,129966,ns,,2.61253e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:128/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",9549,73262.6,80303.2,ns,,2.19161e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:256/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",14318,48871.6,55917.9,ns,,1.64271e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",24231,28898.7,35981,ns,,6.94508e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29599,23567.6,30723.7,ns,,2.12902e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:224/H:224/C:3/N:1/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",14315,48906.8,56034.7,ns,,1.64152e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:192/N:1/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",41342,16950.1,24154.1,ns,,1.48011e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:192/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29682,23620,30752,ns,,2.12431e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:512/N:1/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",55927,12519.5,19654.3,ns,,7.51469e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:512/N:1/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",33324,21000.3,28128,ns,,1.79197e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:832/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",55168,12720.9,19755.6,ns,,9.86096e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:832/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",63286,11060.8,18118.8,ns,,5.67048e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:224/H:224/C:3/N:2/K:64/filter_w(s):7/filter_h(r):7/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",9554,73270.5,80331,ns,,2.19137e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:192/N:2/K:32/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",29658,23616.1,30762.5,ns,,2.12465e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:192/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26277,26683.7,33739,ns,,3.76079e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:512/N:2/K:48/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",46823,14915.9,21980.4,ns,,1.26147e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:512/N:2/K:192/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",27056,25889.1,33017.6,ns,,2.90717e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:832/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",41356,16931.1,24172.5,ns,,1.48177e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:832/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:2/pad_h:2/wstride:1/hstride:1/manual_time",55080,12700.9,19685,ns,,9.87649e+08,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",24119,28873,35949,ns,,6.95126e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",24221,28914.2,35998.8,ns,,6.94137e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26222,26691.3,33724.5,ns,,3.75973e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26212,26677.8,33734.2,ns,,3.76163e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29630,23609.4,30758.5,ns,,2.12525e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29638,23614.3,30733.9,ns,,2.12481e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29652,23593.2,30716.4,ns,,2.12672e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",41207,16952.1,24151.8,ns,,1.47993e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",41297,16974,24219.6,ns,,1.47803e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19602,35676.5,42747.2,ns,,1.12513e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",19607,35722.7,42781.2,ns,,1.12368e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",24235,28915,35950.1,ns,,6.94117e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",24212,28911,36026.2,ns,,6.94213e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26271,26638.8,33655.6,ns,,3.76714e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",26289,26671.4,33745.5,ns,,3.76254e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26272,26696.7,33719.4,ns,,3.75897e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29638,23605.6,30784.9,ns,,2.12559e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:3/pad_h:3/wstride:2/hstride:2/manual_time",29649,23634.7,30767.1,ns,,2.12298e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:700/H:161/C:1/N:1/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",8909,78545.9,85587.6,ns,,2.27495e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:350/H:80/C:64/N:1/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",8915,78496.1,85647.8,ns,,2.28292e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:350/H:80/C:64/N:1/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",13922,50245.6,57298.4,ns,,1.72873e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:175/H:40/C:128/N:1/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",13779,50763.3,57854.2,ns,,1.76506e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:175/H:40/C:128/N:1/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",19532,35838.5,42875,ns,,1.18076e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:84/H:20/C:256/N:1/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19452,35936.7,42969.4,ns,,1.19677e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:84/H:20/C:256/N:1/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",24718,28306.2,35339.3,ns,,6.67445e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:42/H:10/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",23455,29847.8,36942.8,ns,,7.20455e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:700/H:161/C:1/N:2/K:64/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",5215,134230,141293,ns,,2.66241e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:350/H:80/C:64/N:2/K:64/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",5206,134478,141591,ns,,2.66513e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:350/H:80/C:64/N:2/K:128/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",9083,77075.5,84117.8,ns,,2.25391e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:175/H:40/C:128/N:2/K:128/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",8912,78499.6,85546,ns,,2.28281e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:175/H:40/C:128/N:2/K:256/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",10000,50005.4,57044.8,ns,,1.69249e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:84/H:20/C:256/N:2/K:256/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",13872,50459.3,57503.2,ns,,1.70466e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:84/H:20/C:256/N:2/K:512/filter_w(s):5/filter_h(r):5/pad_w:1/pad_h:1/wstride:2/hstride:2/manual_time",19845,35138.1,42157.7,ns,,1.07534e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:42/H:10/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",19470,35956.8,42978.6,ns,,1.1961e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:112/H:112/C:64/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14323,48871.8,55916.2,ns,,1.6427e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:64/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14328,48849.4,55973.8,ns,,1.64345e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:256/N:1/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",24203,28864.4,35891.4,ns,,6.95333e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:256/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26231,26690.2,33706.6,ns,,3.75988e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:128/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19613,35730.8,42803.7,ns,,1.12342e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:512/N:1/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26243,26675.9,33695.2,ns,,3.7619e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:512/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29605,23594.2,30702.5,ns,,2.12662e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",24163,28881.3,36000.9,ns,,6.94928e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:512/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",24182,28910.2,36018.9,ns,,6.94233e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:1024/N:1/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29629,23601.4,30715,ns,,2.12598e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:1/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",24186,28906.2,35941.2,ns,,6.94327e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:1024/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",41373,16917.8,24169.5,ns,,1.48294e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:1/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",41368,16912.6,24090,ns,,1.48339e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26229,26686.2,33696.5,ns,,3.76044e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:1024/N:1/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26245,26648.9,33731.8,ns,,3.76571e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:2048/N:1/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",41424,16919.5,24082,ns,,1.48279e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:112/H:112/C:64/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",9554,73293.1,80346.9,ns,,2.1907e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:64/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",9550,73237.5,80431.1,ns,,2.19236e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:256/N:2/K:64/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19618,35708.1,42743.3,ns,,1.12414e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:56/H:56/C:256/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",24189,28867,35968.5,ns,,6.9527e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:128/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",14328,48884.3,55916.7,ns,,1.64228e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:512/N:2/K:128/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",24215,28889.6,35919.6,ns,,6.94728e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:512/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",26218,26666.7,33690.7,ns,,3.76319e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19623,35704.7,42737.6,ns,,1.12424e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:28/H:28/C:512/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",19608,35700.7,42739.1,ns,,1.12437e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:1024/N:2/K:256/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",26281,26659.3,33675.9,ns,,3.76424e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:256/N:2/K:1024/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",19605,35706.8,42774.1,ns,,1.12418e+10,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:1024/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",29633,23581.1,30686,ns,,2.12781e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:2/K:512/filter_w(s):3/filter_h(r):3/pad_w:1/pad_h:1/wstride:1/hstride:1/manual_time",29619,23615.5,30740.2,ns,,2.1247e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:512/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",24212,28869,35969.1,ns,,6.95222e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:14/H:14/C:1024/N:2/K:2048/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",24188,28867.9,35963,ns,,6.95251e+09,,,
+"LAYER_CUDNN_DROPOUT_FWD_DOUBLE/W:7/H:7/C:2048/N:2/K:512/filter_w(s):1/filter_h(r):1/pad_w:0/pad_h:0/wstride:1/hstride:1/manual_time",29657,23623.6,30792.2,ns,,2.12398e+09,,,
