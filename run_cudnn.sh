@@ -1,4 +1,32 @@
 #! /bin/bash
 
-make -j && ./bench --benchmark_filter=CONV_FORWARD --benchmark_out_format=json --benchmark_out=../results/cudnn/volta_conv_fwd.json
+mkdir -p build
+pushd build
+make -j
 
+CUDA_DEVICE=1
+
+rm -fr run.log
+
+cudnn_bmarks=(
+  CUDNN_ACTIVATION_BWD
+  CUDNN_ACTIVATION_FWD
+  CUDNN_BATCHNORM_BWD
+  CUDNN_BATCHNORM_FWD
+  CUDNN_CONV_BIAS_ACTIVATION_FWD
+  CUDNN_CONV_BWD_BIAS
+  CUDNN_CONV_BWD_DATA
+  CUDNN_CONV_BWD_FILTER
+  CUDNN_CONV_FWD
+  CUDNN_DROPOUT_BWD
+  CUDNN_DROPOUT_FWD
+  CUDNN_POOLING_BWD
+  CUDNN_POOLING_FWD
+  CUDNN_SOFTMAX_BWD
+  CUDNN_SOFTMAX_FWD
+)
+
+for b in "${cudnn_bmarks[@]}"; do
+  CUDA_VISIBLE_DEVICES=$CUDA_DEVICE ./bench --benchmark_filter="$b.*" --benchmark_out_format=json --benchmark_out=../results/cudnn/`hostname`_"${b,,}".json
+  CUDA_VISIBLE_DEVICES=$CUDA_DEVICE ./bench --benchmark_filter="$b.*" --benchmark_out_format=csv --benchmark_out=../results/cudnn/`hostname`_"${b,,}".csv
+done

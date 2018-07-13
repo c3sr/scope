@@ -316,34 +316,34 @@ static void CUDNN_Impl(benchmark::State& state) {
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_FORWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FWD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FWD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_FORWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FWD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FWD_HALF_TENSOROP(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
 #endif
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_FORWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FWD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_FWD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
@@ -359,11 +359,11 @@ static void LAYER_CUDNN_CONV_FORWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD)->CONV_PROBLEMS()->UseManualTime();                        \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED)->CONV_PROBLEMS()->UseManualTime()
 
-/* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_INT32); */
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_HALF);
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_HALF_TENSOROP);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_HALF_TENSOROP);
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FORWARD_DOUBLE);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_DOUBLE);

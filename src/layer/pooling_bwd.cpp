@@ -205,27 +205,27 @@ static void CUDNN_Impl(benchmark::State& state) {
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_POOLING_BACKWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_BWD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_POOLING_BACKWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_BWD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_POOLING_BACKWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_BWD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_POOLING_BACKWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_BWD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, pooling_mode>(state);
 }
 
 template <cudnnPoolingMode_t pooling_mode>
-static void LAYER_CUDNN_POOLING_BACKWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_POOLING_BWD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, pooling_mode>(state);
 }
 
@@ -237,8 +237,8 @@ static void LAYER_CUDNN_POOLING_BACKWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING)->CONV_PROBLEMS()->UseManualTime();                \
   BENCHMARK_TEMPLATE(b, CUDNN_POOLING_MAX_DETERMINISTIC)->CONV_PROBLEMS()->UseManualTime();
 
-/* BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BACKWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BACKWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BACKWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BACKWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BACKWARD_DOUBLE);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BWD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BWD_INT32); */
+BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BWD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BWD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_POOLING_BWD_DOUBLE);

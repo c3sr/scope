@@ -146,30 +146,30 @@ static void CUDNN_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
-static void LAYER_CUDNN_CONV_BACKWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_BIAS_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t>(state);
 }
 
-static void LAYER_CUDNN_CONV_BACKWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_BIAS_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t>(state);
 }
 
-static void LAYER_CUDNN_CONV_BACKWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_BIAS_HALF(benchmark::State& state) {
   CUDNN_Impl<__half>(state);
 }
 
-static void LAYER_CUDNN_CONV_BACKWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_BIAS_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float>(state);
 }
 
-static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_BIAS_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double>(state);
 }
 
 #define CONV_PROBLEMS ALL_INFERENCE_SERVER_CONV_PROBLEMS
 
-BENCHMARK(LAYER_CUDNN_CONV_BACKWARD_INT8)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_BACKWARD_INT32)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_BACKWARD_HALF)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_BACKWARD_FLOAT)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_CONV_BACKWARD_DOUBLE)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+// BENCHMARK(LAYER_CUDNN_CONV_BWD_BIAS_INT8)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+// BENCHMARK(LAYER_CUDNN_CONV_BWD_BIAS_INT32)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_BWD_BIAS_HALF)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_BWD_BIAS_FLOAT)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_CONV_BWD_BIAS_DOUBLE)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();

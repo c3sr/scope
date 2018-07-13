@@ -107,10 +107,10 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   auto dy_tensor = Tensor<T>(state,
-                           {/*batch_size=*/out_n,
-                            /*channels=*/out_c,
-                            /*image_height=*/out_h,
-                            /*image_width=*/out_w});
+                             {/*batch_size=*/out_n,
+                              /*channels=*/out_c,
+                              /*image_height=*/out_h,
+                              /*image_width=*/out_w});
   if (!dy_tensor.is_valid) {
     return;
   }
@@ -301,32 +301,32 @@ static void CUDNN_Impl(benchmark::State& state) {
 }
 
 template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_DATA_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_DATA_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_DATA_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_DATA_HALF_TENSOROP(benchmark::State& state) {
   CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
 
 template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_DATA_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionBwdDataAlgo_t convolution_algorithm>
-static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_CONV_BWD_DATA_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, convolution_algorithm>(state);
 }
 
@@ -344,11 +344,11 @@ static void LAYER_CUDNN_CONV_BACKWARD_DOUBLE(benchmark::State& state) {
       ->INFERENCE_SERVER_CONV_PROBLEMS()                                                                               \
       ->UseManualTime()
 
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT8);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_INT32);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_INT8);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_INT32);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_HALF);
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_HALF_TENSOROP);
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BACKWARD_DOUBLE);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_DOUBLE);

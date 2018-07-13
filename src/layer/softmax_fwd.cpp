@@ -166,27 +166,27 @@ static void CUDNN_Impl(benchmark::State& state) {
 }
 
 template <cudnnSoftmaxAlgorithm_t softmax_algorithm, cudnnSoftmaxMode_t softmax_mode>
-static void LAYER_CUDNN_SOFTMAX_FORWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_SOFTMAX_FWD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, softmax_algorithm, softmax_mode>(state);
 }
 
 template <cudnnSoftmaxAlgorithm_t softmax_algorithm, cudnnSoftmaxMode_t softmax_mode>
-static void LAYER_CUDNN_SOFTMAX_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_SOFTMAX_FWD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, softmax_algorithm, softmax_mode>(state);
 }
 
 template <cudnnSoftmaxAlgorithm_t softmax_algorithm, cudnnSoftmaxMode_t softmax_mode>
-static void LAYER_CUDNN_SOFTMAX_FORWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_SOFTMAX_FWD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, softmax_algorithm, softmax_mode>(state);
 }
 
 template <cudnnSoftmaxAlgorithm_t softmax_algorithm, cudnnSoftmaxMode_t softmax_mode>
-static void LAYER_CUDNN_SOFTMAX_FORWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_SOFTMAX_FWD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, softmax_algorithm, softmax_mode>(state);
 }
 
 template <cudnnSoftmaxAlgorithm_t softmax_algorithm, cudnnSoftmaxMode_t softmax_mode>
-static void LAYER_CUDNN_SOFTMAX_FORWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_SOFTMAX_FWD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, softmax_algorithm, softmax_mode>(state);
 }
 
@@ -201,8 +201,8 @@ static void LAYER_CUDNN_SOFTMAX_FORWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_CUDNN0(b, CUDNN_SOFTMAX_MODE_INSTANCE);                                                                    \
   BENCHMARK_CUDNN0(b, CUDNN_SOFTMAX_MODE_CHANNEL)
 
-/* BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_DOUBLE);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FWD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FWD_INT32); */
+BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FWD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FWD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FWD_DOUBLE);

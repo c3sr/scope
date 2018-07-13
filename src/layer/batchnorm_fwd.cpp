@@ -244,27 +244,27 @@ static void CUDNN_Impl(benchmark::State& state) {
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
-static void LAYER_CUDNN_BATCHNORM_FORWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_BATCHNORM_FWD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
-static void LAYER_CUDNN_BATCHNORM_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_BATCHNORM_FWD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
-static void LAYER_CUDNN_BATCHNORM_FORWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_BATCHNORM_FWD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
-static void LAYER_CUDNN_BATCHNORM_FORWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_BATCHNORM_FWD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float, batchnorm_mode, is_training>(state);
 }
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
-static void LAYER_CUDNN_BATCHNORM_FORWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_BATCHNORM_FWD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double, batchnorm_mode, is_training>(state);
 }
 
@@ -277,8 +277,8 @@ static void LAYER_CUDNN_BATCHNORM_FORWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_BATCHNORM_SPATIAL_PERSISTENT, false)->CONV_PROBLEMS()->UseManualTime();                  \
   BENCHMARK_TEMPLATE(b, CUDNN_BATCHNORM_PER_ACTIVATION, false)->CONV_PROBLEMS()->UseManualTime()
 
-/* BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FORWARD_INT8); */
-/* BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FORWARD_INT32); */
-BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FORWARD_HALF);
-BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FORWARD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FORWARD_DOUBLE);
+/* BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FWD_INT8); */
+/* BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FWD_INT32); */
+BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FWD_HALF);
+BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FWD_FLOAT);
+BENCHMARK_CUDNN(LAYER_CUDNN_BATCHNORM_FWD_DOUBLE);

@@ -47,7 +47,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_height = state.range(10);
 
   const float dropout = 0.5;
-  const uint64_t seed   = 0;
+  const uint64_t seed = 0;
 
   const auto in_n = batch_size;
   const auto in_c = num_filters;
@@ -171,30 +171,30 @@ static void CUDNN_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
-static void LAYER_CUDNN_DROPOUT_FORWARD_INT8(benchmark::State& state) {
+static void LAYER_CUDNN_DROPOUT_FWD_INT8(benchmark::State& state) {
   CUDNN_Impl<int8_t>(state);
 }
 
-static void LAYER_CUDNN_DROPOUT_FORWARD_INT32(benchmark::State& state) {
+static void LAYER_CUDNN_DROPOUT_FWD_INT32(benchmark::State& state) {
   CUDNN_Impl<int32_t>(state);
 }
 
-static void LAYER_CUDNN_DROPOUT_FORWARD_HALF(benchmark::State& state) {
+static void LAYER_CUDNN_DROPOUT_FWD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half>(state);
 }
 
-static void LAYER_CUDNN_DROPOUT_FORWARD_FLOAT(benchmark::State& state) {
+static void LAYER_CUDNN_DROPOUT_FWD_FLOAT(benchmark::State& state) {
   CUDNN_Impl<float>(state);
 }
 
-static void LAYER_CUDNN_DROPOUT_FORWARD_DOUBLE(benchmark::State& state) {
+static void LAYER_CUDNN_DROPOUT_FWD_DOUBLE(benchmark::State& state) {
   CUDNN_Impl<double>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
 
-BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_INT8)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_INT32)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_HALF)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_FLOAT)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
-BENCHMARK(LAYER_CUDNN_DROPOUT_FORWARD_DOUBLE)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FWD_INT8)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FWD_INT32)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FWD_HALF)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FWD_FLOAT)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
+BENCHMARK(LAYER_CUDNN_DROPOUT_FWD_DOUBLE)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime();
