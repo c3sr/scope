@@ -99,7 +99,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnFilterDescriptor_t w_descriptor = w_filter.get();
 
-  int out_h, out_w, out_c, out_n;
+  int out_n, out_c, out_h, out_w;
   if (PRINT_IF_ERROR(cudnnGetConvolution2dForwardOutputDim(convolution_descriptor, dx_descriptor, w_descriptor, &out_n,
                                                            &out_c, &out_h, &out_w))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolution2dForwardOutputDim");

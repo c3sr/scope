@@ -47,14 +47,16 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
+  const float alpha = 1, beta = 0;
+  const double exponential_average_factor = 1.0;  // exponentialAverageFactor
+  const double epsilon                    = 1e-5; // CUDNN_BN_MIN_EPSILON
+
   const auto in_n = batch_size;
   const auto in_c = num_filters;
   const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
-  const float alpha = 1, beta = 0;
-  const double exponential_average_factor = 1.0;  // exponentialAverageFactor
-  const double epsilon                    = 1e-5; // CUDNN_BN_MIN_EPSILON
+  const auto out_n = in_n, out_c = in_c, out_h = in_h, out_w = in_w;
 
   auto x_tensor = Tensor<T>(state,
                             {/*batch_size=*/in_n,
