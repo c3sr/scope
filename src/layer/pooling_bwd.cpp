@@ -148,12 +148,12 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                          &alpha,
                                                          y_descriptor,
                                                          d_y,
-                                                         dy_descriptor,
+                                                         y_descriptor,
                                                          d_dy,
                                                          x_descriptor,
                                                          d_x,
                                                          &beta,
-                                                         dx_descriptor,
+                                                         x_descriptor,
                                                          d_dx);
 
     cudaEventRecord(stop, NULL);

@@ -99,7 +99,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     cudaEventRecord(start, NULL);
 
     const cudnnStatus_t cudnn_err =
-        cudnnConvolutionBackwardBias(cudnn_handle, &alpha, dy_descriptor, &beta, d_dy, db_descriptor, d_db);
+        cudnnConvolutionBackwardBias(cudnn_handle, &alpha, dy_descriptor, d_dy, &beta, db_descriptor, d_db);
 
     cudaEventRecord(stop, NULL);
     const auto cuda_err = cudaEventSynchronize(stop);
