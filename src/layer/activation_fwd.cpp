@@ -147,7 +147,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
       case CUDNN_ACTIVATION_IDENTITY:
-        return in_n * in_c * in_h * in_w;
+        return static_cast<double>(in_n * in_c * in_h * in_w);
       default:
         return static_cast<double>(-1);
     }

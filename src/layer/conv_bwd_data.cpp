@@ -106,7 +106,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     return;
   }
 
-  auto dy_tensor Tensor<T>(state,
+  auto dy_tensor = Tensor<T>(state,
                            {/*batch_size=*/out_n,
                             /*channels=*/out_c,
                             /*image_height=*/out_h,
@@ -175,7 +175,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   if (!dx_memory.is_valid) {
     return;
   }
-  const auto d_dx = x_memory.get();
+  const auto d_dx = dx_memory.get();
 
   cudaEvent_t start, stop;
   PRINT_IF_ERROR(cudaEventCreate(&start));
@@ -283,7 +283,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   int returned_count;
   cudnn_err =
       cudnnFindConvolutionBackwardDataAlgorithm(cudnn_handle, w_descriptor, dy_descriptor, convolution_descriptor,
-                                                input_descriptor, max_count, &returned_count, perfResults);
+                                                x_descriptor, max_count, &returned_count, perfResults);
   if (PRINT_IF_ERROR(cudnn_err)) {
     state.SkipWithError(BENCHMARK_NAME " failed to perform cudnnFindConvolutionBackwardDataAlgorithm");
   }

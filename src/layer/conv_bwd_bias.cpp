@@ -65,11 +65,11 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t db_descriptor = db_tensor.get();
 
-  auto dy_tensor Tensor<T>(state,
-                           {/*batch_size=*/out_n,
-                            /*channels=*/out_c,
-                            /*image_height=*/out_h,
-                            /*image_width=*/out_w});
+  auto dy_tensor = Tensor<T>(state,
+                             {/*batch_size=*/out_n,
+                              /*channels=*/out_c,
+                              /*image_height=*/out_h,
+                              /*image_width=*/out_w});
   if (!dy_tensor.is_valid) {
     return;
   }
@@ -79,13 +79,13 @@ static void CUDNN_Impl(benchmark::State& state) {
   auto output             = std::vector<T>(output_bytes / sizeof(T));
   std::fill(output.begin(), output.end(), detail::one<T>());
 
-  DeviceMemory<T> dy_memory(state, output.get(), output_bytes);
+  DeviceMemory<T> dy_memory(state, output.data(), output_bytes);
   if (!dy_memory.is_valid) {
     return;
   }
   const auto d_dy = dy_memory.get();
 
-  DeviceMemory<T> db_memory(state, input_bytes);
+  DeviceMemory<T> db_memory(state, bias_bytes);
   if (!db_memory.is_valid) {
     return;
   }
@@ -156,10 +156,6 @@ static void LAYER_CUDNN_CONV_BACKWARD_INT32(benchmark::State& state) {
 
 static void LAYER_CUDNN_CONV_BACKWARD_HALF(benchmark::State& state) {
   CUDNN_Impl<__half>(state);
-}
-
-static void LAYER_CUDNN_CONV_BACKWARD_HALF_TENSOROP(benchmark::State& state) {
-  CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
 
 static void LAYER_CUDNN_CONV_BACKWARD_FLOAT(benchmark::State& state) {

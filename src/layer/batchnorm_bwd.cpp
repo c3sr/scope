@@ -137,7 +137,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
 
-  const cudnnStatus_t cudnn_err;
+  cudnnStatus_t cudnn_err;
 
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
@@ -184,7 +184,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_BATCHNORM_PER_ACTIVATION:
       case CUDNN_BATCHNORM_SPATIAL:
       case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
-        return in_n * in_c * in_h * in_w;
+        return static_cast<double>(in_n * in_c * in_h * in_w);
       default:
         return static_cast<double>(-1);
     }

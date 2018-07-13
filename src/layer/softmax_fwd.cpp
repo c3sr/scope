@@ -106,7 +106,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   PRINT_IF_ERROR(cudaEventCreate(&start));
   PRINT_IF_ERROR(cudaEventCreate(&stop));
 
-  const cudnnStatus_t cudnn_err;
+  cudnnStatus_t cudnn_err;
 
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
@@ -149,10 +149,9 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   const auto compute_flops = [&](cudnnSoftmaxMode_t mode) {
     switch (mode) {
-      case CUDNN_SOFTMAX_FAST:
-      case CUDNN_SOFTMAX_ACCURATE:
-      case CUDNN_SOFTMAX_LOG:
-        return in_n * in_c * in_h * in_w;
+      case CUDNN_SOFTMAX_MODE_INSTANCE:
+      case CUDNN_SOFTMAX_MODE_CHANNEL:
+        return static_cast<double>(in_n * in_c * in_h * in_w);
       default:
         return static_cast<double>(-1);
     }
@@ -198,9 +197,9 @@ static void LAYER_CUDNN_SOFTMAX_FORWARD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_SOFTMAX_ACCURATE, SOFTMAX_MODE)->CONV_PROBLEMS()->UseManualTime();                       \
   BENCHMARK_TEMPLATE(b, CUDNN_SOFTMAX_LOG, SOFTMAX_MODE)->CONV_PROBLEMS()->UseManualTime()
 
-#define BENCHMARK_CUDNN(b)
-BENCHMARK_CUDNN0(b, CUDNN_SOFTMAX_MODE_INSTANCE);
-BENCHMARK_CUDNN0(b, CUDNN_SOFTMAX_MODE_CHANNEL)
+#define BENCHMARK_CUDNN(b)                                                                                             \
+  BENCHMARK_CUDNN0(b, CUDNN_SOFTMAX_MODE_INSTANCE);                                                                    \
+  BENCHMARK_CUDNN0(b, CUDNN_SOFTMAX_MODE_CHANNEL)
 
 /* BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_INT8); */
 /* BENCHMARK_CUDNN(LAYER_CUDNN_SOFTMAX_FORWARD_INT32); */

@@ -47,7 +47,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_height = state.range(10);
 
   const float dropout = 0.5;
-  const uint64 seed   = 0;
+  const uint64_t seed   = 0;
 
   const auto in_n = batch_size;
   const auto in_c = num_filters;
