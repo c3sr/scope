@@ -1,0 +1,4 @@
+Run on (40 X 3600 MHz CPU s)
+2018-07-13 05:57:32
+name,iterations,real_time,cpu_time,time_unit,bytes_per_second,items_per_second,label,error_occurred,error_message
+"LAYER_CUDNN_CONV_BWD_DATA_INT8<CUDNN_CONVOLUTION_BWD_DATA_ALGO_0>/W:700/H:161/C:1/N:1/K:32/filter_w(s):20/filter_h(r):5/pad_w:0/pad_h:0/wstride:2/hstride:2/manual_time",,,,,,,,true,"CUDNN/CONV_BWD_DATA failed to perform cudnnConvolutionBackwardData"
