@@ -1,4 +1,4 @@
-# Adding a New Benchmark
+# Adding a New Scope
 
 ## Overview
 
