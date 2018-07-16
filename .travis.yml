@@ -61,15 +61,19 @@ env:
   - CMAKE_ROOT=${HOME}/.cmake
 matrix:
   include:
-    - env: DO_BUILD=0 DOCKER_CUDA=75
-    - env: DO_BUILD=0 DOCKER_CUDA=80 
-    - env: DO_BUILD=0 DOCKER_CUDA=92 
+    - env: DO_BUILD=0 DOCKER_CUDA=75 DOCKER_ARCH=amd64
+    - env: DO_BUILD=0 DOCKER_CUDA=80 DOCKER_ARCH=amd64 
+    - env: DO_BUILD=0 DOCKER_CUDA=92 DOCKER_ARCH=amd64
+    - env: DO_BUILD=0 DOCKER_CUDA=80 DOCKER_ARCH=ppc64le
+    - env: DO_BUILD=0 DOCKER_CUDA=92 DOCKER_ARCH=ppc64le
     - env: DO_BUILD=1 USE_HUNTER=ON
       addons: *buildaddons
     - env: DO_BUILD=1 USE_HUNTER=OFF
       addons: *buildaddons
   allow_failures:
     - env: DO_BUILD=0 DOCKER_CUDA=75
+    - env: DO_BUILD=0 DOCKER_CUDA=80 DOCKER_ARCH=ppc64le
+    - env: DO_BUILD=0 DOCKER_CUDA=92 DOCKER_ARCH=ppc64le
     - env: DO_BUILD=1 USE_HUNTER=OFF
 
 before_install:

@@ -23,9 +23,14 @@ fi
 BRANCH="${BRANCH//\//-}"
 
 
-ARCH=`uname -m`
-if [ $ARCH == x86_64 ]; then
-    ARCH=amd64
+# if DOCKER_ARCH is set
+if [[ ! -z ${DOCKER_ARCH+x} ]]; then
+    ARCH=${DOCKER_ARCH}
+else
+    ARCH=`uname -m`
+    if [ $ARCH == x86_64 ]; then
+        ARCH=amd64
+    fi
 fi
 
 REPO=raiproject/microbench
