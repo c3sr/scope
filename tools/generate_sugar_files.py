@@ -103,8 +103,8 @@ class Generator:
 
         cpp_or_hpp_files = [
             f for f in filelist if is_header(f) or is_cuda_header(f) or is_source(f) or is_cuda_source(f)]
-        if cpp_or_hpp_files == []:
-            return
+        # if cpp_or_hpp_files == []:
+        #     return
         with open(file_name, 'w') as file_id:
             file_id.write(
                 '# This file generated automatically by:\n'
