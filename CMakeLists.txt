@@ -33,7 +33,6 @@ project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
 
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
-set(SCOPE_WANTS_NUMA OFF)
 
 include(cotire)
 include(CMakePackageConfigHelpers)
@@ -42,9 +41,6 @@ include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 include(cmake/GitUtils.cmake)
-
-#set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 if (CONFIG_USE_HUNTER)
@@ -156,6 +152,7 @@ endif(APPLE)
 
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # CMake FindCUDA auto seems to add unsupported architectures somtimes, so we allow the user
 # to override with NVCC_ARCH_FLAGS
@@ -176,8 +173,6 @@ LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
 					         -lineinfo
 					         --expt-extended-lambda
 )
-
-
 
 MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
 			   " archs: ${CUDA_ARCH_FLAGS_readable})")
