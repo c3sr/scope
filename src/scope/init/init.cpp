@@ -6,10 +6,7 @@
 #include "scope/init/flags.hpp"
 #include "scope/init/logger.hpp"
 
-static struct {
-  InitFn fn;
-  const char *name, *type;
-} inits[10000];
+static struct { InitFn fn; } inits[10000];
 static size_t ninits = 0;
 
 void init(int argc, char** argv) {
@@ -24,13 +21,11 @@ void init(int argc, char** argv) {
   }
 }
 
-void RegisterInit(InitFn fn, const char* name, const char* type) {
+void RegisterInit(InitFn fn) {
   if (ninits >= sizeof(inits) / sizeof(inits[0])) {
-    printf("%s %s, line %d: RegisterInit failed\n", name, __FILE__, __LINE__);
+    printf("%s, line %d: RegisterInit failed\n", __FILE__, __LINE__);
     exit(-1);
   }
-  inits[ninits].fn   = fn;
-  inits[ninits].name = name;
-  inits[ninits].type = type;
+  inits[ninits].fn = fn;
   ninits++;
 }

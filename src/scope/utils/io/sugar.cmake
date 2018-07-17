@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SCOPE_UTILS_IO_SUGAR_CMAKE_)
+if(DEFINED BENCHMARK_SRC_SCOPE_UTILS_IO_SUGAR_CMAKE_)
   return()
 else()
-  set(SCOPE_UTILS_IO_SUGAR_CMAKE_ 1)
+  set(BENCHMARK_SRC_SCOPE_UTILS_IO_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)

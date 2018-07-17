@@ -3,10 +3,10 @@
 # see wiki for more info:
 #   https://github.com/ruslo/sugar/wiki/Collecting-sources
 
-if(DEFINED SUGAR_CMAKE_)
+if(DEFINED BENCHMARK_SRC_SUGAR_CMAKE_)
   return()
 else()
-  set(SUGAR_CMAKE_ 1)
+  set(BENCHMARK_SRC_SUGAR_CMAKE_ 1)
 endif()
 
 include(sugar_files)
@@ -15,7 +15,6 @@ include(sugar_include)
 sugar_include(atomic)
 sugar_include(axpy)
 sugar_include(conv)
-sugar_include(example)
 sugar_include(gemm)
 sugar_include(gemv)
 sugar_include(launch)
