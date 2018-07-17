@@ -14,9 +14,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
-option(USE_NUMA "Build benchmarks that require NUMA support" ON)
-option(USE_OPENMP "Build benchmarks that require OpenMP support" ON)
-option(ENABLE_COMM "Use the comm_scope" ON)
+option(ENABLE_COMM "Include Comm|Scope (github.com/rai-project/comm_scope)" ON)
+option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" OFF)
+option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_scope)" OFF)
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -193,10 +193,22 @@ sugar_include("./src")
 add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
 if (ENABLE_COMM)
-  message(STATUS "Enabling COMM submodule...")
+  message(STATUS "Enabling Comm|Scope")
   add_subdirectory(${TOP_DIR}/comm_scope)
   target_link_libraries(bench -Wl,--whole-archive comm_scope -Wl,--no-whole-archive)
 endif(ENABLE_COMM)
+
+if (ENABLE_MISC)
+  message(STATUS "Enabling Misc|Scope")
+  add_subdirectory(${TOP_DIR}/misc_scope)
+  target_link_libraries(bench -Wl,--whole-archive misc_scope -Wl,--no-whole-archive)
+endif(ENABLE_MISC)
+
+if (ENABLE_EXAMPLE)
+  message(STATUS "Enabling Example|Scope")
+  add_subdirectory(${TOP_DIR}/example_scope)
+  target_link_libraries(bench -Wl,--whole-archive example_scope -Wl,--no-whole-archive)
+endif(ENABLE_EXAMPLE)
 
 # once all common utilities in src/scope, remove ${SRC_DIR}
 include_directories(bench
