@@ -1,5 +1,5 @@
 
-#include "utils/utils.hpp"
+#include "scope/utils/utils.hpp"
 
 DEFINE_int32(cuda_device_id, 1, "The cuda device id to use.");
 // DEFINE_bool(fast, false, "Whether to run only parts of the tests.");

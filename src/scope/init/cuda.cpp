@@ -3,11 +3,10 @@
 
 #include "optional/optional.hpp"
 
-#include "init/flags.hpp"
-#include "init/init.hpp"
-#include "init/logger.hpp"
-
-#include "init/cuda.hpp"
+#include "flags.hpp"
+#include "init.hpp"
+#include "logger.hpp"
+#include "cuda.hpp"
 
 bool has_cuda = false;
 cudaDeviceProp cuda_device_prop;

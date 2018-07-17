@@ -90,17 +90,13 @@ else()
 endif (CONFIG_USE_HUNTER)
 
 
-# if (USE_OPENMP)
-#   find_package(OpenMP)
-# endif(USE_OPENMP)
-
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
 
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
-find_package(OpenBLAS REQUIRED)
+
 #find_package(Protobuf REQUIRED)
 
 include(sugar_doxygen_generate)
@@ -211,13 +207,15 @@ if (ENABLE_EXAMPLE)
 endif(ENABLE_EXAMPLE)
 
 # once all common utilities in src/scope, remove ${SRC_DIR}
-include_directories(bench
+target_include_directories(bench PRIVATE
   ${SRC_DIR}
-  ${SRC_DIR}/scope
+  ${TOP_DIR}/include
+)
+
+target_include_directories(bench SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
   ${THIRDPARTY_DIR}/cutlass
   ${THIRDPARTY_DIR}/leathers/Source
-  ${TOP_DIR}/include
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
   ${CUDNN_INCLUDE_DIR}
@@ -241,7 +239,6 @@ target_link_libraries(bench spdlog::spdlog)
 # target_link_libraries(bench ${PROTOBUF_LIBRARY} )
 #target_link_libraries(bench debug_assert)
 target_link_libraries(bench ${CUDNN_LIBRARY})
-target_link_libraries(bench ${OpenBLAS_LIB})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
 # Request that bench be built with -std=c++11

@@ -2,7 +2,7 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-#include "utils/utils.hpp"
+#include "scope/utils/utils.hpp"
 
 cublasHandle_t cublas_handle;
 

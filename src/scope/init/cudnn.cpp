@@ -2,7 +2,7 @@
 
 #include <cudnn.h>
 
-#include "utils/utils.hpp"
+#include "scope/utils/utils.hpp"
 
 cudnnHandle_t cudnn_handle;
 
