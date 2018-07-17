@@ -37,3 +37,6 @@
 [submodule "comm_scope"]
 	path = comm_scope
 	url = ../comm_scope.git
+[submodule "example_scope"]
+	path = example_scope
+	url = git@github.com:rai-project/example_scope.git
