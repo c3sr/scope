@@ -42,4 +42,4 @@
 	url = ../example_scope.git
 [submodule "misc_scope"]
 	path = misc_scope
-	url = git@github.com:rai-project/misc_scope.git
+	url = ../misc_scope.git
