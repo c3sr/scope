@@ -79,7 +79,8 @@ class Generator:
             help='Ignore this filenames'
         )
 
-    def make_header_guard(dir):
+    def make_header_guard(self, dir):
+        dir = self.args.var + '_' + dir
         dir = dir.upper()
         dir = re.sub(r'\W', '_', dir)
         dir = re.sub('_+', '_', dir)
@@ -88,7 +89,7 @@ class Generator:
         dir += '_'
         return dir
 
-    def process_file(relative, source_variable, tests_variable, file_name, filelist, dirlist):
+    def process_file(self, relative, source_variable, tests_variable, file_name, filelist, dirlist):
         def is_header(f):
             return f.endswith(".hpp") or f.endswith(".h") or f.endswith(".hxx") or f.endswith(".hh") or f.endswith(".cuh")
 
@@ -113,7 +114,7 @@ class Generator:
                 '#   {}\n\n'.format(base, wiki)
             )
             relative += '/sugar.cmake'
-            hg = Generator.make_header_guard(relative)
+            hg = self.make_header_guard(relative)
             file_id.write(
                 'if(DEFINED {})\n'
                 '  return()\n'
@@ -202,20 +203,20 @@ class Generator:
         return False
 
     def create(self):
-        args = self.parser.parse_args()
+        self.args = self.parser.parse_args()
 
         cwd = os.getcwd()
-        for x in args.exclude_dirs:
+        for x in self.args.exclude_dirs:
             self.exclude_dirs.append(x)
-        if args.exclude_filenames:
-            exclude_filenames = args.exclude_filenames
+        if self.args.exclude_filenames:
+            exclude_filenames = self.args.exclude_filenames
         else:
             exclude_filenames = []
         exclude_filenames += ['sugar.cmake', 'CMakeLists.txt', '.DS_Store']
 
-        source_variable = args.var
-        tests_variable = args.test
-        for rootdir, dirlist, filelist in os.walk(args.top):
+        source_variable = self.args.var
+        tests_variable = self.args.test
+        for rootdir, dirlist, filelist in os.walk(self.args.top):
             filelist.sort()
             dirlist.sort()
 
@@ -239,7 +240,7 @@ class Generator:
             relative = os.path.relpath(rootdir, cwd)
             file_name = '{}/sugar.cmake'.format(rootdir)
 
-            Generator.process_file(
+            self.process_file(
                 relative, source_variable,
                 tests_variable,
                 file_name, filelist, new_dirlist
