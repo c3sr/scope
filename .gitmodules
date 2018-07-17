@@ -37,3 +37,6 @@
 [submodule "comm_scope"]
 	path = comm_scope
 	url = ../comm_scope.git
+[submodule "misc_scope"]
+	path = misc_scope
+	url = ../misc_scope.git
