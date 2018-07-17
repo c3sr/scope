@@ -80,7 +80,6 @@ class Generator:
         )
 
     def make_header_guard(self, dir):
-        dir = self.args.var + '_' + dir
         dir = dir.upper()
         dir = re.sub(r'\W', '_', dir)
         dir = re.sub('_+', '_', dir)

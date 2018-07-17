@@ -15,7 +15,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
 option(ENABLE_COMM "Include Comm|Scope (github.com/rai-project/comm_scope)" ON)
-option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" OFF)
+option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" ON)
 option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_scope)" ON)
 
 if (CONFIG_USE_HUNTER)
