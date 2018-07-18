@@ -8,5 +8,6 @@
 
 DECLARE_int32(cuda_device_id);
 DECLARE_bool(help);
+DECLARE_int32(verbose);
 
 extern void init_flags(int argc, char **argv);

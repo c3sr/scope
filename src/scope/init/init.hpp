@@ -14,7 +14,7 @@ typedef void (*InitFn)(int argc, char **argv);
 
 void RegisterInit(InitFn fn);
 
-#define INIT(x) static InitRegisterer _r_init_##x(x);
+#define SCOPE_INIT(x) static InitRegisterer _r_init_##x(x);
 
 struct InitRegisterer {
   InitRegisterer(InitFn fn) {
