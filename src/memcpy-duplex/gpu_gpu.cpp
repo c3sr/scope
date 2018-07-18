@@ -149,6 +149,7 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
         state.SkipWithError(NAME " failed to record start event");
         return;
       }
+      // cudaMemcpy, cudaMemcpyPeer, cudaMemcpyPeerAsync
       if(PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream))) {
         state.SkipWithError(NAME " failed to start cudaMemcpyAsync");
         return;
