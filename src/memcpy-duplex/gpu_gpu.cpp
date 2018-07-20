@@ -74,6 +74,7 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to ensure peer access");
     return;
   }
+
   if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
     state.SkipWithError(NAME " failed to set device");
     return;
@@ -92,7 +93,7 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to ensure peer access");
     return;
   }
-  // create a source and destination for second copy
+ // create a source and destination for second copy
   if (PRINT_IF_ERROR(cudaSetDevice(gpu1))) {
     state.SkipWithError(NAME " failed to set device");
     return;
@@ -106,11 +107,13 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform src cudaMemset");
     return;
   }
+
   err = cudaDeviceEnablePeerAccess(gpu0, 0);
   if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
     state.SkipWithError(NAME " failed to ensure peer access");
     return;
   }
+
   if (PRINT_IF_ERROR(cudaSetDevice(gpu0))) {
     state.SkipWithError(NAME " failed to set device");
     return;
@@ -124,6 +127,7 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
     state.SkipWithError(NAME " failed to perform dst cudaMemset");
     return;
   }
+
   err = cudaDeviceEnablePeerAccess(gpu1, 0);
   if (cudaSuccess != err && cudaErrorPeerAccessAlreadyEnabled != err) {
     state.SkipWithError(NAME " failed to ensure peer access");
@@ -149,11 +153,24 @@ static void DUPLEX_Memcpy_GPUGPU(benchmark::State &state) {
         state.SkipWithError(NAME " failed to record start event");
         return;
       }
-      // cudaMemcpy, cudaMemcpyPeer, cudaMemcpyPeerAsync
+      //cudaMemcpyPeerAsync
+      if( i % 2 == 0){
+         if(PRINT_IF_ERROR(cudaMemcpyPeerAsync(dst, gpu1, src, gpu0, bytes, stream))){
+            state.SkipWithError(NAME " failed to start cudaMemcpyAsync");
+            return;
+         }
+      }else{
+         if(PRINT_IF_ERROR(cudaMemcpyPeerAsync(dst, gpu0, src, gpu1, bytes,  stream))){
+            state.SkipWithError(NAME "failed to start cudaMemcpyAsync");
+            return;
+         }
+      }
+/*      // cudaMemcpyAsync
       if(PRINT_IF_ERROR(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToDevice, stream))) {
         state.SkipWithError(NAME " failed to start cudaMemcpyAsync");
         return;
       }
+*/
       if(PRINT_IF_ERROR(cudaEventRecord(stop, stream))) {
         state.SkipWithError(NAME " failed to record stop event");
         return;
