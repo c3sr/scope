@@ -144,7 +144,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   if (!bias_tensor.is_valid) {
     return;
   }
-  cudnnTensorDescriptor_t bias_descriptor = bias_descriptor.get();
+  cudnnTensorDescriptor_t bias_descriptor = bias_tensor.get();
 
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
