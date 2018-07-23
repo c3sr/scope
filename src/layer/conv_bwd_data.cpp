@@ -136,8 +136,9 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                                     dx_descriptor,
                                                                     convolution_algorithm,
                                                                     &workspace_bytes))) {
-      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardDataWorkspaceSize");
-      return;
+      workspace_bytes = 1073741824;
+      // state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardDataWorkspaceSize");
+      // return;
     }
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
@@ -344,8 +345,8 @@ static void LAYER_CUDNN_CONV_BWD_DATA_DOUBLE(benchmark::State& state) {
       ->INFERENCE_SERVER_CONV_PROBLEMS()                                                                               \
       ->UseManualTime()
 
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_INT8);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_INT32);
+// BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_INT8);
+// BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_INT32);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_HALF);
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_DATA_HALF_TENSOROP);

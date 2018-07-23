@@ -161,23 +161,23 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   size_t workspace_bytes = 0;
-  // if (std::is_same<T, int8_t>::value) {
+  if (std::is_same<T, int8_t>::value) {
 
-  //   // Note: cudnn workspace size function doesn't work for INT8_CONFIG
-  //   workspace_bytes = 1073741824;
-  // } else {
-  //   if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
-  //                                                              x_descriptor,
-  //                                                              w_descriptor,
-  //                                                              convolution_descriptor,
-  //                                                              y_descriptor,
-  //                                                              convolution_algorithm,
-  //                                                              &workspace_bytes))) {
-  //     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
-  //     return;
-  //   }
-  // }
-  workspace_bytes = 1073741824;
+    // Note: cudnn workspace size function doesn't work for INT8_CONFIG
+    workspace_bytes = 1073741824;
+  } else {
+    if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
+                                                               x_descriptor,
+                                                               w_descriptor,
+                                                               convolution_descriptor,
+                                                               y_descriptor,
+                                                               convolution_algorithm,
+                                                               &workspace_bytes))) {
+      workspace_bytes = 1073741824;
+      // state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
+      // return;
+    }
+  }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
 
   const int input_bytes  = batch_size * channels * height * width * sizeof(T);

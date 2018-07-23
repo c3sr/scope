@@ -143,8 +143,9 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                                y_descriptor,
                                                                convolution_algorithm,
                                                                &workspace_bytes))) {
-      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
-      return;
+      workspace_bytes = 1073741824;
+      // state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
+      // return;
     }
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
