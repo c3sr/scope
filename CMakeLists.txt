@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
   set(CMAKE_C_COMPILER gcc)
   set(CMAKE_CXX_COMPILER g++)
