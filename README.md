@@ -31,15 +31,14 @@ With coming support for:
 
 The benchmark suite is NUMA-aware on Linux systems.
 
-## Install a Recent CMake
+## Install CMake >= 3.12
 
-cmake version >=3.8 is required.
-(there's a problem with hunter using cmake 3.10.2)
+cmake version >=3.12 is required.
 
 ```
 cd /tmp
-wget https://cmake.org/files/v3.10/cmake-3.10.1-Linux-x86_64.sh
-sudo sh cmake-3.10.1-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
+wget https://cmake.org/files/v3.12/cmake-3.12.0-Linux-x86_64.sh
+sudo sh cmake-3.12.0-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
 ```
 you may also want to remove the default installation `sudo apt-get remove cmake`
 
