@@ -136,6 +136,23 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
+  cudnnTensorDescriptor_t scale_bias_descriptor{nullptr};
+  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&scale_bias_descriptor))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
+    return;
+  }
+
+  if (PRINT_IF_ERROR(cudnnDeriveBNTensorDescriptor(scale_bias_descriptor, x_descriptor, CUDNN_BATCHNORM_SPATIAL))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnDeriveBNTensorDescriptor");
+    return;
+  }
+
+  size_t scale_bias_bytes;
+  if (PRINT_IF_ERROR(cudnnGetTensorSizeInBytes(scale_bias_descriptor, &scale_bias_bytes))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetTensorSizeInBytes");
+    return;
+  }
+
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
                                           y_descriptor, CUDNN_CONVOLUTION_FWD_PREFER_FASTEST, 0,
@@ -144,22 +161,23 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
 
   size_t workspace_bytes = 0;
-  if (std::is_same<T, int8_t>::value) {
+  // if (std::is_same<T, int8_t>::value) {
 
-    // Note: cudnn workspace size function doesn't work for INT8_CONFIG
-    workspace_bytes = 1073741824;
-  } else {
-    if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
-                                                               x_descriptor,
-                                                               w_descriptor,
-                                                               convolution_descriptor,
-                                                               y_descriptor,
-                                                               convolution_algorithm,
-                                                               &workspace_bytes))) {
-      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
-      return;
-    }
-  }
+  //   // Note: cudnn workspace size function doesn't work for INT8_CONFIG
+  //   workspace_bytes = 1073741824;
+  // } else {
+  //   if (PRINT_IF_ERROR(cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle,
+  //                                                              x_descriptor,
+  //                                                              w_descriptor,
+  //                                                              convolution_descriptor,
+  //                                                              y_descriptor,
+  //                                                              convolution_algorithm,
+  //                                                              &workspace_bytes))) {
+  //     state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionForwardWorkspaceSize");
+  //     return;
+  //   }
+  // }
+  workspace_bytes = 1073741824;
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
 
   const int input_bytes  = batch_size * channels * height * width * sizeof(T);
@@ -172,6 +190,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto output_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
   auto output             = std::vector<T>(output_bytes / sizeof(T));
   std::fill(output.begin(), output.end(), detail::one<T>());
+
+  auto scale_bias = std::vector<T>(scale_bias_bytes / sizeof(T));
+  std::fill(scale_bias.begin(), scale_bias.end(), detail::one<T>());
 
   DeviceMemory<T> workspace_memory(state, workspace_bytes);
   if (!workspace_memory.is_valid) {
@@ -203,7 +224,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_z = z_memory.get();
 
-  DeviceMemory<T> bias_memory(state, output.data(), output_bytes);
+  DeviceMemory<T> bias_memory(state, scale_bias.data(), scale_bias_bytes);
   if (!bias_memory.is_valid) {
     return;
   }
@@ -218,7 +239,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     const cudnnStatus_t cudnn_err = cudnnConvolutionBiasActivationForward(
         cudnn_handle, &alpha, x_descriptor, d_x, w_descriptor, d_w, convolution_descriptor, convolution_algorithm,
-        d_workspace, workspace_bytes, &beta, y_descriptor, d_z, y_descriptor, d_bias, activation_descriptor,
+        d_workspace, workspace_bytes, &beta, y_descriptor, d_z, scale_bias_descriptor, d_bias, activation_descriptor,
         y_descriptor, d_y);
 
     cudaEventRecord(stop, NULL);
