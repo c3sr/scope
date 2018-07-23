@@ -136,22 +136,15 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
 
-  cudnnTensorDescriptor_t scale_bias_descriptor{nullptr};
-  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&scale_bias_descriptor))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
+  auto bias_tensor = Tensor<T>(state,
+                               {/*batch_size=*/1,
+                                /*channels=*/out_c,
+                                /*image_height=*/1,
+                                /*image_width=*/1});
+  if (!bias_tensor.is_valid) {
     return;
   }
-
-  if (PRINT_IF_ERROR(cudnnDeriveBNTensorDescriptor(scale_bias_descriptor, x_descriptor, CUDNN_BATCHNORM_SPATIAL))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnDeriveBNTensorDescriptor");
-    return;
-  }
-
-  size_t scale_bias_bytes;
-  if (PRINT_IF_ERROR(cudnnGetTensorSizeInBytes(scale_bias_descriptor, &scale_bias_bytes))) {
-    state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetTensorSizeInBytes");
-    return;
-  }
+  cudnnTensorDescriptor_t bias_descriptor = bias_descriptor.get();
 
   cudnnConvolutionFwdAlgo_t advised_convolution_algorithm = (cudnnConvolutionFwdAlgo_t) -1;
   if (cudnnGetConvolutionForwardAlgorithm(cudnn_handle, x_descriptor, w_descriptor, convolution_descriptor,
@@ -191,8 +184,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   auto output             = std::vector<T>(output_bytes / sizeof(T));
   std::fill(output.begin(), output.end(), detail::one<T>());
 
-  auto scale_bias = std::vector<T>(scale_bias_bytes / sizeof(T));
-  std::fill(scale_bias.begin(), scale_bias.end(), detail::one<T>());
+  const auto bias_bytes = sizeof(T) * 1 * out_c * 1 * 1;
+  auto bias             = std::vector<T>(bias_bytes / sizeof(T));
+  std::fill(bias.begin(), bias.end(), detail::one<T>());
 
   DeviceMemory<T> workspace_memory(state, workspace_bytes);
   if (!workspace_memory.is_valid) {
@@ -224,7 +218,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_z = z_memory.get();
 
-  DeviceMemory<T> bias_memory(state, scale_bias.data(), scale_bias_bytes);
+  DeviceMemory<T> bias_memory(state, bias.data(), bias_bytes);
   if (!bias_memory.is_valid) {
     return;
   }
@@ -239,7 +233,7 @@ static void CUDNN_Impl(benchmark::State& state) {
 
     const cudnnStatus_t cudnn_err = cudnnConvolutionBiasActivationForward(
         cudnn_handle, &alpha, x_descriptor, d_x, w_descriptor, d_w, convolution_descriptor, convolution_algorithm,
-        d_workspace, workspace_bytes, &beta, y_descriptor, d_z, scale_bias_descriptor, d_bias, activation_descriptor,
+        d_workspace, workspace_bytes, &beta, y_descriptor, d_z, bias_descriptor, d_bias, activation_descriptor,
         y_descriptor, d_y);
 
     cudaEventRecord(stop, NULL);
