@@ -51,13 +51,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto out_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto out_c = num_filters;
 
-  const int bias_bytes = batch_size * channels * 1 * 1 * sizeof(T);
-  auto bias            = std::vector<T>(bias_bytes / sizeof(T));
-  std::fill(bias.begin(), bias.end(), detail::one<T>());
-
   auto db_tensor = Tensor<T>(state,
-                             {/*batch_size=*/batch_size,
-                              /*channels=*/channels,
+                             {/*batch_size=*/1,
+                              /*channels=*/out_c,
                               /*image_height=*/1,
                               /*image_width=*/1});
   if (!db_tensor.is_valid) {
@@ -78,6 +74,10 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto output_bytes = sizeof(T) * out_n * out_c * out_h * out_w;
   auto output             = std::vector<T>(output_bytes / sizeof(T));
   std::fill(output.begin(), output.end(), detail::one<T>());
+
+  const int bias_bytes = 1 * out_c * 1 * 1 * sizeof(T);
+  auto bias            = std::vector<T>(bias_bytes / sizeof(T));
+  std::fill(bias.begin(), bias.end(), detail::one<T>());
 
   DeviceMemory<T> dy_memory(state, output.data(), output_bytes);
   if (!dy_memory.is_valid) {
