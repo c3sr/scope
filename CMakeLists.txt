@@ -191,19 +191,19 @@ add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 if (ENABLE_COMM)
   message(STATUS "Enabling Comm|Scope")
   add_subdirectory(${TOP_DIR}/comm_scope)
-  target_link_libraries(bench -Wl,--whole-archive comm_scope -Wl,--no-whole-archive)
+  target_link_libraries(bench comm_scope)
 endif(ENABLE_COMM)
 
 if (ENABLE_MISC)
   message(STATUS "Enabling Misc|Scope")
   add_subdirectory(${TOP_DIR}/misc_scope)
-  target_link_libraries(bench -Wl,--whole-archive misc_scope -Wl,--no-whole-archive)
+  target_link_libraries(bench misc_scope)
 endif(ENABLE_MISC)
 
 if (ENABLE_EXAMPLE)
   message(STATUS "Enabling Example|Scope")
   add_subdirectory(${TOP_DIR}/example_scope)
-  target_link_libraries(bench -Wl,--whole-archive example_scope -Wl,--no-whole-archive)
+  target_link_libraries(bench example_scope)
 endif(ENABLE_EXAMPLE)
 
 # once all common utilities in src/scope, remove ${SRC_DIR}
