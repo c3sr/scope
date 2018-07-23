@@ -21,14 +21,14 @@ option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_sco
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.19.214.tar.gz"
-    SHA1 "8e82b91de713ac393e22d898d421668403172f90"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.1.tar.gz"
+    SHA1 "51d2d6be411251c8de18c4ca20ef778880cf4cce"
 )
 endif (CONFIG_USE_HUNTER)
 
 
 
-project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
+project(microbenchmark LANGUAGES C CXX CUDA VERSION 0.1.0)
 
 
 
@@ -45,8 +45,9 @@ include(cmake/GitUtils.cmake)
 
 if (CONFIG_USE_HUNTER)
 
-  hunter_add_package(Sugar)
-  include(${SUGAR_ROOT}/cmake/Sugar)
+  hunter_add_package(sugar)
+  find_package(sugar CONFIG REQUIRED)
+  # include(${SUGAR_ROOT}/cmake/sugar)
 
   hunter_add_package(benchmark)
   hunter_add_package(cub)

@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2017, Ruslan Baratov
+# Copyright (c) 2013-2015, Ruslan Baratov
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,16 +42,10 @@
 #     * https://github.com/hunter-packages/gate/
 #     * https://github.com/ruslo/hunter
 
-option(HUNTER_ENABLED "Enable Hunter package manager support" ON)
-if(HUNTER_ENABLED)
-  if(CMAKE_VERSION VERSION_LESS "3.0")
-    message(FATAL_ERROR "At least CMake version 3.0 required for hunter dependency management."
-      " Update CMake or set HUNTER_ENABLED to OFF.")
-  endif()
-endif()
-
+cmake_minimum_required(VERSION 3.0) # Minimum for Hunter
 include(CMakeParseArguments) # cmake_parse_arguments
 
+option(HUNTER_ENABLED "Enable Hunter package manager support" ON)
 option(HUNTER_STATUS_PRINT "Print working status" ON)
 option(HUNTER_STATUS_DEBUG "Print a lot info" OFF)
 
@@ -298,29 +292,14 @@ function(hunter_gate_download dir)
   # Otherwise on Visual Studio + MDD this will fail with error:
   # "Could not find an appropriate version of the Windows 10 SDK installed on this machine"
   if(EXISTS "${CMAKE_TOOLCHAIN_FILE}")
-    get_filename_component(absolute_CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
-    set(toolchain_arg "-DCMAKE_TOOLCHAIN_FILE=${absolute_CMAKE_TOOLCHAIN_FILE}")
+    set(toolchain_arg "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
   else()
     # 'toolchain_arg' can't be empty
     set(toolchain_arg "-DCMAKE_TOOLCHAIN_FILE=")
   endif()
 
-  string(COMPARE EQUAL "${CMAKE_MAKE_PROGRAM}" "" no_make)
-  if(no_make)
-    set(make_arg "")
-  else()
-    # Test case: remove Ninja from PATH but set it via CMAKE_MAKE_PROGRAM
-    set(make_arg "-DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}")
-  endif()
-
   execute_process(
-      COMMAND
-      "${CMAKE_COMMAND}"
-      "-H${dir}"
-      "-B${build_dir}"
-      "-G${CMAKE_GENERATOR}"
-      "${toolchain_arg}"
-      ${make_arg}
+      COMMAND "${CMAKE_COMMAND}" "-H${dir}" "-B${build_dir}" "-G${CMAKE_GENERATOR}" "${toolchain_arg}"
       WORKING_DIRECTORY "${dir}"
       RESULT_VARIABLE download_result
       ${logging_params}
@@ -372,17 +351,6 @@ macro(HunterGate)
     # Empty function to avoid error "unknown function"
     function(hunter_add_package)
     endfunction()
-
-    set(
-        _hunter_gate_disabled_mode_dir
-        "${CMAKE_CURRENT_LIST_DIR}/cmake/Hunter/disabled-mode"
-    )
-    if(EXISTS "${_hunter_gate_disabled_mode_dir}")
-      hunter_gate_status_debug(
-          "Adding \"disabled-mode\" modules: ${_hunter_gate_disabled_mode_dir}"
-      )
-      list(APPEND CMAKE_PREFIX_PATH "${_hunter_gate_disabled_mode_dir}")
-    endif()
   elseif(_hunter_gate_done)
     hunter_gate_status_debug("Secondary HunterGate (use old settings)")
     hunter_gate_self(
