@@ -47,7 +47,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto stride_width  = state.range(9);
   const auto stride_height = state.range(10);
 
-  const auto win_h = 50, win_w = 50;
+  const auto win_h = 2, win_w = 2;
   const auto vert_padding = 0, hori_padding = 0;
   const auto vert_stride = 2, hori_stride = 2;
   const float alpha = 1, beta = 0;
