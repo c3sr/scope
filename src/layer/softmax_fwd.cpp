@@ -53,16 +53,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
   const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
-  int out_n = in_n, out_c, out_h, out_w;
-  if (softmax_mode == CUDNN_SOFTMAX_MODE_INSTANCE) {
-    out_c = in_c;
-    out_h = 1;
-    out_w = 1;
-  } else {
-    out_c = 1;
-    out_h = in_h;
-    out_w = in_w;
-  }
+  const auto out_n = in_n, out_c = in_c, out_h = in_h, out_w = in_w;
 
   auto x_tensor = Tensor<T>(state,
                             {/*batch_size=*/in_n,
@@ -74,21 +65,9 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
 
-  auto y_tensor = Tensor<T>(state,
-                            {/*batch_size=*/out_n,
-                             /*channels=*/out_c,
-                             /*image_height=*/out_h,
-                             /*image_width=*/out_w});
-  if (!y_tensor.is_valid) {
-    return;
-  }
-  cudnnTensorDescriptor_t y_descriptor = y_tensor.get();
-
   const auto input_bytes = in_n * in_c * in_w * in_h * sizeof(T);
   auto input             = std::vector<T>(input_bytes / sizeof(T));
   std::fill(input.begin(), input.end(), detail::one<T>());
-
-  const auto output_bytes = out_n * out_w * out_h * out_c * sizeof(T);
 
   DeviceMemory<T> x_memory(state, input.data(), input_bytes);
   if (!x_memory.is_valid) {
@@ -96,7 +75,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   const auto d_x = x_memory.get();
 
-  DeviceMemory<T> y_memory(state, output_bytes);
+  DeviceMemory<T> y_memory(state, input_bytes);
   if (!y_memory.is_valid) {
     return;
   }
@@ -111,7 +90,7 @@ static void CUDNN_Impl(benchmark::State& state) {
   for (auto _ : state) {
     cudaEventRecord(start, NULL);
     cudnn_err = cudnnSoftmaxForward(
-        cudnn_handle, softmax_algorithm, softmax_mode, &alpha, x_descriptor, d_x, &beta, y_descriptor, d_y);
+        cudnn_handle, softmax_algorithm, softmax_mode, &alpha, x_descriptor, d_x, &beta, x_descriptor, d_y);
     cudaEventRecord(stop, NULL);
     state.PauseTiming();
 
