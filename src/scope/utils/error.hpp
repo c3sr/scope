@@ -6,11 +6,14 @@
 #include "scope/init/logger.hpp"
 #include "scope/utils/compat.hpp"
 
+
+#include "nccl.h"
+
 namespace utils {
 namespace detail {
 
   template <typename T>
-  static ALWAYS_INLINE const char *error_string(const T &err);
+  static ALWAYS_INLINE const char *error_string(const T &error);
 
   template <typename T>
   static ALWAYS_INLINE bool is_success(const T &err);
@@ -19,6 +22,17 @@ namespace detail {
   static ALWAYS_INLINE bool is_error(const T &err) {
     return !is_success<T>(err);
   }
+//edited this to use ncclResult_t
+  template <>
+  ALWAYS_INLINE const char *error_string<ncclResult_t>(const ncclResult_t &status) {
+    return ncclGetErrorString(status);
+  }
+
+  template <>
+  ALWAYS_INLINE bool is_success<ncclResult_t>(const ncclResult_t &err) {
+    return err == ncclSuccess;
+  }
+
 
   template <typename T>
   static ALWAYS_INLINE bool print_if_error(const T &err, const char *stmt, const char *file, const char *func,

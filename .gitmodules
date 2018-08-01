@@ -43,3 +43,6 @@
 [submodule "misc_scope"]
 	path = misc_scope
 	url = ../misc_scope.git
+[submodule "nccl_scope"]
+	path = nccl_scope
+	url = ../nccl_scope.git
