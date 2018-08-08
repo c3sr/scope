@@ -183,7 +183,7 @@ static void CUDNN_Impl(benchmark::State& state) {
     switch (mode) {
       case CUDNN_BATCHNORM_PER_ACTIVATION:
       case CUDNN_BATCHNORM_SPATIAL:
-      case CUDNN_BATCHNORM_SPATIAL_PERSISTENT:
+      /* case CUDNN_BATCHNORM_SPATIAL_PERSISTENT: */
         return static_cast<double>(in_n * in_c * in_h * in_w);
       default:
         return static_cast<double>(-1);
@@ -226,7 +226,6 @@ static void LAYER_CUDNN_BATCHNORM_BWD_DOUBLE(benchmark::State& state) {
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
 
 #define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_TEMPLATE(b, CUDNN_BATCHNORM_SPATIAL_PERSISTENT)->CONV_PROBLEMS()->UseManualTime();                         \
   BENCHMARK_TEMPLATE(b, CUDNN_BATCHNORM_SPATIAL)->CONV_PROBLEMS()->UseManualTime();                                    \
   BENCHMARK_TEMPLATE(b, CUDNN_BATCHNORM_PER_ACTIVATION)->CONV_PROBLEMS()->UseManualTime();
 

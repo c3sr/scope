@@ -343,8 +343,7 @@ static void LAYER_CUDNN_CONV_BIAS_ACTIVATION_FWD_DOUBLE(benchmark::State& state)
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED, ACTIVATION_MODE)->CONV_PROBLEMS()->UseManualTime()
 
 #define BENCHMARK_CUDNN(b)                                                                                             \
-  BENCHMARK_CUDNN0(b, CUDNN_ACTIVATION_RELU);                                                                          \
-  BENCHMARK_CUDNN0(b, CUDNN_ACTIVATION_IDENTITY)
+  BENCHMARK_CUDNN0(b, CUDNN_ACTIVATION_RELU)                                                                         
 
 /* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BIAS_ACTIVATION_FWD_INT8); */
 /* BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BIAS_ACTIVATION_FWD_INT32); */

@@ -167,7 +167,7 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_TANH:
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
-      case CUDNN_ACTIVATION_IDENTITY:
+      /* case CUDNN_ACTIVATION_IDENTITY: */
         return static_cast<double>(in_n * in_c * in_h * in_w);
       default:
         return static_cast<double>(-1);
@@ -214,8 +214,7 @@ static void LAYER_CUDNN_ACTIVATION_BWD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_RELU)->CONV_PROBLEMS()->UseManualTime();                                      \
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_TANH)->CONV_PROBLEMS()->UseManualTime();                                      \
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_CLIPPED_RELU)->CONV_PROBLEMS()->UseManualTime();                              \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_ELU)->CONV_PROBLEMS()->UseManualTime();                                       \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_IDENTITY)->CONV_PROBLEMS()->UseManualTime()
+  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_ELU)->CONV_PROBLEMS()->UseManualTime()                                       
 
 /* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BWD_INT8); */
 /* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_BWD_INT32); */
