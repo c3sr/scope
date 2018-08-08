@@ -66,7 +66,12 @@ static void CUDNN_Impl(benchmark::State& state) {
   }
   cudnnTensorDescriptor_t x_descriptor = x_tensor.get();
 
-  cudnnTensorDescriptor_t scale_bias_descriptor;
+  cudnnTensorDescriptor_t scale_bias_descriptor{nullptr};
+  if (PRINT_IF_ERROR(cudnnCreateTensorDescriptor(&scale_bias_descriptor))) {
+    state.SkipWithError(BENCHMARK_NAME " failed to cudnnCreateTensorDescriptor");
+    return;
+  }
+
   if (PRINT_IF_ERROR(cudnnDeriveBNTensorDescriptor(scale_bias_descriptor, x_descriptor, batchnorm_mode))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnDeriveBNTensorDescriptor");
     return;

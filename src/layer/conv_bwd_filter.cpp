@@ -136,8 +136,9 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                                       dw_descriptor,
                                                                       convolution_algorithm,
                                                                       &workspace_bytes))) {
-      state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardFilterWorkspaceSize");
-      return;
+      workspace_bytes = 1073741824;
+      // state.SkipWithError(BENCHMARK_NAME " failed to cudnnGetConvolutionBackwardFilterWorkspaceSize");
+      // return;
     }
   }
   // std::cerr << "Workspace size: " << (workspace_bytes / 1048576.0) << "MB" << std::endl;
@@ -344,8 +345,8 @@ static void LAYER_CUDNN_CONV_BWD_FILTER_DOUBLE(benchmark::State& state) {
       ->UseManualTime();                                                                                               \
   BENCHMARK_TEMPLATE(b, CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING)->INFERENCE_SERVER_CONV_PROBLEMS()->UseManualTime()
 
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_FILTER_INT8);
-BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_FILTER_INT32);
+// BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_FILTER_INT8);
+// BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_FILTER_INT32);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_FILTER_HALF);
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_BWD_FILTER_HALF_TENSOROP);
