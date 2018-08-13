@@ -4,7 +4,6 @@
 #include "benchmark.hpp"
 #include "commandlineflags.hpp"
 #include "compat.hpp"
-#include "cublas.hpp"
 #include "cuda.hpp"
 #include "defer.hpp"
 #include "error.hpp"

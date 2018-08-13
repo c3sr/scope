@@ -20,7 +20,6 @@ sugar_files(
     benchmark.hpp
     commandlineflags.hpp
     compat.hpp
-    cublas.hpp
     cuda.hpp
     defer.hpp
     error.hpp
