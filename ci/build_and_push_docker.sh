@@ -33,7 +33,7 @@ else
     fi
 fi
 
-REPO=raiproject/microbench
+REPO=raiproject/scope
 TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo "${BRANCH}"; fi`
 
 echo "$REPO"
