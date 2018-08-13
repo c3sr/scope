@@ -6,9 +6,6 @@
 #include "scope/init/logger.hpp"
 #include "scope/utils/compat.hpp"
 
-
-#include "nccl.h"
-
 namespace utils {
 namespace detail {
 
@@ -21,16 +18,6 @@ namespace detail {
   template <typename T>
   static ALWAYS_INLINE bool is_error(const T &err) {
     return !is_success<T>(err);
-  }
-//edited this to use ncclResult_t
-  template <>
-  ALWAYS_INLINE const char *error_string<ncclResult_t>(const ncclResult_t &status) {
-    return ncclGetErrorString(status);
-  }
-
-  template <>
-  ALWAYS_INLINE bool is_success<ncclResult_t>(const ncclResult_t &err) {
-    return err == ncclSuccess;
   }
 
 
