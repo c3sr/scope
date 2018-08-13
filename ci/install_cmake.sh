@@ -23,7 +23,7 @@ if [[ ! -z ${CMAKE_VERSION+x} ]]; then
     MAJOR_MINOR="${v[0]}.${v[1]}" # only major and minor version
     mkdir -p ${CMAKE_ROOT}
     cd ${CMAKE_ROOT}
-    travis_retry wget -q https://cmake.org/files/v${MAJOR_MINOR}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+    wget -q https://cmake.org/files/v${MAJOR_MINOR}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
     sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=${CMAKE_ROOT} --exclude-subdir
     ls -l ${CMAKE_ROOT}
 fi

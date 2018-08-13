@@ -1,0 +1,9 @@
+profile:
+  firstname: Carl2
+  lastname: Pearson2
+  username: pearson
+  email: pearson@illinois.edu
+  access_key: auth0|58e3f85b7234265d51903f8a
+  affiliation: travis
+  team:
+    name: noteam
