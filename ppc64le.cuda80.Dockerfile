@@ -18,9 +18,8 @@ RUN curl -sSL https://cmake.org/files/v3.12/cmake-3.12.1.tar.gz -o cmake.tar.gz 
 RUN cmake --version
 RUN gcc --version
 
-COPY . microbench
-
-WORKDIR microbench
+COPY . scope
+WORKDIR scope
 
 RUN mkdir -p build \
     && cd build \
