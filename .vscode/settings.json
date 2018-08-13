@@ -19,7 +19,6 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/third_party": true,
     "build": true
   },
 }
