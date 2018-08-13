@@ -1,33 +1,3 @@
-[submodule "third_party/tiny-dnn"]
-	path = third_party/tiny-dnn
-	url = https://github.com/tiny-dnn/tiny-dnn
-[submodule "third_party/abseil-cpp"]
-	path = third_party/abseil-cpp
-	url = https://github.com/abseil/abseil-cpp
-[submodule "third_party/cctz"]
-	path = third_party/cctz
-	url = https://github.com/google/cctz
-[submodule "third_party/googletest"]
-	path = third_party/googletest
-	url = https://github.com/google/googletest
-[submodule "third_party/cxxopts"]
-	path = third_party/cxxopts
-	url = https://github.com/jarro2783/cxxopts
-[submodule "third_party/cppitertools"]
-	path = third_party/cppitertools
-	url = https://github.com/ryanhaining/cppitertools
-[submodule "third_party/yaml-cpp"]
-	path = third_party/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp
-[submodule "third_party/backward-cpp"]
-	path = third_party/backward-cpp
-	url = https://github.com/bombela/backward-cpp
-[submodule "third_party/safeenum"]
-	path = third_party/safeenum
-	url = https://github.com/tuxalin/safeenum
-[submodule "third_party/transwarp"]
-	path = third_party/transwarp
-	url = https://github.com/bloomen/transwarp
 [submodule "comm_scope"]
 	path = comm_scope
 	url = ../comm_scope.git
