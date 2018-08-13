@@ -72,7 +72,7 @@ if [[ ! -z ${DOCKER_ARCH+x} ]]; then
         cp -v ci/rai/.rai_profile $HOME/.rai_profile
         echo "  secret_key: ${RAI_SECRET_KEY}" >> $HOME/.rai_profile
         mv -v ci/rai/rai_build.cuda${DOCKER_CUDA}.yml rai_build.yml
-        rai -p .
+        or_die rai -p .
         or_die docker push $REPO
     fi
 fi
