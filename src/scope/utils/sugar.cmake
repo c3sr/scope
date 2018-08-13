@@ -30,7 +30,6 @@ sugar_files(
     nvptx.hpp
     page.hpp
     timer.hpp
-    transwarp.h
     utils.hpp
 )
 
