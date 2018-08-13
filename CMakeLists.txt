@@ -1,11 +1,11 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-  set(CMAKE_C_COMPILER gcc)
-  set(CMAKE_CXX_COMPILER g++)
-  set(CUDACXX /usr/local/cuda/bin/nvcc)
-  set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
-  set(CMAKE_CUDA_HOST_COMPILER gcc)
+set(CMAKE_C_COMPILER gcc)
+set(CMAKE_CXX_COMPILER g++)
+set(CUDACXX /usr/local/cuda/bin/nvcc)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+set(CMAKE_CUDA_HOST_COMPILER gcc)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
@@ -20,18 +20,14 @@ option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_sco
 option(ENABLE_NCCL "Include Nccl|Scope (github.com/rai-project/nccl_scope)" ON)
 
 if (CONFIG_USE_HUNTER)
-include("cmake/modules/HunterGate.cmake")
-HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.1.tar.gz"
-    SHA1 "51d2d6be411251c8de18c4ca20ef778880cf4cce"
-)
+  include("cmake/modules/HunterGate.cmake")
+  HunterGate(
+      URL "https://github.com/ruslo/hunter/archive/v0.23.1.tar.gz"
+      SHA1 "51d2d6be411251c8de18c4ca20ef778880cf4cce"
+  )
 endif (CONFIG_USE_HUNTER)
 
-
-
-project(microbenchmark LANGUAGES C CXX CUDA VERSION 0.1.0)
-
-
+project(scope LANGUAGES C CXX CUDA VERSION 0.1.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
@@ -153,71 +149,71 @@ set(SRC_DIR "${TOP_DIR}/src")
 sugar_include("./src")
 
 
-add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
+add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
 if (ENABLE_COMM)
   message(STATUS "Enabling Comm|Scope")
   add_subdirectory(${TOP_DIR}/comm_scope)
-  target_link_libraries(bench comm_scope)
+  target_link_libraries(scope comm_scope)
 endif(ENABLE_COMM)
 
 if (ENABLE_MISC)
   message(STATUS "Enabling Misc|Scope")
   add_subdirectory(${TOP_DIR}/misc_scope)
-  target_link_libraries(bench misc_scope)
+  target_link_libraries(scope misc_scope)
 endif(ENABLE_MISC)
 
 if (ENABLE_EXAMPLE)
   message(STATUS "Enabling Example|Scope")
   add_subdirectory(${TOP_DIR}/example_scope)
-  target_link_libraries(bench example_scope)
+  target_link_libraries(scope example_scope)
 endif(ENABLE_EXAMPLE)
 
 if (ENABLE_NCCL)
   message(STATUS "Enabling NCCL|Scope")
   add_subdirectory(${TOP_DIR}/nccl_scope)
-  target_link_libraries(bench nccl_scope)
+  target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
 
 # once all common utilities in src/scope, remove ${SRC_DIR}
-target_include_directories(bench PRIVATE
+target_include_directories(scope PRIVATE
   ${SRC_DIR}
   ${TOP_DIR}/include
 )
 
-target_include_directories(bench SYSTEM PRIVATE
+target_include_directories(scope SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
   ${CUDA_INCLUDE_DIRS}
 )
 
-add_definitions(-DPROJECT_NAME=microbench)
+add_definitions(-DPROJECT_NAME=scope)
 
-set_target_properties(bench PROPERTIES
+set_target_properties(scope PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON
 	CUDA_RESOLVE_DEVICE_SYMBOLS ON
 )
 
-target_link_libraries(bench benchmark::benchmark)
-target_link_libraries(bench fmt::fmt)
-target_link_libraries(bench spdlog::spdlog)
-target_link_libraries(bench ${CUDA_LIBRARIES})
+target_link_libraries(scope benchmark::benchmark)
+target_link_libraries(scope fmt::fmt)
+target_link_libraries(scope spdlog::spdlog)
+target_link_libraries(scope ${CUDA_LIBRARIES})
 
-# Request that bench be built with -std=c++11
+# Request that scope be built with -std=c++11
 # As this is a public compile feature anything that links to
-# bench will also build with -std=c++11
-target_compile_features(bench PUBLIC cxx_std_11)
+# scope will also build with -std=c++11
+target_compile_features(scope PUBLIC cxx_std_11)
 
 # Convert CUDA flags from list
 MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
-cotire(bench)
+cotire(scope)
 
 if(APPLE)
   # We need to add the path to the driver (libcuda.dylib) as an rpath,
   # so that the static cuda runtime can find it at runtime.
-  set_property(TARGET bench
+  set_property(TARGET scope
                PROPERTY
                BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 endif()
