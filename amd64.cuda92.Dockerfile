@@ -25,5 +25,4 @@ RUN mkdir -p build \
     -DNVCC_ARCH_FLAGS="3.0 3.2 3.5 3.7 5.0 5.2 5.3 6.0" \
     && make VERBOSE=1
 
-RUN mv build/bench /bin/.
-
+RUN mv build/scope /bin/.
