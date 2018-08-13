@@ -15,7 +15,6 @@ sugar_files(
     BENCHMARK_HEADERS
     cublas.hpp
     cuda.hpp
-    cudnn.hpp
     flags.hpp
     init.hpp
     logger.hpp
@@ -25,7 +24,6 @@ sugar_files(
     BENCHMARK_SOURCES
     cublas.cpp
     cuda.cpp
-    cudnn.cpp
     flags.cpp
     init.cpp
     logger.cpp

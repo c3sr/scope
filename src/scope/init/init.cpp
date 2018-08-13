@@ -2,7 +2,6 @@
 
 #include "scope/init/cublas.hpp"
 #include "scope/init/cuda.hpp"
-#include "scope/init/cudnn.hpp"
 #include "scope/init/flags.hpp"
 #include "scope/init/logger.hpp"
 
@@ -38,7 +37,6 @@ void init(int argc, char** argv) {
 
   init_cuda();
   init_cublas();
-  init_cudnn();
 
   for (size_t i = 0; i < ninits; ++i) {
     LOG(debug, "Running registered initialization function...");

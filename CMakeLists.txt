@@ -65,7 +65,6 @@ find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
 find_package(CUDA REQUIRED)
-find_package(CuDNN REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
@@ -189,7 +188,6 @@ target_include_directories(bench PRIVATE
 target_include_directories(bench SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
   ${CUDA_INCLUDE_DIRS}
-  ${CUDNN_INCLUDE_DIR}
 )
 
 add_definitions(-DPROJECT_NAME=microbench)
@@ -202,8 +200,8 @@ set_target_properties(bench PROPERTIES
 target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
-target_link_libraries(bench ${CUDNN_LIBRARY})
-target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
+target_link_libraries(bench ${CUDA_LIBRARIES})
+target_link_libraries(bench ${CUDA_CUBLAS_LIBRARIES})
 
 # Request that bench be built with -std=c++11
 # As this is a public compile feature anything that links to

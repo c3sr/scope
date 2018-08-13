@@ -22,7 +22,6 @@ sugar_files(
     compat.hpp
     cublas.hpp
     cuda.hpp
-    cudnn.hpp
     defer.hpp
     error.hpp
     hostname.hpp

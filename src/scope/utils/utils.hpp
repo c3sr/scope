@@ -6,7 +6,6 @@
 #include "compat.hpp"
 #include "cublas.hpp"
 #include "cuda.hpp"
-#include "cudnn.hpp"
 #include "defer.hpp"
 #include "error.hpp"
 #include "hostname.hpp"

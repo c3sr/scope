@@ -6,7 +6,6 @@
 
 #include "cublas.hpp"
 #include "cuda.hpp"
-#include "cudnn.hpp"
 
 void init(int argc, char **argv);
 
