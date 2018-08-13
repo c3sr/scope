@@ -58,21 +58,14 @@ else()
   # Add Sugar
   message(STATUS "looking for Sugar in: ${SUGAR_ROOT}")
   list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/module")
-  
-  find_package(cub REQUIRED)
-  include_directories(${cub_INCLUDE_DIR})
-
 endif (CONFIG_USE_HUNTER)
 
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
-
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
-
-#find_package(Protobuf REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
@@ -195,7 +188,6 @@ target_include_directories(bench PRIVATE
 
 target_include_directories(bench SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
-  ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
   ${CUDNN_INCLUDE_DIR}
 )
@@ -208,15 +200,8 @@ set_target_properties(bench PROPERTIES
 )
 
 target_link_libraries(bench benchmark::benchmark)
-# target_link_libraries(bench nlohmann_json)
 target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
-# target_link_libraries(bench cub::cub)
-# target_link_libraries(bench rangev3)
-# target_link_libraries(bench type_safe)
-# target_link_libraries(bench yaml-cpp::yaml-cpp)
-# target_link_libraries(bench ${PROTOBUF_LIBRARY} )
-#target_link_libraries(bench debug_assert)
 target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
 
