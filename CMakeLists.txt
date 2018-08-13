@@ -222,8 +222,6 @@ target_include_directories(bench PRIVATE
 
 target_include_directories(bench SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
-  ${THIRDPARTY_DIR}/cutlass
-  ${THIRDPARTY_DIR}/leathers/Source
   ${OpenBLAS_INCLUDE_DIR}
   ${CUDA_INCLUDE_DIRS}
   ${CUDNN_INCLUDE_DIR}
