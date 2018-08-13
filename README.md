@@ -9,6 +9,7 @@ A CUDA microbenchmark suite developed by the [IMPACT](impact.crhc.illinois.edu) 
 Primary maintainers:
 * Carl Pearson ([web](cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
 * Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
+* Cheng Li ([email](mailto:cli99@illinois.edu))
 
 The suite aims to systematically measure CUDA data transfer performance through
 * CUDA explicit memory
