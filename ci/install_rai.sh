@@ -13,8 +13,8 @@ function or_die () {
 
 source ~/.bashrc
 
-if [[ ${DO_BUILD} == 0 ]]; then
-    echo "DO_BUILD == 0, not installing rai"
+if [[ ${DO_BUILD} == 1 ]]; then
+    echo "DO_BUILD == 1, not installing rai"
     exit 0
 fi
 
