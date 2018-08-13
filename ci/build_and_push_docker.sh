@@ -68,7 +68,7 @@ if [[ ! -z ${ARCH+x} ]]; then
     if [ "$ARCH" == amd64 ]; then # if amd64, build on travis
         or_die docker build -f $ARCH.cuda${DOCKER_CUDA}.Dockerfile -t $REPO:$ARCH-cuda${DOCKER_CUDA}-$TAG .
         or_die docker push $REPO
-    elif # if ppc64le, build on rai
+    elif then # if ppc64le, build on rai
         cp -v ci/rai/.rai_profile $HOME/.rai_profile
         echo "  secret_key: ${RAI_SECRET_KEY}" >> $HOME/.rai_profile
         mv -v ci/rai/rai_build.cuda${DOCKER_CUDA}.yml rai_build.yml
