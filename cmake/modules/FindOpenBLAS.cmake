@@ -19,7 +19,7 @@ SET(Open_BLAS_INCLUDE_SEARCH_PATHS
 )
 
 SET(Open_BLAS_LIB_SEARCH_PATHS
-      ${OpenBLAS}/lib
+      ${OpenBLAS}
       /opt/DL/openblas/lib
       /usr/lib/x86_64-linux-gnu/
       /lib/

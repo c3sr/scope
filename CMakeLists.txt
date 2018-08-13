@@ -17,6 +17,7 @@ option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures
 option(ENABLE_COMM "Include Comm|Scope (github.com/rai-project/comm_scope)" ON)
 option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" ON)
 option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_scope)" ON)
+option(ENABLE_NCCL "Include Nccl|Scope (github.com/rai-project/nccl_scope)" ON)
 
 if (CONFIG_USE_HUNTER)
 include("cmake/modules/HunterGate.cmake")
@@ -206,6 +207,12 @@ if (ENABLE_EXAMPLE)
   add_subdirectory(${TOP_DIR}/example_scope)
   target_link_libraries(bench example_scope)
 endif(ENABLE_EXAMPLE)
+
+if (ENABLE_NCCL)
+  message(STATUS "Enabling NCCL|Scope")
+  add_subdirectory(${TOP_DIR}/nccl_scope)
+  target_link_libraries(bench nccl_scope)
+endif(ENABLE_NCCL)
 
 # once all common utilities in src/scope, remove ${SRC_DIR}
 target_include_directories(bench PRIVATE
