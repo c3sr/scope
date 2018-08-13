@@ -41,8 +41,6 @@ include(CTest)
 include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
-include(cmake/GitUtils.cmake)
-
 
 if (CONFIG_USE_HUNTER)
 
@@ -55,31 +53,8 @@ if (CONFIG_USE_HUNTER)
   hunter_add_package(fmt)
   hunter_add_package(spdlog)
 
-
   find_package(cub CONFIG REQUIRED)
-
   find_package(spdlog CONFIG REQUIRED)
-
-# hunter_add_package(nlohmann_json)
-# find_package(nlohmann_json CONFIG REQUIRED)
-
-# hunter_add_package(cxxopts)
-# find_package(cxxopts CONFIG REQUIRED)
-
-#hunter_add_package(debug_assert)
-#find_package(debug_assert CONFIG REQUIRED)
-
-# hunter_add_package(range-v3)
-# find_package(range-v3 CONFIG REQUIRED)
-
-# hunter_add_package(type_safe)
-# find_package(type_safe CONFIG REQUIRED)
-
-# hunter_add_package(yaml-cpp)
-# find_package(yaml-cpp CONFIG REQUIRED)
-
-# hunter_add_package(Protobuf)
-# find_package(Protobuf CONFIG REQUIRED)
 
 else()
   # Add Sugar
