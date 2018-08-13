@@ -75,10 +75,6 @@ if [[ ! -z ${DOCKER_ARCH+x} ]]; then
         rai -p .
         or_die docker push $REPO
     fi
-
-else
-    echo "set DOCKER_ARCH"
-    exit 1
 fi
 
 set +x
