@@ -57,7 +57,7 @@ env:
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/nvvm/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
-  - CMAKE_VERSION=3.11.1
+  - CMAKE_VERSION=3.12.1
   - CMAKE_ROOT=${HOME}/.cmake
 matrix:
   include:
@@ -79,6 +79,7 @@ matrix:
 before_install:
 - cd ${TRAVIS_BUILD_DIR}
 - ./ci/install_cmake.sh
+- ./ci/install_rai.sh
 - export PATH=${CMAKE_ROOT}/bin:$PATH
 - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
 script:
