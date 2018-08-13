@@ -4,7 +4,6 @@
 
 #include <cuda_runtime.h>
 
-#include "cublas.hpp"
 #include "cuda.hpp"
 
 void init(int argc, char **argv);

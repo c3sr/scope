@@ -13,7 +13,6 @@ include(sugar_files)
 
 sugar_files(
     BENCHMARK_HEADERS
-    cublas.hpp
     cuda.hpp
     flags.hpp
     init.hpp
@@ -22,7 +21,6 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    cublas.cpp
     cuda.cpp
     flags.cpp
     init.cpp

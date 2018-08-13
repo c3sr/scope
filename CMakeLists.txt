@@ -201,7 +201,6 @@ target_link_libraries(bench benchmark::benchmark)
 target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
 target_link_libraries(bench ${CUDA_LIBRARIES})
-target_link_libraries(bench ${CUDA_CUBLAS_LIBRARIES})
 
 # Request that bench be built with -std=c++11
 # As this is a public compile feature anything that links to
