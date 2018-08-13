@@ -49,11 +49,9 @@ if (CONFIG_USE_HUNTER)
   # include(${SUGAR_ROOT}/cmake/sugar)
 
   hunter_add_package(benchmark)
-  hunter_add_package(cub)
   hunter_add_package(fmt)
   hunter_add_package(spdlog)
 
-  find_package(cub CONFIG REQUIRED)
   find_package(spdlog CONFIG REQUIRED)
 
 else()
