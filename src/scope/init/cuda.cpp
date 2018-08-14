@@ -10,6 +10,11 @@
 
 bool has_cuda = false;
 cudaDeviceProp cuda_device_prop;
+int device_count = 0;
+
+int num_gpus() {
+  return device_count;
+}
 
 // using optional = std::experimental::optional;
 // using nullopt = std::experimental::nullopt;
@@ -20,12 +25,11 @@ static size_t device_total_physmem{0};
 
 bool init_cuda() {
 
-  int deviceCount;
-  if (PRINT_IF_ERROR(cudaGetDeviceCount(&deviceCount))) {
+  if (PRINT_IF_ERROR(cudaGetDeviceCount(&device_count))) {
     return false;
   }
 
-  if (deviceCount == 0) {
+  if (device_count == 0) {
     LOG(critical, "No devices supporting CUDA.");
     exit(1);
   }
@@ -36,7 +40,7 @@ bool init_cuda() {
     LOG(critical, "device = {} is not valid.", FLAG(cuda_device_id));
     exit(1);
   }
-  if ((FLAG(cuda_device_id) > deviceCount - 1) || (FLAG(cuda_device_id) < 0)) {
+  if ((FLAG(cuda_device_id) > device_count - 1) || (FLAG(cuda_device_id) < 0)) {
     FLAG(cuda_device_id) = 0;
   }
 

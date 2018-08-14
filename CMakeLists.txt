@@ -38,6 +38,8 @@ include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 
+message(STATUS ${CMAKE_CXX_FLAGS_DEBUG})
+
 if (CONFIG_USE_HUNTER)
 
   hunter_add_package(sugar)
