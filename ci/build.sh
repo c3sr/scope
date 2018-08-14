@@ -21,6 +21,8 @@ if [[ $DO_BUILD == 1 ]]; then
         -DCONFIG_USE_TRAVIS=ON \
         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} \
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} \
+        -DENABLE_MISC=0 \
+        -DENABLE_NCCL=0 \
         ..
     or_die make
 fi

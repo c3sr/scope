@@ -6,6 +6,6 @@ resources:
   network: true
 commands:
   build_image:
-    image_name: raiproject/scope:ppc64le-cuda92-latest
-    dockerfile: "./ppc64le.cuda92.Dockerfile"
+    image_name: raiproject/scope:ppc64le-cuda80-latest
+    dockerfile: "./ppc64le.cuda80.Dockerfile"
     no_cache: true

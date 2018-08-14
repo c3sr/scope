@@ -59,6 +59,7 @@ env:
   - PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
   - CMAKE_VERSION=3.12.1
   - CMAKE_ROOT=${HOME}/.cmake
+  - RAI_ROOT=${HOME}/.rai
 matrix:
   include:
     - env: DO_BUILD=0 DOCKER_CUDA=75 DOCKER_ARCH=amd64
@@ -81,6 +82,7 @@ before_install:
 - ./ci/install_cmake.sh
 - ./ci/install_rai.sh
 - export PATH=${CMAKE_ROOT}/bin:$PATH
+- export PATH=${RAI_ROOT}:$PATH
 - sudo ln -s /usr/local/cuda-9.2 /usr/local/cuda
 script:
 - cd ${TRAVIS_BUILD_DIR}
