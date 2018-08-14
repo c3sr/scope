@@ -23,7 +23,7 @@ if [[ ${DOCKER_ARCH} != ppc64le ]]; then
     exit 0
 fi
 
-travis_retry wget -q https://github.com/rai-project/rai/releases/download/v0.2.57/linux-amd64.tar.gz
+wget -q https://github.com/rai-project/rai/releases/download/v0.2.57/linux-amd64.tar.gz
 tar -xvf linux-amd64.tar.gz -C rai
 mv -v rai/rai /usr/bin/.
 rm -rvf rai
