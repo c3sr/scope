@@ -31,10 +31,12 @@ sugar_files(
     page.hpp
     timer.hpp
     utils.hpp
+    version.hpp
 )
 
 sugar_files(
     BENCHMARK_SOURCES
     commandlineflags.cpp
+    version.cpp
 )
 

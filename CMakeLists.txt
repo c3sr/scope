@@ -38,8 +38,6 @@ include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 
-message(STATUS ${CMAKE_CXX_FLAGS_DEBUG})
-
 if (CONFIG_USE_HUNTER)
 
   hunter_add_package(sugar)
@@ -188,7 +186,7 @@ target_include_directories(scope SYSTEM PRIVATE
   ${CUDA_INCLUDE_DIRS}
 )
 
-add_definitions(-DPROJECT_NAME=scope)
+target_compile_definitions(scope PUBLIC -DPROJECT_NAME=scope)
 
 set_target_properties(scope PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON
@@ -204,6 +202,13 @@ target_link_libraries(scope ${CUDA_LIBRARIES})
 # As this is a public compile feature anything that links to
 # scope will also build with -std=c++11
 target_compile_features(scope PUBLIC cxx_std_11)
+
+git_get_head_revision(GIT_REFSPEC GIT_HASH)
+git_local_changes(GIT_LOCAL_CHANGES)
+MESSAGE(STATUS GIT_REFSPEC=${GIT_REFSPEC})
+MESSAGE(STATUS GIT_HASH=${GIT_HASH})
+MESSAGE(STATUS GIT_LOCAL_CHANGES=${GIT_LOCAL_CHANGES})
+target_compile_definitions(scope PUBLIC -DSCOPE_GIT_LOCAL_CHANGES="${GIT_LOCAL_CHANGES}" -DSCOPE_GIT_REFSPEC="${GIT_REFSPEC}" -DSCOPE_GIT_HASH="${GIT_HASH}")
 
 # Convert CUDA flags from list
 MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")

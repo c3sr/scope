@@ -6,6 +6,7 @@
 #include "scope/init/flags.hpp"
 #include "scope/init/init.hpp"
 #include "scope/utils/utils.hpp"
+#include "scope/utils/version.hpp"
 
 static const auto help = R"(
 benchmark [--benchmark_list_tests={true|false}]
@@ -33,7 +34,14 @@ int main(int argc, char **argv) {
   //   return 0;
   // }
 
+
+
   benchmark::Initialize(&argc, argv);
+
+  if (FLAG(version)) {
+    std::cout << version() << "\n";
+    return 0;
+  }
 
   if (::benchmark::ReportUnrecognizedArguments(argc, argv)) return 1;
 

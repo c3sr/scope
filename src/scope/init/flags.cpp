@@ -5,6 +5,7 @@ DEFINE_int32(cuda_device_id, 1, "The cuda device id to use.");
 // DEFINE_bool(fast, false, "Whether to run only parts of the tests.");
 DEFINE_int32(verbose, 1, "Verbose level.");
 DEFINE_bool(help, false, "Show help message.");
+DEFINE_bool(version, false, "Show version message.");
 
 static void parse(int* argc, char** argv) {
   using namespace utils;
@@ -17,11 +18,14 @@ static void parse(int* argc, char** argv) {
       --(*argc);
       --i;
     }
+  
+  // don't consume version, so scopes may also see it and print a version string
+  ParseBoolFlag(argv[i], "version", &FLAG(version));
   }
+
 }
 
 void init_flags(int argc, char** argv) {
   parse(&argc, argv);
-
   return;
 }

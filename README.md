@@ -4,46 +4,31 @@
 |--|
 | [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
 
-A CUDA microbenchmark suite developed by the [IMPACT](impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
+A benchmark framework developed by the [IMPACT](impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
 
 Primary maintainers:
 * Carl Pearson ([web](cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
 * Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
 * Cheng Li ([email](mailto:cli99@illinois.edu))
 
-The suite aims to systematically measure CUDA data transfer performance through
-* CUDA explicit memory
-* CUDA unified memory
+Various benchmark suites using Scope are under development:
 
-The suite also aims to systematically measure CUDA neural network primitives
-* CUDA kernel launches
-* CUDNN convolutions
-* Vector add
-* GEMM
-* GEMV
-* Locks / Mutexes
+* [Comm|Scope](github.com/rai-project/comm_scope) - CUDA/NUMA data transfer performance
+* [NCCL|Scope](github.com/rai-project/nccl_scope) - GPU collective communication performance
+* [Misc|Scope](github.com/rai-project/misc_scope) - experimental or miscellaneous benchmarks
 
-With coming support for:
-* Tensorcores
-* Atomic operations
-* Collective communication (e.g. NCCL)
-* Communication link contention
-* and more!
-
-The benchmark suite is NUMA-aware on Linux systems.
 
 ## Install CMake >= 3.12
 
-cmake version >=3.12 is required.
+On **x86-64**, the following may work.
 
 ```
 cd /tmp
 wget https://cmake.org/files/v3.12/cmake-3.12.0-Linux-x86_64.sh
 sudo sh cmake-3.12.0-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
 ```
-you may also want to remove the default installation `sudo apt-get remove cmake`
 
-you need to install from source if on ppc64le
+On **ppc64le**, you will need to build from source.
 
 ## Checkout all submodules
 
@@ -51,7 +36,7 @@ you need to install from source if on ppc64le
 git submodule update --init --recursive
 ```
 
-or to update
+or to update modules, if you did not do a recursive clone
 
 ```
 git submodule update --recursive --remote
@@ -80,23 +65,23 @@ You can optionally choose your own CUDA archs that you would like to be compiled
 
 The accepted syntax is the same as the `CUDA_SELECT_NVCC_ARCH_FLAGS` syntax in the FindCUDA module.
 
-You can disable benchmarks that depend on NUMA or OpenMP, even if your system supports them
+You can disable or enable individual scopes
 
-    cmake -DUSE_OPENMP=OFF -DUSE_NUMA=OFF
+    cmake -DENABLE_MISC=0 ...
 
 ## Available Benchmarks
 
 The available benchmarks and descriptions are listed [here](docs/benchmark_descriptions.md). You can list all the benchmarks with
 
-    ./bench --benchmark_list_tests=true
+    ./scope --benchmark_list_tests=true
 
 you can filter the benchmarks that are run with a regular expression passed to `--benchmark_filter`.
 
-    ./bench --benchmark_filter=[regex]
+    ./scope --benchmark_filter=[regex]
 
 for example
 
-    ./bench --benchmark_filter=SGEMM
+    ./scope --benchmark_filter=SGEMM
 
 futher controls over the benchmarks are explained in the `--help` option
 
@@ -104,7 +89,7 @@ futher controls over the benchmarks are explained in the `--help` option
 
 This is not generally recommended, as it will take quite some time.
 
-    ./bench
+    ./scope
 
 The above will output to stdout something like 
 
@@ -129,15 +114,21 @@ The above will output to stdout something like
 
 Output as JSON using
 
-    ./bench --benchmark_out_format=json --benchmark_out=test.json
+    ./scope --benchmark_out_format=json --benchmark_out=test.json
     
 or preferably 
 
-    ./bench --benchmark_out_format=json --benchmark_out=`hostname`.json
+    ./scope --benchmark_out_format=json --benchmark_out=`hostname`.json
+
+Repeat benchmark runs with
+
+    ./scope --benchmark_repetitions=5
 
 ## Plot Benchmark JSON files
 
-Try the [microbench_plot](https://github.com/rai-project/microbench_plot) python package.
+Try the [ScopePlot](https://github.com/rai-project/scope_plot) python package.
+
+    pip install scope_plot
 
 ## On Minsky With PowerAI
 
