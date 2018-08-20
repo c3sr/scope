@@ -9,13 +9,14 @@
 #include "scope/utils/version.hpp"
 
 static const auto help = R"(
-benchmark [--benchmark_list_tests={true|false}]
+scope [--benchmark_list_tests={true|false}]
           [--benchmark_filter=<regex>]
           [--benchmark_min_time=<min_time>]
           [--benchmark_repetitions=<num_repetitions>]
           [--benchmark_format=<tabular|json|csv>]
           [--color_print={true|false}]
           [--v=<verbosity>]
+          [ --version]
 )";
 
 // const char *bench_git_refspec();
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
   benchmark::Initialize(&argc, argv);
 
   if (FLAG(version)) {
-    std::cout << version() << "\n";
+    std::cout << "Scope " << version() << "\n";
     return 0;
   }
 

@@ -28,7 +28,10 @@ void init(int argc, char** argv) {
 
   for (size_t i = 0; i < ninits; ++i) {
     LOG(debug, "Running registered initialization function...");
-    inits[i].fn(argc, argv);
+    int status = inits[i].fn(argc, argv);
+    if (status) {
+      exit(status);
+    }
   }
 }
 
