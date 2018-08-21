@@ -30,4 +30,4 @@ template <typename T, cudnnBatchNormMode_t batchnorm_mode>
 extern void LAYER_CUDNN_BATCHNORM_FWD_INFERENCE_Impl(benchmark::State& state);
 
 template <typename T, cudnnBatchNormMode_t batchnorm_mode>
-extern void LAYER_CUDNN_BATCHNORM_FWD_INFERENCE_Impl(benchmark::State& state);
+extern void LAYER_CUDNN_BATCHNORM_FWD_TRAINING_Impl(benchmark::State& state);
