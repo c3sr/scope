@@ -8,7 +8,9 @@ static struct { InitFn fn; } inits[10000];
 static size_t ninits = 0;
 
 void init(int argc, char** argv) {
-  bench::init::logger::console = spdlog::stdout_logger_mt(argv[0]);
+  if (!bench::init::logger::console || bench::init::logger::console->name() != std::string(argv[0])) {
+    bench::init::logger::console = spdlog::stdout_logger_mt(argv[0]);
+  }
   init_flags(argc, argv);
   
   // keep levels somewhat consistent with Benchmark
