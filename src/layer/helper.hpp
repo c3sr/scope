@@ -1,3 +1,5 @@
+#pragma once
+
 #include <benchmark/benchmark.h>
 
 #include <initializer_list>

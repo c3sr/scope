@@ -241,7 +241,7 @@ void LAYER_CUDNN_BATCHNORM_FWD_INFERENCE_Impl(benchmark::State& state) {
   LAYER_CUDNN_BATCHNORM_FWD_Impl<T, batchnorm_mode, false>(state);
 }
 template <typename T, cudnnBatchNormMode_t batchnorm_mode>
-void LAYER_CUDNN_BATCHNORM_FWD_INFERENCE_Impl(benchmark::State& state) {
+void LAYER_CUDNN_BATCHNORM_FWD_TRAINING_Impl(benchmark::State& state) {
   LAYER_CUDNN_BATCHNORM_FWD_Impl<T, batchnorm_mode, true>(state);
 }
 

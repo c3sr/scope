@@ -313,7 +313,13 @@ void LAYER_CUDNN_CONV_FWD_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
-#ifndef GENERATED_BENCHMARK_LAYER
+#ifdef GENERATED_BENCHMARK_LAYER
+
+#define ENABLE_LAYER_CUDNN_CONV_FWD 1
+#include "generated_benchmarks.hpp"
+#undef ENABLE_LAYER_CUDNN_CONV_FWD
+
+#else // GENERATED_BENCHMARK_LAYER
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_INT8(benchmark::State& state) {
@@ -367,5 +373,6 @@ BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_HALF_TENSOROP);
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_FLOAT);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_DOUBLE);
+
 
 #endif // GENERATED_BENCHMARK_LAYER
