@@ -12,8 +12,6 @@ endif()
 include(sugar_files)
 include(sugar_include)
 
-sugar_include(tensor)
-
 sugar_files(
     BENCHMARK_HEADERS
     benchmark.hpp
