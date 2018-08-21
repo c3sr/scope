@@ -10,7 +10,7 @@ RUN curl -sSL https://cmake.org/files/v3.12/cmake-3.12.1.tar.gz -o cmake.tar.gz 
     && mkdir -p cmake \
     && tar --strip-components=1 -C cmake -xf cmake.tar.gz \
     && cd cmake \
-    && ./bootstrap  && make && make install \
+    && ./bootstrap --system-curl && make && make install \
     && cd .. \
     && rm -r cmake \
     && rm cmake.tar.gz
