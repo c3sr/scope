@@ -22,7 +22,7 @@
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationMode_t
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationForward
 template <typename T, cudnnActivationMode_t activation_mode>
-static void CUDNN_Impl(benchmark::State& state) {
+static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
@@ -154,27 +154,27 @@ static void CUDNN_Impl(benchmark::State& state) {
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_INT8(benchmark::State& state) {
-  CUDNN_Impl<int8_t, activation_mode>(state);
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<int8_t, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_INT32(benchmark::State& state) {
-  CUDNN_Impl<int32_t, activation_mode>(state);
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<int32_t, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_HALF(benchmark::State& state) {
-  CUDNN_Impl<__half, activation_mode>(state);
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<__half, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_FLOAT(benchmark::State& state) {
-  CUDNN_Impl<float, activation_mode>(state);
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<float, activation_mode>(state);
 }
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_DOUBLE(benchmark::State& state) {
-  CUDNN_Impl<double, activation_mode>(state);
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<double, activation_mode>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
