@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     curl \
     git \
     libnuma-dev \
+    zlib1g-dev \
+    libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://cmake.org/files/v3.12/cmake-3.12.1.tar.gz -o cmake.tar.gz \
