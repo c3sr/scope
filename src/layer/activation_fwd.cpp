@@ -144,7 +144,13 @@ static void CUDNN_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
-#ifndef GENERATED_BENCHMARK_LAYER
+#ifdef GENERATED_BENCHMARK_LAYER
+
+#define ENABLE_LAYER_CUDNN_ACTIVATION_FWD 1
+#include "generated_benchmarks.hpp"
+#undef ENABLE_LAYER_CUDNN_ACTIVATION_FWD
+
+#else // GENERATED_BENCHMARK_LAYER
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_INT8(benchmark::State& state) {
