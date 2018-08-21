@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://cmake.org/files/v3.12/cmake-3.12.1.tar.gz -o cmake.tar.gz \
-    $$ mkdir -p cmake \
+    && mkdir -p cmake \
     && tar --strip-components=1 -C cmake -xf cmake.tar.gz \
     && cd cmake \
     && ./bootstrap  && make && make install \
