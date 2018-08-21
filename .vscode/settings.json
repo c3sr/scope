@@ -52,4 +52,5 @@
   },
   "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/",
   "cmake.configureOnOpen": false,
+  "C_Cpp.dimInactiveRegions": false,
 }

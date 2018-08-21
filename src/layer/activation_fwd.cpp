@@ -19,11 +19,6 @@
 #include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
-// calculates convolution output dimension
-static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int stride) {
-  return (input_dim - filter_dim + 2 * padd) / stride + 1;
-}
-
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationMode_t
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnActivationForward
 template <typename T, cudnnActivationMode_t activation_mode>
@@ -33,26 +28,13 @@ static void CUDNN_Impl(benchmark::State& state) {
     return;
   }
 
-  //  w, h, c, n, k, filter_w(s), filter_h(r), pad_w, pad_h, wstride, hstride
-  const auto width         = state.range(0);
-  const auto height        = state.range(1);
-  const auto channels      = state.range(2);
-  const auto batch_size    = state.range(3);
-  const auto num_filters   = state.range(4);
-  const auto filter_width  = state.range(5);
-  const auto filter_height = state.range(6);
-  const auto pad_width     = state.range(7);
-  const auto pad_height    = state.range(8);
-  const auto stride_width  = state.range(9);
-  const auto stride_height = state.range(10);
+  const auto in_n = state.range(0);
+  const auto in_c = state.range(1);
+  const auto in_h = state.range(2);
+  const auto in_w = state.range(3);
 
   const float alpha = 1, beta = 0;
   const double coef = 1;
-
-  const auto in_n = batch_size;
-  const auto in_c = num_filters;
-  const auto in_h = calc_conv_out_dim(height, filter_height, pad_height, stride_height);
-  const auto in_w = calc_conv_out_dim(width, filter_width, pad_width, stride_width);
 
   const auto out_n = in_n, out_c = in_c, out_h = in_h, out_w = in_w;
 
@@ -146,8 +128,9 @@ static void CUDNN_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_TANH:
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
-      /* case CUDNN_ACTIVATION_IDENTITY: */
         return static_cast<double>(in_n * in_c * in_h * in_w);
+      case CUDNN_ACTIVATION_IDENTITY:
+        return static_cast<double>(0);
       default:
         return static_cast<double>(-1);
     }
@@ -160,6 +143,8 @@ static void CUDNN_Impl(benchmark::State& state) {
 
   state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
+
+#ifndef GENERATED_BENCHMARK_LAYER
 
 template <cudnnActivationMode_t activation_mode>
 static void LAYER_CUDNN_ACTIVATION_FWD_INT8(benchmark::State& state) {
@@ -193,10 +178,12 @@ static void LAYER_CUDNN_ACTIVATION_FWD_DOUBLE(benchmark::State& state) {
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_RELU)->CONV_PROBLEMS()->UseManualTime();                                      \
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_TANH)->CONV_PROBLEMS()->UseManualTime();                                      \
   BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_CLIPPED_RELU)->CONV_PROBLEMS()->UseManualTime();                              \
-  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_ELU)->CONV_PROBLEMS()->UseManualTime()                                       
+  BENCHMARK_TEMPLATE(b, CUDNN_ACTIVATION_ELU)->CONV_PROBLEMS()->UseManualTime()
 
 /* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FWD_INT8); */
 /* BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FWD_INT32); */
 BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FWD_HALF);
 BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FWD_FLOAT);
-BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FWD_DOUBLE);
+// BENCHMARK_CUDNN(LAYER_CUDNN_ACTIVATION_FWD_DOUBLE);
+
+#endif // GENERATED_BENCHMARK_LAYER

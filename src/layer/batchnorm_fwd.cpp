@@ -19,11 +19,6 @@
 #include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
-// calculates convolution output dimension
-static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int stride) {
-  return (input_dim - filter_dim + 2 * padd) / stride + 1;
-}
-
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormMode_t
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormalizationForwardTraining
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnBatchNormalizationForwardInference
@@ -247,7 +242,7 @@ void LAYER_CUDNN_BATCHNORM_FWD_TRAINING_Impl(benchmark::State& state) {
 
 #ifdef GENERATED_BENCHMARK_LAYER
 
-#define ENABLE_LAYER_CUDNN_BATCHNORM_FWD_INFERENCE  1 
+#define ENABLE_LAYER_CUDNN_BATCHNORM_FWD_INFERENCE 1
 #include "generated_benchmarks.hpp"
 #undef ENABLE_LAYER_CUDNN_BATCHNORM_FWD_INFERENCE
 
