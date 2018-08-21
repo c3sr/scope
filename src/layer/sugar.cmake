@@ -26,7 +26,7 @@ sugar_files(
     #   softmax_bwd.cpp
     #   ctc_loss.cpp
     #   softmax_fwd.cpp
-    #   batchnorm_fwd.cpp
+       batchnorm_fwd.cpp
     #   element_wise.cpp
     #   dropout_bwd.cpp
     #   find_conv_alg.cpp

@@ -245,7 +245,13 @@ void LAYER_CUDNN_BATCHNORM_FWD_TRAINING_Impl(benchmark::State& state) {
   LAYER_CUDNN_BATCHNORM_FWD_Impl<T, batchnorm_mode, true>(state);
 }
 
-#ifndef GENERATED_BENCHMARK_LAYER
+#ifdef GENERATED_BENCHMARK_LAYER
+
+#define ENABLE_LAYER_CUDNN_BATCHNORM_FWD_INFERENCE  1 
+#include "generated_benchmarks.hpp"
+#undef ENABLE_LAYER_CUDNN_BATCHNORM_FWD_INFERENCE
+
+#else // GENERATED_BENCHMARK_LAYER
 
 template <cudnnBatchNormMode_t batchnorm_mode, bool is_training>
 static void LAYER_CUDNN_BATCHNORM_FWD_INT8(benchmark::State& state) {
