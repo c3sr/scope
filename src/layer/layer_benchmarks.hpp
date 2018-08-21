@@ -24,7 +24,7 @@ template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm
           cudnnMathType_t math_type = CUDNN_DEFAULT_MATH
 #endif
           >
-extern void LAYER_CUDNN_CONV_FWD_Imp(benchmark::State& state);
+extern void LAYER_CUDNN_CONV_FWD_Impl(benchmark::State& state);
 
 template <typename T, cudnnBatchNormMode_t batchnorm_mode>
 extern void LAYER_CUDNN_BATCHNORM_FWD_INFERENCE_Impl(benchmark::State& state);
