@@ -19,11 +19,6 @@
 #include "layer/helper.hpp"
 #include "layer/utils.hpp"
 
-// calculates convolution output dimension
-static inline int calc_conv_out_dim(int input_dim, int filter_dim, int padd, int stride) {
-  return (input_dim - filter_dim + 2 * padd) / stride + 1;
-}
-
 // http://www.goldsborough.me/cuda/ml/cudnn/c++/2017/10/01/14-37-23-convolutions_with_cudnn/
 // http://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionFwdAlgo_t
 // https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#cudnnConvolutionForward
@@ -33,7 +28,7 @@ template <typename T, cudnnConvolutionFwdAlgo_t convolution_algorithm
           cudnnMathType_t math_type = CUDNN_DEFAULT_MATH
 #endif
           >
-static void CUDNN_Impl(benchmark::State& state) {
+void LAYER_CUDNN_CONV_FWD_Impl(benchmark::State& state) {
   if (!has_cuda) {
     state.SkipWithError(BENCHMARK_NAME " no CUDA device found");
     return;
@@ -51,17 +46,19 @@ static void CUDNN_Impl(benchmark::State& state) {
   const cudnnConvolutionMode_t conv_mode = CUDNN_CONVOLUTION;
 
   //  w, h, c, n, k, filter_w(s), filter_h(r), pad_w, pad_h, wstride, hstride
-  const auto width         = state.range(0);
-  const auto height        = state.range(1);
-  const auto channels      = state.range(2);
-  const auto batch_size    = state.range(3);
-  const auto num_filters   = state.range(4);
-  const auto filter_width  = state.range(5);
-  const auto filter_height = state.range(6);
-  const auto pad_width     = state.range(7);
-  const auto pad_height    = state.range(8);
-  const auto stride_width  = state.range(9);
-  const auto stride_height = state.range(10);
+  const auto batch_size      = state.range(0);
+  const auto channels        = state.range(1);
+  const auto height          = state.range(2);
+  const auto width           = state.range(3);
+  const auto num_filters     = state.range(4);
+  const auto filter_height   = state.range(5);
+  const auto filter_width    = state.range(6);
+  const auto pad_height      = state.range(7);
+  const auto pad_width       = state.range(8);
+  const auto stride_height   = state.range(9);
+  const auto stride_width    = state.range(10);
+  const auto dilation_height = state.range(11);
+  const auto dilation_width  = state.range(12);
 
   cudnnConvolutionDescriptor_t convolution_descriptor;
   if (PRINT_IF_ERROR(cudnnCreateConvolutionDescriptor(&convolution_descriptor))) {
@@ -73,8 +70,8 @@ static void CUDNN_Impl(benchmark::State& state) {
                                                      /*pad_width=*/pad_width,
                                                      /*vertical_stride=*/stride_height,
                                                      /*horizontal_stride=*/stride_width,
-                                                     /*dilation_height=*/1,
-                                                     /*dilation_width=*/1,
+                                                     /*dilation_height=*/dilation_height,
+                                                     /*dilation_width=*/dilation_width,
                                                      /*mode=*/conv_mode,
                                                      /*computeType=*/accumDataType<T>::type))) {
     state.SkipWithError(BENCHMARK_NAME " failed to cudnnSetConvolution2dDescriptor");
@@ -316,36 +313,38 @@ static void CUDNN_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * N * K * C * W * H);
 }
 
+#ifndef GENERATED_BENCHMARK_LAYER
+
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_INT8(benchmark::State& state) {
-  CUDNN_Impl<int8_t, convolution_algorithm>(state);
+  LAYER_CUDNN_CONV_FWD_Impl<int8_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_INT32(benchmark::State& state) {
-  CUDNN_Impl<int32_t, convolution_algorithm>(state);
+  LAYER_CUDNN_CONV_FWD_Impl<int32_t, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_HALF(benchmark::State& state) {
-  CUDNN_Impl<__half, convolution_algorithm>(state);
+  LAYER_CUDNN_CONV_FWD_Impl<__half, convolution_algorithm>(state);
 }
 
 #ifdef CUDNN_SUPPORTS_TENSOR_OPS
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_HALF_TENSOROP(benchmark::State& state) {
-  CUDNN_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
+  LAYER_CUDNN_CONV_FWD_Impl<__half, convolution_algorithm, CUDNN_TENSOR_OP_MATH>(state);
 }
 #endif
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_FLOAT(benchmark::State& state) {
-  CUDNN_Impl<float, convolution_algorithm>(state);
+  LAYER_CUDNN_CONV_FWD_Impl<float, convolution_algorithm>(state);
 }
 
 template <cudnnConvolutionFwdAlgo_t convolution_algorithm>
 static void LAYER_CUDNN_CONV_FWD_DOUBLE(benchmark::State& state) {
-  CUDNN_Impl<double, convolution_algorithm>(state);
+  LAYER_CUDNN_CONV_FWD_Impl<double, convolution_algorithm>(state);
 }
 
 #define CONV_PROBLEMS INFERENCE_SERVER_CONV_PROBLEMS
@@ -368,3 +367,5 @@ BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_HALF_TENSOROP);
 #endif // CUDNN_SUPPORTS_TENSOR_OPS
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_FLOAT);
 BENCHMARK_CUDNN(LAYER_CUDNN_CONV_FWD_DOUBLE);
+
+#endif // GENERATED_BENCHMARK_LAYER

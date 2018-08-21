@@ -215,6 +215,7 @@ if (USE_CUDA_EVENTS)
 endif(USE_CUDA_EVENTS)
 
 add_definitions(-DPROJECT_NAME=microbench)
+add_definitions(-DGENERATED_BENCHMARK_LAYER=1)
 
 set_target_properties(bench PROPERTIES
 	# CUDA_SEPARABLE_COMPILATION ON
