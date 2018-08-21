@@ -1,3 +1,4 @@
+#include "scope/init/logger.hpp"
 #include "scope/utils/version.hpp"
 
 #include <string>
@@ -45,6 +46,10 @@ std::string version() {
         return refspec.substr(11, refspec.size() - 11) + std::string("-") + hash + local_changes;
     } else if (refspec.rfind("refs/tags/", 0) == 0) {
         return refspec.substr(10, refspec.size() - 10) + local_changes;
+    } else {
+      LOG(debug, "refspec={}", refspec);
+      LOG(debug, "hash={}", hash);
+      return std::string("unknown");
     }
 
 }
