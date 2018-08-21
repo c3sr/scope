@@ -72,7 +72,6 @@ matrix:
     - env: DO_BUILD=1 USE_HUNTER=OFF
       addons: *buildaddons
   allow_failures:
-    - env: DO_BUILD=0 DOCKER_CUDA=75 DOCKER_ARCH=amd64
     - env: DO_BUILD=1 USE_HUNTER=OFF
 
 before_install:
