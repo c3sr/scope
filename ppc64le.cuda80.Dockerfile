@@ -24,8 +24,6 @@ WORKDIR scope
 RUN mkdir -p build \
     && cd build \
     && cmake .. -DCMAKE_BUILD_TYPE=Release \
-    -DENABLE_MISC=OFF \
-    -DENABLE_NCCL=OFF \
     -DNVCC_ARCH_FLAGS="2.0 3.0 3.2 3.5 3.7 5.0 5.2 5.3" \
     && make VERBOSE=1
 
