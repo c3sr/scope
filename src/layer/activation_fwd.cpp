@@ -129,8 +129,6 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
         return static_cast<double>(in_n * in_c * in_h * in_w);
-      case CUDNN_ACTIVATION_IDENTITY:
-        return static_cast<double>(0);
       default:
         return static_cast<double>(-1);
     }
