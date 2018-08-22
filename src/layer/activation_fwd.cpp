@@ -145,8 +145,8 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
 }
 
 template <typename T, cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_IDENTITY_FWD_Impl(state) {
-  LAYER_CUDNN_ACTIVATION_FWD_Impl<T, activation_mode>(benchmark::State & state);
+static void LAYER_CUDNN_IDENTITY_FWD_Impl(benchmark::State & state) {
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<T, activation_mode>(state);
 }
 
 #ifdef GENERATED_BENCHMARK_LAYER
