@@ -48,7 +48,7 @@ or_die tar -xvf linux-amd64.tar.gz -C ${RAI_ROOT}
 chmod +x ${RAI_ROOT}/rai
 
 set +x
-echo "$profile" >> $HOME./rai_profile
+or_die echo "$profile" >> $HOME/.rai_profile
 set -x
 
 set +x
