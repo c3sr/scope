@@ -1,6 +1,8 @@
 
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
+set(CMAKE_BUILD_TYPE "Release")
+
   set(CMAKE_C_COMPILER gcc)
   set(CMAKE_CXX_COMPILER g++)
   set(CUDACXX /usr/local/cuda/bin/nvcc)
@@ -31,7 +33,6 @@ project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
-include(cotire)
 include(GetGitRevisionDescription)
 include(CTest)
 include(GNUInstallDirs)
@@ -244,8 +245,6 @@ target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
 # bench will also build with -std=c++11
 target_compile_features(bench PUBLIC cxx_std_11)
 
-
-cotire(bench)
 
 if(APPLE)
   # We need to add the path to the driver (libcuda.dylib) as an rpath,
