@@ -2,6 +2,25 @@
 
 set -x
 
+set +x
+profile="profile:
+  firstname: Carl2
+  lastname: Pearson2
+  username: pearson
+  email: pearson@illinois.edu
+  access_key: auth0|58e3f85b7234265d51903f8a
+  secret_key: ${RAI_SECRET_KEY}
+  affiliation: travis
+  team:
+    name: noteam
+  dockerhub:
+    username: cwpearson
+    password: ${DOCKER_PASSWORD}
+"
+set -x
+
+set -x
+
 function or_die () {
     "$@"
     local status=$?
@@ -27,6 +46,10 @@ mkdir -p ${RAI_ROOT}
 or_die wget -q https://github.com/rai-project/rai/releases/download/v0.2.57/linux-amd64.tar.gz
 or_die tar -xvf linux-amd64.tar.gz -C ${RAI_ROOT}
 chmod +x ${RAI_ROOT}/rai
+
+set +x
+echo "$profile" >> $HOME./rai_profile
+set -x
 
 set +x
 exit 0

@@ -9,3 +9,4 @@ commands:
     image_name: raiproject/scope:ppc64le-cuda92-latest
     dockerfile: "./ppc64le.cuda92.Dockerfile"
     no_cache: true
+    push: true
