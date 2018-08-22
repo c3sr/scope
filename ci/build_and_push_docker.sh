@@ -69,7 +69,23 @@ if [[ ! -z ${DOCKER_ARCH+x} ]]; then
         or_die docker build -f $ARCH.cuda${DOCKER_CUDA}.Dockerfile -t $REPO:$ARCH-cuda${DOCKER_CUDA}-$TAG .
         or_die docker push $REPO
     elif [ "$ARCH" == ppc64le ]; then # if ppc64le, build on rai
-        mv -v ci/rai/rai_build.cuda${DOCKER_CUDA}.yml rai_build.yml
+
+rai_build="rai:
+  version: 0.2
+resources:
+  cpu:
+    architecture: ppc64le
+  network: true
+commands:
+  build_image:
+    image_name: $REPO:$ARCH-cuda${DOCKER_CUDA}-$TAG
+    dockerfile: \"./$ARCH.cuda${DOCKER_CUDA}.Dockerfile\"
+    no_cache: true
+    push:
+      push: true
+"
+
+        echo "$rai_build" > rai_build.yml
         or_die rai -d -v -p . -q rai_ppc64le_osu
     fi
 fi
