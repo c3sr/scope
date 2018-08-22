@@ -144,6 +144,11 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
+template <typename T, cudnnActivationMode_t activation_mode>
+static void LAYER_CUDNN_IDENTITY_FWD_Impl(benchmark::State& state) {
+  LAYER_CUDNN_ACTIVATION_FWD_Impl<T, activation_mode>(benchmark::State & state);
+}
+
 #ifdef GENERATED_BENCHMARK_LAYER
 
 #define ENABLE_LAYER_CUDNN_ACTIVATION_FWD 1
