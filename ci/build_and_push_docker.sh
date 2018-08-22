@@ -71,7 +71,6 @@ if [[ ! -z ${DOCKER_ARCH+x} ]]; then
     elif [ "$ARCH" == ppc64le ]; then # if ppc64le, build on rai
         mv -v ci/rai/rai_build.cuda${DOCKER_CUDA}.yml rai_build.yml
         or_die rai -d -v -p . -q rai_ppc64le_osu
-        or_die docker push $REPO
     fi
 fi
 
