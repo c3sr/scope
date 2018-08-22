@@ -129,8 +129,6 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
       case CUDNN_ACTIVATION_CLIPPED_RELU:
       case CUDNN_ACTIVATION_ELU:
         return static_cast<double>(in_n * in_c * in_h * in_w);
-      case CUDNN_ACTIVATION_IDENTITY:
-        return static_cast<double>(0);
       default:
         return static_cast<double>(-1);
     }
@@ -144,17 +142,10 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
   state.SetItemsProcessed(int64_t(state.iterations()) * in_n * in_c * in_h * in_w);
 }
 
-template <typename T, cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_IDENTITY_FWD_Impl(state) {
-  LAYER_CUDNN_ACTIVATION_FWD_Impl<T, activation_mode>(benchmark::State & state);
-}
-
 #ifdef GENERATED_BENCHMARK_LAYER
 
 #define ENABLE_LAYER_CUDNN_ACTIVATION_FWD 1
-#define ENABLE_LAYER_CUDNN_IDENTITY_FWD 1
 #include "generated_benchmarks.hpp"
-#undef ENABLE_LAYER_CUDNN_IDENTITY_FWD
 #undef ENABLE_LAYER_CUDNN_ACTIVATION_FWD
 
 #else // GENERATED_BENCHMARK_LAYER
