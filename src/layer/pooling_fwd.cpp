@@ -29,14 +29,17 @@ static void LAYER_CUDNN_POOLING_FWD_Impl(benchmark::State& state) {
     return;
   }
 
-  const auto in_n = state.range(0);
-  const auto in_c = state.range(1);
-  const auto in_h = state.range(2);
-  const auto in_w = state.range(3);
+  const auto in_n         = state.range(0);
+  const auto in_c         = state.range(1);
+  const auto in_h         = state.range(2);
+  const auto in_w         = state.range(3);
+  const auto win_h        = state.range(4);
+  const auto win_w        = state.range(5);
+  const auto vert_padding = state.range(6);
+  const auto hori_padding = state.range(7);
+  const auto vert_stride  = state.range(8);
+  const auto hori_stride  = state.range(9);
 
-  const auto win_h = 2, win_w = 2;
-  const auto vert_padding = 0, hori_padding = 0;
-  const auto vert_stride = 2, hori_stride = 2;
   const float alpha = 1, beta = 0;
 
   auto x_tensor = Tensor<T>(state,
