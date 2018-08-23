@@ -30,8 +30,8 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
 
   const auto in_n = state.range(0);
   const auto in_c = state.range(1);
-  const auto in_h = state.range(2);
-  const auto in_w = state.range(3);
+  const auto in_h = state.range(2) == -1 ? 1 : state.range(2);
+  const auto in_w = state.range(3) == -1 ? 1 : state.range(3);
 
   const float alpha = 1, beta = 0;
   const double coef = 1;
@@ -143,7 +143,7 @@ static void LAYER_CUDNN_ACTIVATION_FWD_Impl(benchmark::State& state) {
 }
 
 template <typename T, cudnnActivationMode_t activation_mode>
-static void LAYER_CUDNN_IDENTITY_FWD_Impl(benchmark::State & state) {
+static void LAYER_CUDNN_IDENTITY_FWD_Impl(benchmark::State& state) {
   LAYER_CUDNN_ACTIVATION_FWD_Impl<T, activation_mode>(state);
 }
 

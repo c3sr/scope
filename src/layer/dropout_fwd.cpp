@@ -30,8 +30,8 @@ static void LAYER_CUDNN_DROPOUT_FWD_Impl(benchmark::State& state) {
 
   const auto in_n = state.range(0);
   const auto in_c = state.range(1);
-  const auto in_h = state.range(2);
-  const auto in_w = state.range(3);
+  const auto in_h = state.range(2) == -1 ? 1 : state.range(2);
+  const auto in_w = state.range(3) == -1 ? 1 : state.range(3);
 
   const float dropout = 0.5;
   const uint64_t seed = 0;
