@@ -6,7 +6,7 @@
 	url = ../example_scope.git
 [submodule "misc_scope"]
 	path = misc_scope
-	url = ../misc_scope.git
+	url = ../../rai-project/misc_scope.git
 [submodule "nccl_scope"]
 	path = nccl_scope
-	url = ../nccl_scope.git
+	url = ../../rai-project/nccl_scope.git
