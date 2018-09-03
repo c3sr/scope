@@ -37,8 +37,30 @@ include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 
-if (CONFIG_USE_HUNTER)
+# Checkout submodules
+find_package(Git QUIET)
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+# Update submodules as needed
+    option(GIT_SUBMODULE "Check submodules during build" ON)
+    if(GIT_SUBMODULE)
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+        endif()
+    endif()
+endif()
 
+if(   NOT EXISTS "${PROJECT_SOURCE_DIR}/nccl_scope/CMakeLists.txt" 
+   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/comm_scope/CMakeLists.txt"
+   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/example_scope/CMakeLists.txt"
+   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/misc_scope/CMakeLists.txt")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()
+
+if (CONFIG_USE_HUNTER)
   hunter_add_package(sugar)
   find_package(sugar CONFIG REQUIRED)
   # include(${SUGAR_ROOT}/cmake/sugar)
@@ -63,6 +85,9 @@ find_package(CUDA REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
+
+
+
 
 # Disable extended variants of C++ dialects
 # i.e. don't choose gnu++17 over c++17

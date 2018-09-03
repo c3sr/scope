@@ -30,18 +30,6 @@ sudo sh cmake-3.12.0-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
 
 On **ppc64le**, you will need to build from source.
 
-## Checkout all submodules
-
-```
-git submodule update --init --recursive
-```
-
-or to update modules, if you did not do a recursive clone
-
-```
-git submodule update --recursive --remote
-```
-
 ## Compile
 
 To compile the project run the following commands
@@ -68,6 +56,19 @@ The accepted syntax is the same as the `CUDA_SELECT_NVCC_ARCH_FLAGS` syntax in t
 You can disable or enable individual scopes
 
     cmake -DENABLE_MISC=0 ...
+
+The submodules should automatically be checked out.
+If not, try checking them out yourself:
+
+```
+git submodule update --init --recursive
+```
+
+or to update modules to the proper verions
+
+```
+git submodule update --recursive --remote
+```
 
 ## Available Benchmarks
 
