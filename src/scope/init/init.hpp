@@ -8,7 +8,7 @@
 
 void init(int argc, char **argv);
 
-typedef int (*InitFn)(int argc, char **argv);
+typedef int (*InitFn)(int argc, char *const * argv);
 
 void RegisterInit(InitFn fn);
 
