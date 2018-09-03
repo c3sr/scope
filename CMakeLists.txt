@@ -181,6 +181,7 @@ target_include_directories(scope PRIVATE
 target_include_directories(scope SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
   ${CUDA_INCLUDE_DIRS}
+  ${PROJECT_BINARY_DIR}/src/
 )
 
 target_compile_definitions(scope PUBLIC -DPROJECT_NAME=scope)
@@ -212,10 +213,10 @@ string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 # Generate version file
-message(STATUS "${PROJECT_SOURCE_DIR}/.../version.hpp.in -> ${PROJECT_SOURCE_DIR}/.../version.hpp")
+message(STATUS "${PROJECT_SOURCE_DIR}/.../version.hpp.in -> ${PROJECT_BINARY_DIR}/.../version.hpp")
 configure_file (
     "${PROJECT_SOURCE_DIR}/src/scope/utils/version.hpp.in"
-    "${PROJECT_SOURCE_DIR}/src/scope/utils/version.hpp"
+    "${PROJECT_BINARY_DIR}/src/scope/utils/version.hpp"
 )
 
 cotire(scope)
