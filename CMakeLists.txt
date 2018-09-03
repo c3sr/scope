@@ -38,7 +38,6 @@ include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 
 if (CONFIG_USE_HUNTER)
-
   hunter_add_package(sugar)
   find_package(sugar CONFIG REQUIRED)
   # include(${SUGAR_ROOT}/cmake/sugar)
@@ -48,7 +47,6 @@ if (CONFIG_USE_HUNTER)
   hunter_add_package(spdlog)
 
   find_package(spdlog CONFIG REQUIRED)
-
 else()
   # Add Sugar
   message(STATUS "looking for Sugar in: ${SUGAR_ROOT}")
@@ -207,12 +205,18 @@ git_local_changes(GIT_LOCAL_CHANGES)
 MESSAGE(STATUS GIT_REFSPEC=${GIT_REFSPEC})
 MESSAGE(STATUS GIT_HASH=${GIT_HASH})
 MESSAGE(STATUS GIT_LOCAL_CHANGES=${GIT_LOCAL_CHANGES})
-target_compile_definitions(scope PUBLIC -DSCOPE_GIT_LOCAL_CHANGES="${GIT_LOCAL_CHANGES}" -DSCOPE_GIT_REFSPEC="${GIT_REFSPEC}" -DSCOPE_GIT_HASH="${GIT_HASH}")
 
 # Convert CUDA flags from list
 MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+
+# Generate version file
+message(STATUS "${PROJECT_SOURCE_DIR}/.../version.hpp.in -> ${PROJECT_SOURCE_DIR}/.../version.hpp")
+configure_file (
+    "${PROJECT_SOURCE_DIR}/src/scope/utils/version.hpp.in"
+    "${PROJECT_SOURCE_DIR}/src/scope/utils/version.hpp"
+)
 
 cotire(scope)
 
