@@ -17,6 +17,7 @@ option(ENABLE_COMM "Include Comm|Scope (github.com/rai-project/comm_scope)" ON)
 option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" OFF)
 option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_scope)" ON)
 option(ENABLE_NCCL "Include Nccl|Scope (github.com/rai-project/nccl_scope)" OFF)
+option(ENABLE_HISTO "Include Histo|Scope (github.com/cwpearson/histo_scope)" OFF)
 
 if (CONFIG_USE_HUNTER)
   include("cmake/modules/HunterGate.cmake")
@@ -173,6 +174,12 @@ if (ENABLE_NCCL)
   add_subdirectory(${TOP_DIR}/nccl_scope)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
+
+if (ENABLE_HISTO)
+  message(STATUS "Enabling Histo|Scope")
+  add_subdirectory(${TOP_DIR}/histo_scope)
+  target_link_libraries(scope histo_scope)
+endif(ENABLE_HISTO)
 
 # once all common utilities in src/scope, remove ${SRC_DIR}
 target_include_directories(scope PRIVATE

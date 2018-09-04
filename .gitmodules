@@ -10,3 +10,6 @@
 [submodule "nccl_scope"]
 	path = nccl_scope
 	url = ../../rai-project/nccl_scope.git
+[submodule "histo_scope"]
+	path = histo_scope
+	url = ../../cwpearson/histo_scope.git
