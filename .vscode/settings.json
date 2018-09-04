@@ -21,4 +21,5 @@
     "**/.DS_Store": true,
     "build": true
   },
+  "cmake.configureOnOpen": false,
 }

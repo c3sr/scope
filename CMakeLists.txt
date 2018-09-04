@@ -37,9 +37,32 @@ include(CTest)
 include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
+include(ScopeStatus)
+
+# Checkout submodules
+find_package(Git QUIET)
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+# Update submodules as needed
+    option(GIT_SUBMODULE "Check submodules during build" ON)
+    if(GIT_SUBMODULE)
+        scope_status("Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+        endif()
+    endif()
+endif()
+
+if(   NOT EXISTS "${PROJECT_SOURCE_DIR}/nccl_scope/CMakeLists.txt" 
+   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/comm_scope/CMakeLists.txt"
+   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/example_scope/CMakeLists.txt"
+   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/misc_scope/CMakeLists.txt")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()
 
 if (CONFIG_USE_HUNTER)
-
   hunter_add_package(sugar)
   find_package(sugar CONFIG REQUIRED)
   # include(${SUGAR_ROOT}/cmake/sugar)
@@ -49,10 +72,9 @@ if (CONFIG_USE_HUNTER)
   hunter_add_package(spdlog)
 
   find_package(spdlog CONFIG REQUIRED)
-
 else()
   # Add Sugar
-  message(STATUS "looking for Sugar in: ${SUGAR_ROOT}")
+  scope_status("looking for Sugar in: ${SUGAR_ROOT}")
   list(APPEND CMAKE_MODULE_PATH "${SUGAR_ROOT}/cmake/module")
 endif (CONFIG_USE_HUNTER)
 
@@ -64,6 +86,9 @@ find_package(CUDA REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
+
+
+
 
 # Disable extended variants of C++ dialects
 # i.e. don't choose gnu++17 over c++17
@@ -82,7 +107,7 @@ if (UNIX AND NOT APPLE)
                   -fuse-ld=gold -Wl,--version
                   ERROR_QUIET OUTPUT_VARIABLE ld_version)
   if ("${ld_version}" MATCHES "GNU gold")
-    message(STATUS "Found Gold linker, use faster linker")
+    scope_status("Found Gold linker, use faster linker")
     set(CMAKE_EXE_LINKER_FLAGS
         "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
     set(CMAKE_SHARED_LINKER_FLAGS
@@ -119,10 +144,10 @@ if(CUDA_MULTI_ARCH)
   CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
 else()
   if (DEFINED NVCC_ARCH_FLAGS)
-    message(STATUS "Manual cuda arch flags...")
+    scope_status("Manual cuda arch flags...")
     CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS ${NVCC_ARCH_FLAGS})
   else()
-    message(STATUS "Automatic cuda arch flags...")
+    scope_status("Automatic cuda arch flags...")
     CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
   endif()
 endif()
@@ -133,7 +158,7 @@ LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
 					         --expt-extended-lambda
 )
 
-MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
+scope_status("Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
 			   " archs: ${CUDA_ARCH_FLAGS_readable})")
 
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
@@ -144,7 +169,7 @@ set(CUDA_VERBOSE_BUILD OFF)
 
 set(TOP_DIR "${PROJECT_SOURCE_DIR}")
 set(THIRDPARTY_DIR "${TOP_DIR}/third_party")
-set(SRC_DIR "${TOP_DIR}/src")
+set(SCOPE_SRC_DIR "${TOP_DIR}/src")
 
 sugar_include("./src")
 
@@ -152,44 +177,44 @@ sugar_include("./src")
 add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
 if (ENABLE_COMM)
-  message(STATUS "Enabling Comm|Scope")
+  scope_status("Enabling Comm|Scope")
   add_subdirectory(${TOP_DIR}/comm_scope)
   target_link_libraries(scope comm_scope)
 endif(ENABLE_COMM)
 
 if (ENABLE_MISC)
-  message(STATUS "Enabling Misc|Scope")
+  scope_status("Enabling Misc|Scope")
   add_subdirectory(${TOP_DIR}/misc_scope)
   target_link_libraries(scope misc_scope)
 endif(ENABLE_MISC)
 
 if (ENABLE_EXAMPLE)
-  message(STATUS "Enabling Example|Scope")
-  add_subdirectory(${TOP_DIR}/example_scope)
+  scope_status("Enabling Example|Scope")
+  add_subdirectory(${TOP_DIR}/example_scope EXCLUDE_FROM_ALL)
   target_link_libraries(scope example_scope)
 endif(ENABLE_EXAMPLE)
 
 if (ENABLE_NCCL)
-  message(STATUS "Enabling NCCL|Scope")
+  scope_status("Enabling NCCL|Scope")
   add_subdirectory(${TOP_DIR}/nccl_scope)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
 
 if (ENABLE_HISTO)
-  message(STATUS "Enabling Histo|Scope")
+  scope_status("Enabling Histo|Scope")
   add_subdirectory(${TOP_DIR}/histo_scope)
   target_link_libraries(scope histo_scope)
 endif(ENABLE_HISTO)
 
-# once all common utilities in src/scope, remove ${SRC_DIR}
 target_include_directories(scope PRIVATE
-  ${SRC_DIR}
+  ${SCOPE_SRC_DIR}
   ${TOP_DIR}/include
 )
 
 target_include_directories(scope SYSTEM PRIVATE
   ${THIRDPARTY_DIR}
   ${CUDA_INCLUDE_DIRS}
+  ${PROJECT_BINARY_DIR}/src/
 )
 
 target_compile_definitions(scope PUBLIC -DPROJECT_NAME=scope)
@@ -211,15 +236,21 @@ target_compile_features(scope PUBLIC cxx_std_11)
 
 git_get_head_revision(GIT_REFSPEC GIT_HASH)
 git_local_changes(GIT_LOCAL_CHANGES)
-MESSAGE(STATUS GIT_REFSPEC=${GIT_REFSPEC})
-MESSAGE(STATUS GIT_HASH=${GIT_HASH})
-MESSAGE(STATUS GIT_LOCAL_CHANGES=${GIT_LOCAL_CHANGES})
-target_compile_definitions(scope PUBLIC -DSCOPE_GIT_LOCAL_CHANGES="${GIT_LOCAL_CHANGES}" -DSCOPE_GIT_REFSPEC="${GIT_REFSPEC}" -DSCOPE_GIT_HASH="${GIT_HASH}")
+scope_status(GIT_REFSPEC=${GIT_REFSPEC})
+scope_status(GIT_HASH=${GIT_HASH})
+scope_status(GIT_LOCAL_CHANGES=${GIT_LOCAL_CHANGES})
 
 # Convert CUDA flags from list
-MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
-MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+
+# Generate version file
+scope_status("${PROJECT_SOURCE_DIR}/.../version.hpp.in -> ${PROJECT_BINARY_DIR}/.../version.hpp")
+configure_file (
+    "${PROJECT_SOURCE_DIR}/src/scope/utils/version.hpp.in"
+    "${PROJECT_BINARY_DIR}/src/scope/utils/version.hpp"
+)
 
 cotire(scope)
 
