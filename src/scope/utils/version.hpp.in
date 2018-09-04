@@ -1,5 +1,4 @@
-#ifndef SCOPE_UTILS_VERSION_HPP
-#define SCOPE_UTILS_VERSION_HPP
+#pragma once
 
 #include <string>
 
@@ -12,6 +11,11 @@
 #define SCOPE_GIT_HASH "@GIT_HASH@"
 #define SCOPE_GIT_LOCAL_CHANGES "@GIT_LOCAL_CHANGES@"
 
-std::string version();
+// Construct a version string from arguments
+// project version-refspec-hash-changes
+std::string version(const std::string &project,
+                    const std::string &version,
+                    const std::string &refspec,
+                    const std::string &hash,
+                    const std::string &changes);
 
-#endif

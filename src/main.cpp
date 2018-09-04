@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   // }
 
   if (FLAG(version)) {
-    std::cout << "Scope " << version() << "\n";
+    std::cout << version("Scope", SCOPE_VERSION, SCOPE_GIT_REFSPEC, SCOPE_GIT_HASH, SCOPE_GIT_LOCAL_CHANGES) << "\n";
     return 0;
   }
 
