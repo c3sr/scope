@@ -4,52 +4,28 @@
 #include <string>
 #include <iostream>
 
-const char * scope_git_refspec() 
-{
-#ifdef SCOPE_GIT_REFSPEC
-  return SCOPE_GIT_REFSPEC;
-#else
-  return "";
-#endif
-}
-
-const char * scope_git_hash() 
-{
-#ifdef SCOPE_GIT_HASH
-  return SCOPE_GIT_HASH;
-#else
-  return "";
-#endif
-}
-
-const char * scope_git_local_changes() 
-{
-#ifdef SCOPE_GIT_LOCAL_CHANGES
-  return SCOPE_GIT_LOCAL_CHANGES;
-#else
-  return "";
-#endif
-}
-
 std::string version() {
-
-    std::string refspec = scope_git_refspec();
-    std::string hash = scope_git_hash();
-    std::string local_changes;
-    if (std::string("DIRTY") == std::string(scope_git_local_changes())) {
-        local_changes = "-dirty";
+    std::string changes_part;
+    if (std::string("DIRTY") == std::string(SCOPE_GIT_LOCAL_CHANGES)) {
+        changes_part = "-dirty";
     } else {
-        local_changes = "";
+        changes_part = "";
     }
 
+    std::string refspec = SCOPE_GIT_REFSPEC;
+    std::string refspec_part;
     if (refspec.rfind("refs/heads/", 0) == 0) {
-        return refspec.substr(11, refspec.size() - 11) + std::string("-") + hash + local_changes;
+        refspec_part = refspec.substr(11, refspec.size() - 11);
     } else if (refspec.rfind("refs/tags/", 0) == 0) {
-        return refspec.substr(10, refspec.size() - 10) + local_changes;
+        refspec_part = refspec.substr(10, refspec.size() - 10);
     } else {
-      LOG(debug, "refspec={}", refspec);
-      LOG(debug, "hash={}", hash);
-      return std::string("unknown");
+      LOG(debug, "refspec={} was unexpected", refspec);
+      refspec_part = std::string("unknown");
     }
 
+    std::string hash_part = SCOPE_GIT_HASH;
+
+    std::string version_part = SCOPE_VERSION;
+
+    return version_part + "-" + refspec_part + "-" + hash_part + changes_part;
 }
