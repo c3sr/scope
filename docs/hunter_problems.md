@@ -16,11 +16,10 @@ This could be caused by a few things:
 
 If you built your own CMake, you may not have built it with SSL enabled. Try this [hunter documentation](https://docs.hunter.sh/en/latest/faq/how-to-fix-download-error.html) for more info, but the short version is, you should build cmake like this (described in [hunter issue 328](https://github.com/ruslo/hunter/issues/328)):
 
-    git clone ... cmake
-    cd cmake
-    ./bootstrap --system-curl
+    sudo apt install zlib1g-dev libcurl4-openssl-dev
+    ./bootstrap --system-curl --parallel=`nproc`
     make
-    sudo make install
+    make install
 
 ### libcurl was not built with SSL support
 
