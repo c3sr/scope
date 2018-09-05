@@ -8,8 +8,9 @@
 #include "logger.hpp"
 #include "cuda.hpp"
 
-bool has_cuda = false;
 cudaDeviceProp cuda_device_prop;
+
+bool has_cuda = false;
 int device_count = 0;
 
 int num_gpus() {

@@ -9,3 +9,4 @@ extern cudaDeviceProp cuda_device_prop;
 
 bool init_cuda();
 int num_gpus();
+

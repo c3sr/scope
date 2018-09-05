@@ -1,9 +1,5 @@
 #pragma once
 
-#include <iostream>
-
-#include "config.hpp"
-
 #include "scope/utils/commandlineflags.hpp"
 
 DECLARE_int32(cuda_device_id);

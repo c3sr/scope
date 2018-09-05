@@ -239,10 +239,10 @@ string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
 # Generate version file
-scope_status("${PROJECT_SOURCE_DIR}/.../version.hpp.in -> ${PROJECT_BINARY_DIR}/.../version.hpp")
+scope_status("${PROJECT_SOURCE_DIR}/.../config.hpp.in -> ${PROJECT_BINARY_DIR}/.../config.hpp")
 configure_file (
-    "${PROJECT_SOURCE_DIR}/src/scope/utils/version.hpp.in"
-    "${PROJECT_BINARY_DIR}/src/scope/utils/version.hpp"
+    "${PROJECT_SOURCE_DIR}/src/config.hpp.in"
+    "${PROJECT_BINARY_DIR}/src/config.hpp"
 )
 
 cotire(scope)

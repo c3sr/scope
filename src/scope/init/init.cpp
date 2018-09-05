@@ -1,5 +1,4 @@
 #include "scope/init/init.hpp"
-
 #include "scope/init/cuda.hpp"
 #include "scope/init/flags.hpp"
 #include "scope/init/logger.hpp"

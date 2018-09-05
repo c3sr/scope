@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "benchmark.hpp"
@@ -14,3 +13,4 @@
 #include "nvptx.hpp"
 #include "page.hpp"
 #include "timer.hpp"
+
