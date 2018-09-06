@@ -74,6 +74,42 @@ bool ParseDouble(const std::string& src_text, const char* str, double* value) {
   return true;
 }
 
+
+std::vector<std::string> split(const std::string &str, const std::string &delim) {
+  std::string token;
+  std::vector<std::string> tokens;
+
+  size_t start = 0;
+  size_t end = str.find(delim);
+  while (end != std::string::npos) {
+    tokens.push_back(str.substr(start, end-start));
+    start = end + delim.size();
+    end = str.find(delim, start);
+  }
+
+  return tokens;
+}
+
+// Parses 'str' for a list of int32_t.  If successful, writes the result to *value and
+// returns true; otherwise leaves *value unchanged and returns false.
+bool ParseVecInt32(const std::string& src_text, const char* str, std::vector<int32_t>* value) {
+
+  // Split the value by the delimiter
+  auto tokens = split(str, ",");
+  std::vector<int32_t> vec_int32_value(tokens.size());
+
+  for (size_t i = 0; i < tokens.size(); ++i) {
+    if (!ParseInt32("The token ", tokens[i].c_str(), &vec_int32_value[i])) {
+      std::cerr << src_text << " is expected to be a vec<int32_t>, "
+                << "but actually has value \"" << str << "\".\n";
+      return false;
+    }
+  }
+
+  *value = vec_int32_value;
+  return true;
+}
+
 // Returns the name of the environment variable corresponding to the
 // given flag.  For example, FlagToEnvVar("foo") will return
 // "BENCHMARK_FOO" in the open-source version.
@@ -205,6 +241,18 @@ bool ParseStringFlag(const char* str, const char* flag, std::string* value) {
 
   *value = value_str;
   return true;
+}
+
+bool ParseVecInt32Flag(const char* str, const char* flag, std::vector<int32_t>* value) {
+  // Gets the value of the flag as a string.
+  const char* const value_str = ParseFlagValue(str, flag, false);
+
+  // Aborts if the parsing failed.
+  if (value_str == nullptr)
+    return false;
+
+  // Sets *value to the value of the flag.
+  return ParseVecInt32(std::string("The value of flag --") + flag, value_str, value);
 }
 
 bool IsFlag(const char* str, const char* flag) {

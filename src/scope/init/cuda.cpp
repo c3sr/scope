@@ -37,15 +37,23 @@ bool init_cuda() {
 
   has_cuda = true;
 
-  if (FLAG(cuda_device_id) < 0) {
-    LOG(critical, "device = {} is not valid.", FLAG(cuda_device_id));
-    exit(1);
-  }
-  if ((FLAG(cuda_device_id) > device_count - 1) || (FLAG(cuda_device_id) < 0)) {
-    FLAG(cuda_device_id) = 0;
+  // check that any cuda_device_ids are existing devices
+  if (!FLAG(cuda_device_ids).empty()) {
+    for (const auto &dev: FLAG(cuda_device_ids)) {
+      if (dev < 0 || dev >= device_count) {
+        LOG(critical, "device = {} is not valid.", dev);
+        exit(1);
+    }
+    }
+  } else { // populate with existing devices
+    for (int dev = 0; dev < device_count; ++dev) {
+      FLAG(cuda_device_ids).push_back(dev);
+    }
   }
 
-  if (PRINT_IF_ERROR(cudaSetDevice(FLAG(cuda_device_id)))) {
+  assert(FLAG(cuda_device_ids).empty() && "expected at least one CUDA device");
+  const int dev0 = FLAG(cuda_device_ids)[0];
+  if (PRINT_IF_ERROR(cudaSetDevice(dev0))) {
     return false;
   }
 
@@ -53,7 +61,7 @@ bool init_cuda() {
     return false;
   }
 
-  if (PRINT_IF_ERROR(cudaGetDeviceProperties(&cuda_device_prop, FLAG(cuda_device_id)))) {
+  if (PRINT_IF_ERROR(cudaGetDeviceProperties(&cuda_device_prop, dev0))) {
     return false;
   }
 

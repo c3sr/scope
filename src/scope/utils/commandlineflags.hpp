@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace bench {
 namespace flags {}
@@ -24,6 +25,7 @@ namespace flags {}
 #define DECLARE_int64(name) FLAGS_NS(extern int64_t name)
 #define DECLARE_double(name) FLAGS_NS(extern double name)
 #define DECLARE_string(name) FLAGS_NS(extern std::string name)
+#define DECLARE_vec_int32(name) FLAGS_NS(extern std::vector<int32_t> name)
 
 // Macros for defining flags.
 #define DEFINE_bool(name, default_val, doc) FLAGS_NS(bool name = (default_val))
@@ -31,6 +33,7 @@ namespace flags {}
 #define DEFINE_int64(name, default_val, doc) FLAGS_NS(int64_t name = (default_val))
 #define DEFINE_double(name, default_val, doc) FLAGS_NS(double name = (default_val))
 #define DEFINE_string(name, default_val, doc) FLAGS_NS(std::string name = (default_val))
+#define DEFINE_vec_int32(name, default_val, doc) FLAGS_NS(std::vector<int32_t> name(default_val))
 
 namespace utils {
 // Parses 'str' for a 32-bit signed integer.  If successful, writes the result
@@ -76,6 +79,13 @@ bool ParseDoubleFlag(const char* str, const char* flag, double* value);
 // On success, stores the value of the flag in *value, and returns
 // true.  On failure, returns false without changing *value.
 bool ParseStringFlag(const char* str, const char* flag, std::string* value);
+
+// Parses a vec<int32_t> for a vec<int32_t> flag, in the form of
+// "--flag=v0,v1,v2,...".
+//
+// On success, stores the value of the flag in *value, and returns
+// true.  On failure, returns false without changing *value.
+bool ParseVecInt32Flag(const char* str, const char* flag, std::vector<int32_t>* value);
 
 // Returns true if the string matches the flag.
 bool IsFlag(const char* str, const char* flag);
