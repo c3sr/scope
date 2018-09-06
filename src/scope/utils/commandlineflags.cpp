@@ -80,12 +80,12 @@ std::vector<std::string> split(const std::string &str, const std::string &delim)
   std::vector<std::string> tokens;
 
   size_t start = 0;
-  size_t end = str.find(delim);
-  while (end != std::string::npos) {
+  size_t end;
+  do {
+    end = str.find(delim, start);
     tokens.push_back(str.substr(start, end-start));
     start = end + delim.size();
-    end = str.find(delim, start);
-  }
+  } while (end != std::string::npos);
 
   return tokens;
 }
@@ -99,7 +99,7 @@ bool ParseVecInt32(const std::string& src_text, const char* str, std::vector<int
   std::vector<int32_t> vec_int32_value(tokens.size());
 
   for (size_t i = 0; i < tokens.size(); ++i) {
-    if (!ParseInt32("The token ", tokens[i].c_str(), &vec_int32_value[i])) {
+    if (!ParseInt32("The token", tokens[i].c_str(), &vec_int32_value[i])) {
       std::cerr << src_text << " is expected to be a vec<int32_t>, "
                 << "but actually has value \"" << str << "\".\n";
       return false;
