@@ -2,7 +2,7 @@
 
 |master|
 |--|
-| [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
+| [![Build Status](https://travis-ci.com/c3sr/scope.svg?branch=master)](https://travis-ci.com/c3sr/scope)|
 
 A benchmark framework developed by the [IMPACT](impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
 
