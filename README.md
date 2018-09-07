@@ -178,7 +178,8 @@ If some of the third-party code compiled by hunter needs a different compiler, y
 
 ## Adding a new benchmark
 
-If you would like to extend the benchmark suite, read [here](docs/new_benchmark.md) for more information.
+If you would like to develop a benchmark suite, read [here](docs/new_scope.md) for more information.
+Also, check out the [Example|Scope](https://github.com/c3sr/example_scope) for a template to get started
 
 ## Third-Party Resources
 
