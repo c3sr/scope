@@ -13,9 +13,11 @@ Primary maintainers:
 
 Various benchmark suites using Scope are under development:
 
-* [Comm|Scope](github.com/rai-project/comm_scope) - CUDA/NUMA data transfer performance
-* [NCCL|Scope](github.com/rai-project/nccl_scope) - GPU collective communication performance
-* [Misc|Scope](github.com/rai-project/misc_scope) - experimental or miscellaneous benchmarks
+* [Comm|Scope](https://github.com/c3sr/comm_scope) - CUDA/NUMA data transfer performance (Carl Pearson, UIUC)
+* [NCCL|Scope](https://github.com/rai-project/nccl_scope) - GPU collective communication performance (Sarah Hashash, UIUC)
+* Histo|Scope - CUDA histogram techniques (Carl Pearson, UIUC)
+* DDL|Scope - IBM Distributed Deep Learning Library benchmarks (Vandana Kulkarni, UIUC)
+* [Misc|Scope](https://github.com/c3sr/misc_scope) - experimental or miscellaneous benchmarks
 
 
 ## Install CMake >= 3.12
