@@ -16,7 +16,7 @@ sugar_include(scope)
 
 sugar_files(
     BENCHMARK_HEADERS
-    config.hpp
+    config.hpp.in
 )
 
 sugar_files(

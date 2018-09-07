@@ -1,7 +1,6 @@
-#ifndef SCOPE_UTILS_VERSION_HPP
-#define SCOPE_UTILS_VERSION_HPP
+#pragma once
 
-#include <string>
+#define CUDA_MAX_GRID_SIZE 65535
 
 #define SCOPE_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define SCOPE_VERSION_MINOR @PROJECT_VERSION_MINOR@
@@ -12,6 +11,4 @@
 #define SCOPE_GIT_HASH "@GIT_HASH@"
 #define SCOPE_GIT_LOCAL_CHANGES "@GIT_LOCAL_CHANGES@"
 
-std::string version();
 
-#endif

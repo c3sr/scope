@@ -1,9 +1,5 @@
 #pragma once
 
-#include "config.hpp"
-
-#include <cuda_runtime.h>
-
 #include "cuda.hpp"
 
 void init(int argc, char **argv);
