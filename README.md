@@ -1,8 +1,8 @@
-# Microbenchmark
+# Scope
 
 |master|
 |--|
-| [![Build Status](https://travis-ci.com/rai-project/microbench.svg?branch=master)](https://travis-ci.com/rai-project/microbench)|
+| [![Build Status](https://travis-ci.com/c3sr/scope.svg?branch=master)](https://travis-ci.com/c3sr/scope)|
 
 A benchmark framework developed by the [IMPACT](impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
 
@@ -13,9 +13,11 @@ Primary maintainers:
 
 Various benchmark suites using Scope are under development:
 
-* [Comm|Scope](github.com/rai-project/comm_scope) - CUDA/NUMA data transfer performance
-* [NCCL|Scope](github.com/rai-project/nccl_scope) - GPU collective communication performance
-* [Misc|Scope](github.com/rai-project/misc_scope) - experimental or miscellaneous benchmarks
+* [Comm|Scope](https://github.com/c3sr/comm_scope) - CUDA/NUMA data transfer performance (Carl Pearson, UIUC)
+* [NCCL|Scope](https://github.com/rai-project/nccl_scope) - GPU collective communication performance (Sarah Hashash, UIUC)
+* Histo|Scope - CUDA histogram techniques (Carl Pearson, UIUC)
+* DDL|Scope - IBM Distributed Deep Learning Library benchmarks (Vandana Kulkarni, UIUC)
+* [Misc|Scope](https://github.com/c3sr/misc_scope) - experimental or miscellaneous benchmarks
 
 
 ## Install CMake >= 3.12
@@ -176,7 +178,8 @@ If some of the third-party code compiled by hunter needs a different compiler, y
 
 ## Adding a new benchmark
 
-If you would like to extend the benchmark suite, read [here](docs/new_benchmark.md) for more information.
+If you would like to develop a benchmark suite, read [here](docs/new_scope.md) for more information.
+Also, check out the [Example|Scope](https://github.com/c3sr/example_scope) for a template to get started
 
 ## Third-Party Resources
 
