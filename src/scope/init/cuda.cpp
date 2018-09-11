@@ -51,7 +51,7 @@ bool init_cuda() {
     }
   }
 
-  assert(FLAG(cuda_device_ids).empty() && "expected at least one CUDA device");
+  assert(!FLAG(cuda_device_ids).empty() && "expected at least one CUDA device");
   const int dev0 = FLAG(cuda_device_ids)[0];
   if (PRINT_IF_ERROR(cudaSetDevice(dev0))) {
     return false;
