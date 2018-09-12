@@ -1,0 +1,7 @@
+
+[build]
+  base    = "docs"
+  # build   = "cd docs && npm install && node docs_build"
+  publish = "docs"
+
+
