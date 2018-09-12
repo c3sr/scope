@@ -22,6 +22,30 @@ The following options are also recognized according to Google Benchmark:
       [--benchmark_counters_tabular={true|false}]
 )";
 
+std::vector<char*> get_benchmark_argv(int argc, char *const *argv) {
+  std::vector<char*> ret;
+  ret.push_back(argv[0]);
+  for (int i = 1; i < argc; ++i) {
+    std::string arg(argv[i]);
+    if (arg.find("--benchmark_") == 0) {
+      ret.push_back(argv[i]);
+    }
+  }
+  return ret;
+}
+
+std::vector<char*> get_scope_argv(int argc, char *const *argv) {
+  std::vector<char*> ret;
+  ret.push_back(argv[0]);
+  for (int i = 1; i < argc; ++i) {
+    std::string arg(argv[i]);
+    if (arg.find("--benchmark_") == std::string::npos) {
+      ret.push_back(argv[i]);
+    }
+  }
+  return ret;
+}
+
 int main(int argc, char **argv) {
 
   if (!bench::init::logger::console || bench::init::logger::console->name() != std::string(argv[0])) {
@@ -31,8 +55,12 @@ int main(int argc, char **argv) {
   // run all the registered before_inits
   do_before_inits();
 
+  // Separate out the arguments
+  std::vector<char*> benchmark_argv = get_benchmark_argv(argc, argv);
+  std::vector<char*> scope_argv = get_scope_argv(argc, argv);
+
   // register scope flags and parse all flags
-  init_flags(argc, argv);
+  init_flags(scope_argv.size(), scope_argv.data());
 
   // keep levels somewhat consistent with Benchmark
   if (FLAG(verbose) == 0) {
@@ -64,9 +92,11 @@ int main(int argc, char **argv) {
   // run main init functions
   init();
 
-  benchmark::Initialize(&argc, argv);
+  //if (::benchmark::ReportUnrecognizedArguments(benchmark_argv.size(), benchmark_argv.data())) return 1;
 
-  // if (::benchmark::ReportUnrecognizedArguments(argc, argv)) return 1;
+  int i = benchmark_argv.size();
+  benchmark::Initialize(&i, benchmark_argv.data());
+
 
   // auto options = benchmark::internal::GetOutputOptions();
 
