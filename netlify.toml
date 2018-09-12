@@ -1,7 +1,7 @@
 
 [build]
   base    = "docs"
-  command = "cp example_scope/docs docs/example_scope && cp comm_scope/docs docs/comm_scope"
+  command = "git submodule update --init --recursive ; cp example_scope/docs docs/example_scope ; cp comm_scope/docs docs/comm_scope"
   publish = "docs"
 
 
