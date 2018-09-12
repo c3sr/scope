@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>C3SR Scope</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/katex.min.css" integrity="sha384-BTL0nVi8DnMrNdMQZG1Ww6yasK9ZGnUxL1ZWukXQ7fygA1py52yPp9W4wrR00VML"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css">
+
+
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+  <link rel="stylesheet" href="//unpkg.com/vue-material@beta/dist/vue-material.css">
+  <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/buble.css">
+  <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/docsify-themeable/dist/css/theme-simple.css"> -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/docsify-themeable/dist/css/theme-defaults.css"> -->
+
+  <link rel="stylesheet" href="./assets/occa.css">
+
+
+  <script src="//unpkg.com/docsify-edit-on-github@1.0.1/index.js">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+</head>
+
+<body class="no-sidebar">
+  <script>
+    window.build = {};
+    if (window.USING_NETLIFY) {
+      window.build.REPOSITORY_URL = "NETLIFY_REPOSITORY_URL";
+      window.build.BRANCH = "NETLFIY_BRANCH";
+      window.build.PULL_REQUEST = NETLFIY_PULL_REQUEST;
+      window.build.HEAD = "NETLFIY_HEAD";
+      window.build.COMMIT_REF = "NETLFIY_COMMIT_REF";
+      window.build.CONTEXT = "NETLFIY_CONTEXT";
+      window.build.REVIEW_ID = "NETLFIY_REVIEW_ID";
+      window.build.URL = "NETLIFY_URL";
+      window.build.DEPLOY_URL = "NETLIFY_DEPLOY_URL";
+      window.build.DEPLOY_PRIME_URL = "NETLIFY_DEPLOY_PRIME_URL";
+    } else {
+      window.build.DEPLOY_URL = "https://tensorcorebench.netlify.com"
+    }
+  </script>
+
+  <div id="app">Loading...</div>
+
+  <script src="//unpkg.com/vue/dist/vue.min.js"></script>
+  <script src="//unpkg.com/vue-material@beta"></script>
+  <script src="./assets/occa.js"></script>
+
+
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        console.log("hello netlify")
+      });
+    }
+
+
+    var makeViz = (function () {
+      var executed = false;
+      return function () {
+        if (!executed) {
+          executed = true;
+          viz = new Viz();
+        }
+      };
+    })();
+
+    function toMathsExpression(expr) {
+      if (expr[0] === '$' && expr[expr.length - 1] === '$') {
+        let displayStyle = false
+        expr = expr.substr(1, expr.length - 2)
+        if (expr[0] === '$' && expr[expr.length - 1] === '$') {
+          displayStyle = true
+          expr = expr.substr(1, expr.length - 2)
+        }
+        let html = null
+        try {
+          html = katex.renderToString(expr)
+        } catch (e) {
+          console.error(e)
+          return null
+        }
+        if (displayStyle && html) {
+          html = html.replace(/class="katex"/g, 'class="katex katex-block" style="display: block;"')
+        }
+        return html
+      } else {
+        return null
+      }
+    }
+
+    let alias = {
+      '/_sidebar.md': '/_sidebar.md',
+
+      '/.*/_navbar.md': '/_navbar.md',
+      '/layers/_sidebar.md': '/layers/_sidebar.md',
+      '/layers/.*/_sidebar.md': '/layers/_sidebar.md'
+    }
+    // if (window.build.DEPLOY_URL) {
+    //   alias['/benchmarks/(.*)/figures/(.*)'] = `/benchmarks/$1/${window.build.DEPLOY_URL}/figures/$2`
+    //   alias['figures/(.*)'] = `${window.build.DEPLOY_URL}/figures/$1`
+    // }
+
+    window.$docsify = window.$docsify || {};
+    window.$docsify = {
+      ...window.$docsify,
+      name: 'SCOPE',
+      repo: 'c3sr/scope',
+      loadNavbar: true,
+      loadSidebar: true,
+      autoHeader: true,
+      maxLevel: 4,
+      subMaxLevel: 4,
+      auto2top: true,
+      formatUpdated: '{MM}/{DD} {HH}:{mm}',
+      homepage: 'README.md',
+      search: {
+        noData: 'No Results! 😞',
+        paths: 'auto',
+        placeholder: 'Type to search 🔍',
+      },
+      alias,
+      // basePath: `${window.build.DEPLOY_URL}`,
+      notFoundPage: true,
+      executeScript: true,
+      themeable: {
+        readyTransition: true, // default
+        responsiveTables: false  // default
+      },
+      plugins: [
+        occa.docsifyPlugin,
+        EditOnGithubPlugin.create(
+          'https://github.com/c3sr/scope/docs/tree/master/',
+          '',
+          'Edit Me ✎'
+        )
+      ],
+      markdown: {
+        smartLists: true,
+        breaks: true,
+        gfm: true,
+        tables: true,
+        xhtml: false,
+        renderer: {
+          // link: function () {
+          //   // ...
+          //   return this.origin.code.apply(this, arguments);
+          // },
+          paragraph: function (text) {
+            const blockRegex = /\$\$[^\$]*\$\$/g
+            const inlineRegex = /\$[^\$]*\$/g
+            let blockExprArray = text.match(blockRegex)
+            let inlineExprArray = text.match(inlineRegex)
+            for (let i in blockExprArray) {
+              const expr = blockExprArray[i]
+              const result = toMathsExpression(expr)
+              if (result != null) {
+                text = text.replace(expr, result)
+              }
+            }
+            for (let i in inlineExprArray) {
+              const expr = inlineExprArray[i]
+              const result = toMathsExpression(expr)
+              if (result != null) {
+                text = text.replace(expr, result)
+              }
+            }
+            arguments[0] = text;
+            return this.origin.paragraph.apply(this, arguments)
+          },
+          codespan: function (code) {
+            if (code.startsWith("$") && code.endsWith("$")) {
+              try {
+                html = katex.renderToString(code.substr(1, code.length - 2))
+                return html
+              } catch (e) {
+              }
+            }
+            return '<code>' + code + '</code>';
+          },
+          code: function (code, lang) {
+            if (code.startsWith("$") && code.endsWith("$")) {
+              try {
+                html = katex.renderToString(code.substr(1, code.length - 1))
+                return html
+              } catch (e) {
+              }
+            }
+
+            mermaid.initialize({ startOnLoad: false });
+            if (lang === "mermaid") {
+              return (
+                '<div class="mermaid">' + mermaid.render(lang, code) + "</div>"
+              );
+            }
+            if (lang === "latex_render") {
+              try {
+                html = katex.renderToString(code)
+                return html.replace(/class="katex"/g, 'class="katex katex-block" style="display: block;"')
+              } catch (e) {
+                console.error(e)
+              }
+            }
+            if (lang === "graphviz" || lang == "dot") {
+              try {
+                makeViz();
+                return viz.renderSVGElement(code)
+                  .then(function (element) {
+                    document.body.appendChild(element);
+                  })
+                  .catch(error => {
+                    // Create a new Viz instance (@see Caveats page for more info)
+                    viz = new Viz();
+
+                    // Possibly display the error
+                    console.error(error);
+                  });
+              } catch (e) {
+                console.error(e)
+              }
+            }
+            return this.origin.code.apply(this, arguments);
+          },
+          image: function (href, title, text) {
+            var alignment;
+            var dimensions = [];
+            if (href) {
+              var splitted = href.split('|').map(function (s) {
+                return s.trim();
+              });
+              href = splitted[0];
+              var parameters = splitted[1];
+              if (parameters) {
+                var heightFromParams = /height=(\d+)/.exec(parameters);
+                var widthFromParams = /width=(\d+)/.exec(parameters);
+                var alignFromParams = /align=([a-zA-Z]+)/.exec(parameters);
+                var height = heightFromParams && heightFromParams[1];
+                var width = widthFromParams && widthFromParams[1];
+                var align = alignFromParams && alignFromParams[1];
+                var widthIsFinite = isFinite(parseInt(width));
+                var heightIsFinite = isFinite(parseInt(height));
+                if (widthIsFinite) {
+                  dimensions.push('width="' + width + '"');
+                }
+                if (heightIsFinite) {
+                  dimensions.push('height="' + height + '"');
+                }
+                alignment = align;
+              }
+            }
+            var attributes = [];
+            if (href) {
+              attributes.push('src="' + href + '"');
+              attributes.push('data-origin="' + href + '"');
+            }
+            if (text) {
+              attributes.push('alt="' + text + '"');
+            }
+            if (alignment) {
+              attributes.push('class="' + alignment + '"');
+            }
+            if (title) {
+              attributes.push('title="' + title + '"');
+            }
+            if (dimensions.length) {
+              attributes = attributes.concat(dimensions);
+            }
+            return '<img ' + attributes.join(' ') + '>';
+          }
+        }
+      },
+      // echartsTheme: {
+      //   categoryAxis: {
+      //     axisLine: { show: false },
+      //     axisTick: { show: false },
+      //     splitLine: { show: false }
+      //   },
+      //   valueAxis: { axisLine: { show: false } }
+      // }
+    }
+
+    Vue.use(VueMaterial.default)
+
+
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        tabNamespaces: {},
+      },
+      methods: {
+        onTabChange: (namespace, tab) => {
+          if (tab === vm.$data.tabNamespaces[namespace]) {
+            return;
+          }
+          vm.$data.tabNamespaces[namespace] = tab;
+        }
+      },
+    })
+
+    // if (typeof navigator.serviceWorker !== 'undefined') {
+    //   navigator.serviceWorker.register('sw.js')
+    // }
+  </script>
+
+  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <!--
+  <script src="//cdn.jsdelivr.net/npm/echarts@latest/dist/echarts.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-echarts-plugin/lib/index.min.js"></script> -->
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/katex.min.js" integrity="sha384-y6SGsNt7yZECc4Pf86XmQhC4hG2wxL6Upkt9N1efhFxfh6wlxBH0mJiTE8XYclC1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/contrib/auto-render.min.js" integrity="sha384-IiI65aU9ZYub2MY9zhtKd1H2ps7xxf+eb2YFG9lX6uRqpXCvBTOidPRCXCrQ++Uc"
+    crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/docsify-copy-code@2"></script>
+  <script src="https://unpkg.com/docsify-themeable"></script>
+
+  <script src="//unpkg.com/docsify/lib/plugins/zoom-image.min.js"></script>
+  <script src="//unpkg.com/docsify/lib/plugins/emoji.min.js"></script>
+  <script src="//unpkg.com/docsify/lib/plugins/external-script.min.js"></script>
+  <script src="https://unpkg.com/docsify/lib/plugins/search.min.js"></script>
+  <script src="//unpkg.com/docsify-plantuml/dist/docsify-plantuml.min.js"></script>
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
+  <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+  <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <script src="//unpkg.com/prismjs@1.13.0/components/prism-bash.min.js"></script>
+  <script src="//unpkg.com/prismjs@1.13.0/components/prism-c.min.js"></script>
+  <script src="//unpkg.com/prismjs@1.13.0/components/prism-cpp.min.js"></script>
+  <script src="//unpkg.com/prismjs@1.13.0/components/prism-latex.min.js"></script>
+  <script src="//unpkg.com/prismjs@1.13.0/components/prism-python.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.0.0/viz.js" integrity="sha256-bNrgdhNCcQJaZ5sTUCzFyL+Y3h3Is/EyJpH+Lw7Ouxs="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.0.0/full.render.js" integrity="sha256-xL5AKJzxGKMvEskoeJBbe0pVW1Q+SEKaWV75F6F0xIQ="
+    crossorigin="anonymous"></script>
+
+  <script src="https://use.fontawesome.com/990dab6c40.js"></script>
+
+  <script>
+
+    const extra_keywords = [
+      '__device__',
+      '__global__',
+      '__host__',
+      '__constant__',
+      '__shared__',
+      '__inline__',
+      '__align__',
+      '__thread____import__',
+      '__export__',
+      '__location__',
+      "__syncthreads",
+      "__threadfence",
+      "__threadfence_block",
+      "__restricted"
+    ];
+    const cuda_api_calls = [
+      'cudaDeviceReset',
+      'cudaDeviceSynchronize',
+      'cudaDeviceSetLimit',
+      'cudaDeviceGetLimit',
+      'cudaDeviceGetCacheConfig',
+      'cudaDeviceGetStreamPriorityRange',
+      'cudaDeviceSetCacheConfig',
+      'cudaDeviceGetSharedMemConfig',
+      'cudaDeviceSetSharedMemConfig',
+      'cudaDeviceGetByPCIBusId',
+      'cudaDeviceGetPCIBusId',
+      'cudaIpcGetEventHandle',
+      'cudaIpcOpenEventHandle',
+      'cudaIpcGetMemHandle',
+      'cudaIpcOpenMemHandle',
+      'cudaIpcCloseMemHandle',
+      'cudaThreadExit',
+      'cudaThreadSynchronize',
+      'cudaThreadSetLimit',
+      'cudaThreadGetLimit',
+      'cudaThreadGetCacheConfig',
+      'cudaThreadSetCacheConfig',
+      'cudaGetLastError',
+      'cudaPeekAtLastError',
+      'cudaGetErrorName',
+      'cudaGetErrorString',
+      'cudaGetDeviceCount',
+      'cudaGetDeviceProperties',
+      'cudaDeviceGetAttribute',
+      'cudaChooseDevice',
+      'cudaSetDevice',
+      'cudaGetDevice',
+      'cudaSetValidDevices',
+      'cudaSetDeviceFlags',
+      'cudaGetDeviceFlags',
+      'cudaStreamCreate',
+      'cudaStreamCreateWithFlags',
+      'cudaStreamCreateWithPriority',
+      'cudaStreamGetPriority',
+      'cudaStreamGetFlags',
+      'cudaStreamDestroy',
+      'cudaStreamWaitEvent',
+      'cudaStreamAddCallback',
+      'cudaStreamSynchronize',
+      'cudaStreamQuery',
+      'cudaStreamAttachMemAsync',
+      'cudaEventCreate',
+      'cudaEventCreateWithFlags',
+      'cudaEventRecord',
+      'cudaEventQuery',
+      'cudaEventSynchronize',
+      'cudaEventDestroy',
+      'cudaEventElapsedTime',
+      'cudaLaunchKernel',
+      'cudaFuncSetCacheConfig',
+      'cudaFuncSetSharedMemConfig',
+      'cudaFuncGetAttributes',
+      'cudaSetDoubleForDevice',
+      'cudaSetDoubleForHost',
+      'cudaOccupancyMaxActiveBlocksPerMultiprocessor',
+      'cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags',
+      'cudaConfigureCall',
+      'cudaSetupArgument',
+      'cudaLaunch',
+      'cudaMallocManaged',
+      'cudaMalloc',
+      'cudaMallocHost',
+      'cudaMallocPitch',
+      'cudaMallocArray',
+      'cudaFree',
+      'cudaFreeHost',
+      'cudaFreeArray',
+      'cudaFreeMipmappedArray',
+      'cudaHostAlloc',
+      'cudaHostRegister',
+      'cudaHostUnregister',
+      'cudaHostGetDevicePointer',
+      'cudaHostGetFlags',
+      'cudaMalloc3D',
+      'cudaMalloc3DArray',
+      'cudaMallocMipmappedArray',
+      'cudaGetMipmappedArrayLevel',
+      'cudaMemcpy3D',
+      'cudaMemcpy3DPeer',
+      'cudaMemcpy3DAsync',
+      'cudaMemcpy3DPeerAsync',
+      'cudaMemGetInfo',
+      'cudaArrayGetInfo',
+      'cudaMemcpy',
+      'cudaMemcpyPeer',
+      'cudaMemcpyToArray',
+      'cudaMemcpyFromArray',
+      'cudaMemcpyArrayToArray',
+      'cudaMemcpy2D',
+      'cudaMemcpy2DToArray',
+      'cudaMemcpy2DFromArray',
+      'cudaMemcpy2DArrayToArray',
+      'cudaMemcpyToSymbol',
+      'cudaMemcpyFromSymbol',
+      'cudaMemcpyAsync',
+      'cudaMemcpyPeerAsync',
+      'cudaMemcpyToArrayAsync',
+      'cudaMemcpyFromArrayAsync',
+      'cudaMemcpy2DAsync',
+      'cudaMemcpy2DToArrayAsync',
+      'cudaMemcpy2DFromArrayAsync',
+      'cudaMemcpyToSymbolAsync',
+      'cudaMemcpyFromSymbolAsync',
+      'cudaMemset',
+      'cudaMemset2D',
+      'cudaMemset3D',
+      'cudaMemsetAsync',
+      'cudaMemset2DAsync',
+      'cudaMemset3DAsync',
+      'cudaGetSymbolAddress',
+      'cudaGetSymbolSize',
+      'cudaPointerGetAttributes',
+      'cudaDeviceCanAccessPeer',
+      'cudaDeviceEnablePeerAccess',
+      'cudaDeviceDisablePeerAccess',
+      'cudaGraphicsUnregisterResource',
+      'cudaGraphicsResourceSetMapFlags',
+      'cudaGraphicsMapResources',
+      'cudaGraphicsUnmapResources',
+      'cudaGraphicsResourceGetMappedPointer',
+      'cudaGraphicsSubResourceGetMappedArray',
+      'cudaGraphicsResourceGetMappedMipmappedArray',
+      'cudaGetChannelDesc',
+      'cudaCreateChannelDesc',
+      'cudaBindTexture',
+      'cudaBindTexture2D',
+      'cudaBindTextureToArray',
+      'cudaBindTextureToMipmappedArray',
+      'cudaUnbindTexture',
+      'cudaGetTextureAlignmentOffset',
+      'cudaGetTextureReference',
+      'cudaBindSurfaceToArray',
+      'cudaGetSurfaceReference',
+      'cudaCreateTextureObject',
+      'cudaDestroyTextureObject',
+      'cudaGetTextureObjectResourceDesc',
+      'cudaGetTextureObjectTextureDesc',
+      'cudaGetTextureObjectResourceViewDesc',
+      'cudaCreateSurfaceObject',
+      'cudaDestroySurfaceObject',
+      'cudaGetSurfaceObjectResourceDesc',
+      'cudaDriverGetVersion',
+      'cudaRuntimeGetVersion',
+      'cudaGetExportTable',
+      'cudaMemcpy',
+      'cudaMemcpyToSymbol',
+      'cudaMemcpyFromSymbol',
+      'cudaMemcpy2D',
+      'cudaMemcpyToArray',
+      'cudaMemcpy2DToArray',
+      'cudaMemcpyFromArray',
+      'cudaMemcpy2DFromArray',
+      'cudaMemcpyArrayToArray',
+      'cudaMemcpy2DArrayToArray',
+      'cudaMemcpy3D',
+      'cudaMemcpy3DPeer',
+      'cudaMemset',
+      'cudaMemset2D',
+      'cudaMemset3D',
+      'cudaMemcpyAsync',
+      'cudaMemcpyToSymbolAsync',
+      'cudaMemcpyFromSymbolAsync',
+      'cudaMemcpy2DAsync',
+      'cudaMemcpyToArrayAsync',
+      'cudaMemcpy2DToArrayAsync',
+      'cudaMemcpyFromArrayAsync',
+      'cudaMemcpy2DFromArrayAsync',
+      'cudaMemcpy3DAsync',
+      'cudaMemcpy3DPeerAsync',
+      'cudaMemsetAsync',
+      'cudaMemset2DAsync',
+      'cudaMemset3DAsync',
+      'cudaStreamQuery',
+      'cudaStreamGetFlags',
+      'cudaStreamGetPriority',
+      'cudaEventRecord',
+      'cudaStreamWaitEvent',
+      'cudaStreamAddCallback',
+      'cudaStreamAttachMemAsync',
+      'cudaStreamSynchronize',
+      'cudaLaunch',
+      'cudaLaunchKernel'
+
+    ];
+    const extra_types = [
+      'char1',
+      'char2',
+      'char3',
+      'char4',
+      'uchar1',
+      'uchar2',
+      'uchar3',
+      'uchar4',
+      'short1',
+      'short2',
+      'short3',
+      'short4',
+      'ushort1',
+      'ushort2',
+      'ushort3',
+      'ushort4',
+      'int1',
+      'int2',
+      'int3',
+      'int4',
+      'uint1',
+      'uint2',
+      'uint3',
+      'uint4',
+      'long1',
+      'long2',
+      'long3',
+      'long4',
+      'ulong1',
+      'ulong2',
+      'ulong3',
+      'ulong4',
+      'float1',
+      'float2',
+      'float3',
+      'float4',
+      'ufloat1',
+      'ufloat2',
+      'ufloat3',
+      'ufloat4',
+      'dim3',
+      'half',
+      'texture',
+      'textureReference',
+      'cudaError_t',
+      'cudaDeviceProp',
+      'cudaMemcpyKind',
+    ];
+    const keywords = [...extra_keywords, ...extra_types, ...cuda_api_calls];
+    Prism.languages.cuda = Prism.languages.extend('cpp', {
+      'keyword': new RegExp(
+        Prism.languages.cpp.keyword.source + "|" + "\b(?:" + keywords.join("|") + ")\b"
+      ),
+    });
+  </script>
+</body>
+
+</html>

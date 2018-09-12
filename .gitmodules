@@ -1,12 +1,12 @@
 [submodule "comm_scope"]
 	path = comm_scope
-	url = ../comm_scope.git
+	url = https://github.com/c3sr/comm_scope.git
 [submodule "example_scope"]
 	path = example_scope
-	url = ../example_scope.git
+	url = https://github.com/c3sr/example_scope.git
 [submodule "misc_scope"]
 	path = misc_scope
-	url = ../../rai-project/misc_scope.git
+	url = https://github.com/rai-project/misc_scope.git
 [submodule "nccl_scope"]
 	path = nccl_scope
-	url = ../../rai-project/nccl_scope.git
+	url = https://github.com/rai-project/nccl_scope.git

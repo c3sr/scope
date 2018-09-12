@@ -9,7 +9,7 @@ A benchmark framework developed by the [IMPACT](impact.crhc.illinois.edu) group 
 Primary maintainers:
 * Carl Pearson ([web](cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
 * Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
-* Cheng Li ([email](mailto:cli99@illinois.edu))
+* Cheng Li ([web](cli99.github.io)) ([email](mailto:cli99@illinois.edu))
 
 Various benchmark suites using Scope are under development:
 
@@ -17,6 +17,9 @@ Various benchmark suites using Scope are under development:
 * [NCCL|Scope](https://github.com/rai-project/nccl_scope) - GPU collective communication performance (Sarah Hashash, UIUC)
 * Histo|Scope - CUDA histogram techniques (Carl Pearson, UIUC)
 * DDL|Scope - IBM Distributed Deep Learning Library benchmarks (Vandana Kulkarni, UIUC)
+* TensorCore|Scope - Evaluation of Computational Techniques on TensorCore (Cheng Li and Abdul Dakkak, UIUC)
+* FrameworkLayer|Scope - Evaluation of neural network layers across frameworks (Cheng Li and Abdul Dakkak, UIUC)
+* CUDNN|Scope - Evaluation of neural network layers using CuDNN(Cheng Li and Abdul Dakkak, UIUC)
 * [Misc|Scope](https://github.com/c3sr/misc_scope) - experimental or miscellaneous benchmarks
 
 
