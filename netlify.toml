@@ -1,7 +1,7 @@
 
 [build]
   base    = "docs"
-  # build   = "cd docs && npm install && node docs_build"
+  build   = "cp example_scope/docs docs/example_scope && cp comm_scope/docs docs/comm_scope"
   publish = "docs"
 
 
