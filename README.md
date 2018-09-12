@@ -9,7 +9,7 @@ A benchmark framework developed by the [IMPACT](impact.crhc.illinois.edu) group 
 Primary maintainers:
 * Carl Pearson ([web](cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
 * Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
-* Cheng Li ([email](mailto:cli99@illinois.edu))
+* Cheng Li ([web](cli99.github.io)) ([email](mailto:cli99@illinois.edu))
 
 Various benchmark suites using Scope are under development:
 
