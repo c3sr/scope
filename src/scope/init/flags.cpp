@@ -1,31 +1,19 @@
+#include "clara/clara.hpp"
 
+#include "scope/init/flags.hpp"
 #include "scope/utils/utils.hpp"
+#include "scope/init/init.hpp"
 
-DEFINE_vec_int32(cuda_device_ids, {}, "The cuda devices to use");
-// DEFINE_bool(fast, false, "Whether to run only parts of the tests.");
-DEFINE_int32(verbose, 1, "Verbose level.");
-DEFINE_bool(help, false, "Show help message.");
-DEFINE_bool(version, false, "Show version message.");
 
-static void parse(int* argc, char** argv) {
-  using namespace utils;
-  for (int i = 1; i < *argc; ++i) {
-    if (ParseVecInt32Flag(argv[i], "cuda_device_ids", &FLAG(cuda_device_ids)) || ParseBoolFlag(argv[i], "h", &FLAG(help)) ||
-        ParseBoolFlag(argv[i], "help", &FLAG(help)) || ParseInt32Flag(argv[i], "v", &FLAG(verbose))) {
-      for (int j = i; j != *argc - 1; ++j)
-        argv[j] = argv[j + 1];
 
-      --(*argc);
-      --i;
-    }   
-  
-  // don't consume version, so scopes may also see it and print a version string
-  ParseBoolFlag(argv[i], "version", &FLAG(version));
-  }
+DEFINE_FLAG_vec_int32(cuda_device_ids, {}, "The cuda devices to use");
+DEFINE_FLAG_bool(help, false, "Show help message.");
+DEFINE_FLAG_int32(verbose, 1, "Verbose level.");
+DEFINE_FLAG_bool(version, false, "Show version message.");
 
-}
-
-void init_flags(int argc, char** argv) {
-  parse(&argc, argv);
-  return;
+void register_flags() {
+    RegisterOpt(clara::Help(FLAG(help)));
+    RegisterOpt(clara::Opt(FLAG(verbose), "verbosity")["-v"]["--verbose"]("verbose mode"));
+    RegisterOpt(clara::Opt(FLAG(version))["--version"]("print version info"));
+    RegisterOpt(clara::Opt(FLAG(cuda_device_ids), "id")["-c"]["--cuda"]("add cuda device id"));
 }

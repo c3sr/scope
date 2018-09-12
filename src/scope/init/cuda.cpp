@@ -17,9 +17,6 @@ int num_gpus() {
   return device_count;
 }
 
-// using optional = std::experimental::optional;
-// using nullopt = std::experimental::nullopt;
-
 static float device_giga_bandwidth{0};
 static size_t device_free_physmem{0};
 static size_t device_total_physmem{0};
@@ -46,6 +43,7 @@ bool init_cuda() {
     }
     }
   } else { // populate with existing devices
+    LOG(debug, "no cuda devices provided, auto-detecting...");
     for (int dev = 0; dev < device_count; ++dev) {
       FLAG(cuda_device_ids).push_back(dev);
     }

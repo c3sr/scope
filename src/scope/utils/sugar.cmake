@@ -33,7 +33,6 @@ sugar_files(
 
 sugar_files(
     BENCHMARK_SOURCES
-    commandlineflags.cpp
     cuda.cpp
     version.cpp
 )

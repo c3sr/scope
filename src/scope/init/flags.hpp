@@ -1,10 +1,14 @@
 #pragma once
 
+
 #include "scope/utils/commandlineflags.hpp"
+#include "clara/clara.hpp"
 
-DECLARE_vec_int32(cuda_device_ids);
-DECLARE_bool(help);
-DECLARE_int32(verbose);
-DECLARE_bool(version);
+DECLARE_FLAG_vec_int32(cuda_device_ids);
+DECLARE_FLAG_bool(help);
+DECLARE_FLAG_int32(verbose);
+DECLARE_FLAG_bool(version);
 
-extern void init_flags(int argc, char **argv);
+
+
+void register_flags();
