@@ -1,7 +1,7 @@
 
 [build]
   base    = "docs"
-  command = "cp -r ../example_scope/docs example_scope ; cp -r ../comm_scope/docs comm_scope"
+  command = "cp ../README.md . ; cp -r ../example_scope/docs example_scope ; cp -r ../comm_scope/docs comm_scope"
   publish = "docs"
 
 
