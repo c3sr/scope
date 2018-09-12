@@ -37,6 +37,7 @@ include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 include(ScopeStatus)
+include(ScopeFatal)
 
 # Checkout submodules
 find_package(Git QUIET)
@@ -85,6 +86,8 @@ find_package(CUDA REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
+
+
 
 
 
@@ -198,6 +201,29 @@ if (ENABLE_NCCL)
   add_subdirectory(${TOP_DIR}/nccl_scope)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
+
+
+# Treat everything in scope/enable as a scope that should be enabled
+# This is useful for people who want to use the docker base image,
+# they can copy their scope into enable and then run cmake
+file(GLOB children LIST_DIRECTORIES true "${PROJECT_SOURCE_DIR}/enable/*" )
+set(autoenable_scopes "")
+foreach( child ${children} )
+  if(IS_DIRECTORY ${child} )
+    list(APPEND autoenable_scopes ${child})
+    scope_status("Assuming ${child} is a scope. Remove from scope/enable if not")
+  endif()
+endforeach()
+foreach( scope_dir ${autoenable_scopes})
+  scope_status("Adding scope ${scope_dir}")
+  unset(SCOPE_AUTOENABLE_TARGET)
+  add_subdirectory(${scope_dir})
+  if (DEFINED ${SCOPE_AUTOENABLE_TARGET})
+    target_link_libraries(scope ${SCOPE_AUTOENABLE_TARGET})
+  else()
+    scope_fatal("${scope_dir} should have set SCOPE_AUTOENABLE_TARGET for scope to link to. use set(SCOPE_AUTOENABLE_TARGET <target> PARENT_SCOPE)")
+  endif()
+endforeach()
 
 target_include_directories(scope PRIVATE
   ${SCOPE_SRC_DIR}
