@@ -25,6 +25,12 @@
 
   <script src="//unpkg.com/docsify-edit-on-github@1.0.1/index.js">
 
+
+
+
+
+
+
   </script>
 </head>
 
@@ -62,14 +68,14 @@
     }
 
 
-    var makeViz = (function() {
-        var executed = false;
-        return function() {
-            if (!executed) {
-                executed = true;
-                viz = new Viz();
-            }
-        };
+    var makeViz = (function () {
+      var executed = false;
+      return function () {
+        if (!executed) {
+          executed = true;
+          viz = new Viz();
+        }
+      };
     })();
 
     function toMathsExpression(expr) {
@@ -111,8 +117,8 @@
     window.$docsify = window.$docsify || {};
     window.$docsify = {
       ...window.$docsify,
-      name: 'Déjà vu',
-      repo: 'rai-project/dlperf',
+      name: 'SCOPE',
+      repo: 'c3sr/scope',
       loadNavbar: true,
       loadSidebar: true,
       autoHeader: true,
@@ -137,7 +143,7 @@
       plugins: [
         occa.docsifyPlugin,
         EditOnGithubPlugin.create(
-          'https://github.com/rai-project/dlperf_website/tree/master/',
+          'https://github.com/c3sr/scope/docs/tree/master/',
           '',
           'Edit Me ✎'
         )
@@ -212,16 +218,16 @@
               try {
                 makeViz();
                 return viz.renderSVGElement(code)
-                          .then(function(element) {
-                            document.body.appendChild(element);
-                          })
-                          .catch(error => {
-                            // Create a new Viz instance (@see Caveats page for more info)
-                            viz = new Viz();
+                  .then(function (element) {
+                    document.body.appendChild(element);
+                  })
+                  .catch(error => {
+                    // Create a new Viz instance (@see Caveats page for more info)
+                    viz = new Viz();
 
-                            // Possibly display the error
-                            console.error(error);
-                          });
+                    // Possibly display the error
+                    console.error(error);
+                  });
               } catch (e) {
                 console.error(e)
               }
@@ -339,8 +345,10 @@
   <script src="//unpkg.com/prismjs@1.13.0/components/prism-latex.min.js"></script>
   <script src="//unpkg.com/prismjs@1.13.0/components/prism-python.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.0.0/viz.js" integrity="sha256-bNrgdhNCcQJaZ5sTUCzFyL+Y3h3Is/EyJpH+Lw7Ouxs=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.0.0/full.render.js" integrity="sha256-xL5AKJzxGKMvEskoeJBbe0pVW1Q+SEKaWV75F6F0xIQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.0.0/viz.js" integrity="sha256-bNrgdhNCcQJaZ5sTUCzFyL+Y3h3Is/EyJpH+Lw7Ouxs="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.0.0/full.render.js" integrity="sha256-xL5AKJzxGKMvEskoeJBbe0pVW1Q+SEKaWV75F6F0xIQ="
+    crossorigin="anonymous"></script>
 
   <script src="https://use.fontawesome.com/990dab6c40.js"></script>
 

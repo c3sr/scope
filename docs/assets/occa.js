@@ -3,7 +3,7 @@ var occa = occa || {};
 occa.languageLabels = {
   cpp: "C++",
   cuda: "cuda",
-  python: "python",
+  python: "python"
 };
 
 occa.getLanguageLabel = language =>
@@ -16,7 +16,7 @@ occa.addFooter = content =>
   '<div id="footer">\n' +
   "  <hr/>\n" +
   '  <div id="copyright">\n' +
-  `   © Copyright 2018 - ${new Date().getFullYear()}, Abdul Dakkak and Cheng Li. &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Last modified on {docsify-updated} \n` +
+  `   © Copyright 2018 - ${new Date().getFullYear()}, Carl Pearson, Abdul Dakkak, and Cheng Li. &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Last modified on {docsify-updated} \n` +
   "  </div>\n" +
   "</div>\n";
 //======================================
