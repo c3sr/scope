@@ -9,8 +9,7 @@
 #include "scope/utils/version.hpp"
 
 static const auto benchmark_help = R"(
-
-The following options are also passed to benchmark:
+The following options are also recognized according to Google Benchmark:
       [--benchmark_list_tests={true|false}]
       [--benchmark_filter=<regex>]
       [--benchmark_min_time=<min_time>]
@@ -29,14 +28,11 @@ int main(int argc, char **argv) {
     bench::init::logger::console = spdlog::stdout_logger_mt(argv[0]);
   }
 
+  // run all the registered before_inits
+  do_before_inits();
+
+  // register scope flags and parse all flags
   init_flags(argc, argv);
-
-   if (FLAG(help)) {
-     std::cout << benchmark_help << "\n";
-     return 0;
-  }
-
-
 
   // keep levels somewhat consistent with Benchmark
   if (FLAG(verbose) == 0) {
@@ -51,12 +47,22 @@ int main(int argc, char **argv) {
     bench::init::logger::console->set_level(spdlog::level::trace);
   }
 
-  init();
+   if (FLAG(help)) {
+     std::cout << benchmark_help << "\n";
+     return 0;
+  }
 
   if (FLAG(version)) {
+    // print scope version
     std::cout << version("Scope", SCOPE_VERSION, SCOPE_GIT_REFSPEC, SCOPE_GIT_HASH, SCOPE_GIT_LOCAL_CHANGES) << "\n";
+    for (auto version_str : VersionStrings()) {
+      std::cout << version_str << "\n";
+    }
     return 0;
   }
+
+  // run main init functions
+  init();
 
   benchmark::Initialize(&argc, argv);
 

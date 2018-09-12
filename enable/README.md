@@ -1,6 +1,6 @@
 directories in this folder will be treated as scopes, and automatically enabled.
 
-As an additional requirement, they should use
+As an additional requirement, they should use in their `CMakeLists.txt`
 
 ```cmake
 set(SCOPE_AUTOENABLE_TARGET <target> PARENT_SCOPE)
