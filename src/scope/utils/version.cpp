@@ -13,12 +13,12 @@ std::string version(const std::string &project,
 
     std::string refspec_part;
     if (refspec.rfind("refs/heads/", 0) == 0) {
-        refspec_part = refspec.substr(11, refspec.size() - 11);
+        refspec_part = "-" + refspec.substr(11, refspec.size() - 11);
     } else if (refspec.rfind("refs/tags/", 0) == 0) {
-        refspec_part = refspec.substr(10, refspec.size() - 10);
+        refspec_part = "-" + refspec.substr(10, refspec.size() - 10);
     } else {
       LOG(debug, "refspec={} was unexpected", refspec);
-      refspec_part = std::string("unknown");
+      refspec_part = "";
     }
 
     std::string hash_part = hash.substr(0,8);
@@ -30,5 +30,5 @@ std::string version(const std::string &project,
         changes_part = "";
     }
 
-    return project_part + " " + version_part + "-" + refspec_part + "-" + hash_part + changes_part;
+    return project_part + " " + version_part + "-" + hash_part + refspec_part + changes_part;
 }
