@@ -17,6 +17,7 @@ option(ENABLE_COMM "Include Comm|Scope (github.com/rai-project/comm_scope)" ON)
 option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" OFF)
 option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_scope)" ON)
 option(ENABLE_NCCL "Include Nccl|Scope (github.com/rai-project/nccl_scope)" OFF)
+option(ENABLE_CUDNN "Include cuDNN|Scope (github.com/rai-project/cudnn_scope)" OFF)
 
 if (CONFIG_USE_HUNTER)
   include("cmake/modules/HunterGate.cmake")
@@ -58,7 +59,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-if(   NOT EXISTS "${PROJECT_SOURCE_DIR}/nccl_scope/CMakeLists.txt" 
+if(   NOT EXISTS "${PROJECT_SOURCE_DIR}/nccl_scope/CMakeLists.txt"
    OR NOT EXISTS "${PROJECT_SOURCE_DIR}/comm_scope/CMakeLists.txt"
    OR NOT EXISTS "${PROJECT_SOURCE_DIR}/example_scope/CMakeLists.txt"
    OR NOT EXISTS "${PROJECT_SOURCE_DIR}/misc_scope/CMakeLists.txt")
@@ -205,6 +206,11 @@ if (ENABLE_NCCL)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
 
+if (ENABLE_CUDNN)
+  scope_status("Enabling cuDNN|Scope")
+  add_subdirectory(${SCOPE_TOP_DIR}/cudnn_scope)
+  target_link_libraries(scope cudnn_scope)
+endif(ENABLE_CUDNN)
 
 # Treat everything in scope/enable as a scope that should be enabled
 # This is useful for people who want to use the docker base image,

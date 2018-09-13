@@ -10,3 +10,6 @@
 [submodule "nccl_scope"]
 	path = nccl_scope
 	url = https://github.com/rai-project/nccl_scope.git
+[submodule "cudnn_scope"]
+	path = cudnn_scope
+	url = https://github.com/c3sr/cudnn_scope.git
