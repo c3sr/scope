@@ -42,26 +42,31 @@ include(ScopeWarning)
 include(TargetIncludeScopeDirectories)
 include(TargetLinkScopeLibraries)
 
+set(SCOPE_TOP_DIR "${PROJECT_SOURCE_DIR}")
+set(SCOPE_THIRDPARTY_DIR "${SCOPE_TOP_DIR}/third_party")
+set(SCOPE_SRC_DIR "${SCOPE_TOP_DIR}/src")
+set(SCOPE_SCOPES_DIR "${SCOPE_TOP_DIR}/scopes")
+
 # Checkout submodules
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 # Update submodules as needed
-    option(GIT_SUBMODULE "Check submodules during build" ON)
-    if(GIT_SUBMODULE)
+    option(GIT_SUBMODULE_UPDATE "Update submodules during cmake" ON)
+    if(GIT_SUBMODULE_UPDATE)
         scope_status("Submodule update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                         RESULT_VARIABLE GIT_SUBMOD_RESULT)
         if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+            scope_fatal("git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
         endif()
     endif()
 endif()
 
-if(   NOT EXISTS "${PROJECT_SOURCE_DIR}/nccl_scope/CMakeLists.txt" 
-   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/comm_scope/CMakeLists.txt"
-   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/example_scope/CMakeLists.txt"
-   OR NOT EXISTS "${PROJECT_SOURCE_DIR}/misc_scope/CMakeLists.txt")
+if(   NOT EXISTS "${SCOPE_SCOPES_DIR}/nccl_scope/CMakeLists.txt" 
+   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/comm_scope/CMakeLists.txt"
+   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/example_scope/CMakeLists.txt"
+   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/misc_scope/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
@@ -89,7 +94,6 @@ find_package(CUDA REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
-
 
 
 
@@ -170,12 +174,6 @@ set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
 
-
-
-set(SCOPE_TOP_DIR "${PROJECT_SOURCE_DIR}")
-set(SCOPE_THIRDPARTY_DIR "${SCOPE_TOP_DIR}/third_party")
-set(SCOPE_SRC_DIR "${SCOPE_TOP_DIR}/src")
-
 sugar_include("./src")
 
 
@@ -183,25 +181,25 @@ add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
 if (ENABLE_COMM)
   scope_status("Enabling Comm|Scope")
-  add_subdirectory(${SCOPE_TOP_DIR}/comm_scope)
+  add_subdirectory(${SCOPE_SCOPES_DIR}/comm_scope)
   target_link_libraries(scope comm_scope)
 endif(ENABLE_COMM)
 
 if (ENABLE_MISC)
   scope_status("Enabling Misc|Scope")
-  add_subdirectory(${SCOPE_TOP_DIR}/misc_scope)
+  add_subdirectory(${SCOPE_SCOPES_DIR}/misc_scope)
   target_link_libraries(scope misc_scope)
 endif(ENABLE_MISC)
 
 if (ENABLE_EXAMPLE)
   scope_status("Enabling Example|Scope")
-  add_subdirectory(${SCOPE_TOP_DIR}/example_scope EXCLUDE_FROM_ALL)
+  add_subdirectory(${SCOPE_SCOPES_DIR}/example_scope EXCLUDE_FROM_ALL)
   target_link_libraries(scope example_scope)
 endif(ENABLE_EXAMPLE)
 
 if (ENABLE_NCCL)
   scope_status("Enabling NCCL|Scope")
-  add_subdirectory(${SCOPE_TOP_DIR}/nccl_scope)
+  add_subdirectory(${SCOPE_SCOPES_DIR}/nccl_scope)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
 
