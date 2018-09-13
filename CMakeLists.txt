@@ -13,10 +13,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
-option(ENABLE_COMM "Include Comm|Scope (github.com/rai-project/comm_scope)" ON)
-option(ENABLE_MISC "Include Misc|Scope (github.com/rai-project/misc_scope)" OFF)
-option(ENABLE_EXAMPLE "Include Example|Scope (github.com/rai-project/example_scope)" ON)
-option(ENABLE_NCCL "Include Nccl|Scope (github.com/rai-project/nccl_scope)" OFF)
+option(ENABLE_COMM "Include Comm|Scope (github.com/c3sr/comm_scope)" ON)
+option(ENABLE_MISC "Include Misc|Scope (github.com/c3sr/misc_scope)" OFF)
+option(ENABLE_EXAMPLE "Include Example|Scope (github.com/c3sr/example_scope)" ON)
+option(ENABLE_NCCL "Include Nccl|Scope (github.com/c3sr/nccl_scope)" OFF)
+option(ENABLE_CUDNN "Include cuDNN|Scope (github.com/c3sr/cudnn_scope)" OFF)
 
 if (CONFIG_USE_HUNTER)
   include("cmake/modules/HunterGate.cmake")
@@ -66,8 +67,9 @@ endif()
 if(   NOT EXISTS "${SCOPE_SCOPES_DIR}/nccl_scope/CMakeLists.txt" 
    OR NOT EXISTS "${SCOPE_SCOPES_DIR}/comm_scope/CMakeLists.txt"
    OR NOT EXISTS "${SCOPE_SCOPES_DIR}/example_scope/CMakeLists.txt"
-   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/misc_scope/CMakeLists.txt")
-    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/misc_scope/CMakeLists.txt"
+   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/cudnn_scope/CMakeLists.txt")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE_UPDATE was turned off or failed. Please update submodules and try again.")
 endif()
 
 if (CONFIG_USE_HUNTER)
@@ -203,6 +205,11 @@ if (ENABLE_NCCL)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
 
+if (ENABLE_CUDNN)
+  scope_status("Enabling cuDNN|Scope")
+  add_subdirectory(${SCOPE_TOP_DIR}/cudnn_scope)
+  target_link_libraries(scope cudnn_scope)
+endif(ENABLE_CUDNN)
 
 # Treat everything in scope/enable as a scope that should be enabled
 # This is useful for people who want to use the docker base image,
