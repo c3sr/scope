@@ -1,0 +1,5 @@
+function(target_link_scope_libraries)
+    target_link_libraries(${ARGV0} PRIVATE benchmark::benchmark)
+    target_link_libraries(${ARGV0} PRIVATE fmt::fmt)
+    target_link_libraries(${ARGV0} PRIVATE spdlog::spdlog)
+endfunction()

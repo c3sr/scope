@@ -38,6 +38,9 @@ include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 include(ScopeStatus)
 include(ScopeFatal)
+include(ScopeWarning)
+include(TargetIncludeScopeDirectories)
+include(TargetLinkScopeLibraries)
 
 # Checkout submodules
 find_package(Git QUIET)
@@ -169,9 +172,9 @@ set(CUDA_VERBOSE_BUILD OFF)
 
 
 
-set(TOP_DIR "${PROJECT_SOURCE_DIR}")
-set(THIRDPARTY_DIR "${TOP_DIR}/third_party")
-set(SCOPE_SRC_DIR "${TOP_DIR}/src")
+set(SCOPE_TOP_DIR "${PROJECT_SOURCE_DIR}")
+set(SCOPE_THIRDPARTY_DIR "${SCOPE_TOP_DIR}/third_party")
+set(SCOPE_SRC_DIR "${SCOPE_TOP_DIR}/src")
 
 sugar_include("./src")
 
@@ -180,25 +183,25 @@ add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
 if (ENABLE_COMM)
   scope_status("Enabling Comm|Scope")
-  add_subdirectory(${TOP_DIR}/comm_scope)
+  add_subdirectory(${SCOPE_TOP_DIR}/comm_scope)
   target_link_libraries(scope comm_scope)
 endif(ENABLE_COMM)
 
 if (ENABLE_MISC)
   scope_status("Enabling Misc|Scope")
-  add_subdirectory(${TOP_DIR}/misc_scope)
+  add_subdirectory(${SCOPE_TOP_DIR}/misc_scope)
   target_link_libraries(scope misc_scope)
 endif(ENABLE_MISC)
 
 if (ENABLE_EXAMPLE)
   scope_status("Enabling Example|Scope")
-  add_subdirectory(${TOP_DIR}/example_scope EXCLUDE_FROM_ALL)
+  add_subdirectory(${SCOPE_TOP_DIR}/example_scope EXCLUDE_FROM_ALL)
   target_link_libraries(scope example_scope)
 endif(ENABLE_EXAMPLE)
 
 if (ENABLE_NCCL)
   scope_status("Enabling NCCL|Scope")
-  add_subdirectory(${TOP_DIR}/nccl_scope)
+  add_subdirectory(${SCOPE_TOP_DIR}/nccl_scope)
   target_link_libraries(scope nccl_scope)
 endif(ENABLE_NCCL)
 
@@ -225,14 +228,9 @@ foreach( scope_dir ${autoenable_scopes})
   endif()
 endforeach()
 
+# Add include directories
+target_include_scope_directories(scope)
 target_include_directories(scope PRIVATE
-  ${SCOPE_SRC_DIR}
-  ${TOP_DIR}/include
-)
-
-target_include_directories(scope SYSTEM PRIVATE
-  ${THIRDPARTY_DIR}
-  ${CUDA_INCLUDE_DIRS}
   ${PROJECT_BINARY_DIR}/src/
 )
 
