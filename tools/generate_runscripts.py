@@ -48,6 +48,12 @@ class Generator(object):
             assert c not in s
         return s
 
+    def escape(s):
+        return s.translate(str.maketrans({
+        "(": r"\(",
+        ")": r"\)",
+        }))
+
     def create(self):
         # Get matching benchmarks
         cmd = [self.scope_path]
@@ -64,16 +70,16 @@ class Generator(object):
             benchmark_output_names[str(b)] = Generator.make_filename(str(b))
 
         # print commands to run each benchmark
-        for benchmark in benchmark_output_names:
+        for benchmark in sorted([k for k in benchmark_output_names]):
             output_name = benchmark_output_names[benchmark]
             cmd = [self.scope_path]
-            cmd += ["--benchmark_filter=" + benchmark]
+            cmd += ['--benchmark_filter="' + Generator.escape(benchmark) + '"']
 
             output_path = str(output_name) + ".json"
             if self.output_prefix:
                 output_path = self.output_prefix + output_path
 
-            cmd += ["--benchmark_out=" + output_path ]
+            cmd += ['--benchmark_out="' + output_path + '"']
             if self.repetitions:
                 cmd += ["--benchmark_repetitions=" + self.repetitions]
             print(" ".join(cmd))
