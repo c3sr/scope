@@ -49,7 +49,7 @@ std::vector<char*> get_scope_argv(int argc, char *const *argv) {
 int main(int argc, char **argv) {
 
   if (!bench::init::logger::console || bench::init::logger::console->name() != std::string(argv[0])) {
-    bench::init::logger::console = spdlog::stdout_logger_mt(argv[0]);
+    bench::init::logger::console = spdlog::stderr_logger_mt(argv[0]);
   }
 
   // run all the registered before_inits
