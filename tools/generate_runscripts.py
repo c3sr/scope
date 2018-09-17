@@ -39,7 +39,12 @@ class Generator(object):
         disallowed = '<>:"/\\|?*%. '
         s = s.replace('/', '_')
         s = s.replace(':','_')
+        s = s.replace('<','-')
+        s = s.replace('>','-')
+        s = s.replace(' ','-')
         for c in disallowed:
+            if c in s:
+                print(c, s)
             assert c not in s
         return s
 
