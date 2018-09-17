@@ -6,16 +6,20 @@ import re
 import sys
 import shutil
 import subprocess
+import socket
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 
 class Generator(object):
-    def __init__(self, scope_path, benchmark_filter):
+    def __init__(self, scope_path, benchmark_filter, output_prefix=None, output_postfix=None):
         self.scope_path = scope_path
         self.benchmark_filter = benchmark_filter
         self.repetitions = None
+        self.output_prefix = output_prefix
+        self.output_postfix = output_postfix
+
 
     def find_scope(self):
         if self.scope_path:
@@ -32,7 +36,12 @@ class Generator(object):
         sys.exit(-1)
     
     def make_filename(s):
-        return s.replace('/', '_')
+        disallowed = '<>:"/\\|?*%. '
+        s = s.replace('/', '_')
+        s = s.replace(':','_')
+        for c in disallowed:
+            assert c not in s
+        return s
 
     def create(self):
         # Get matching benchmarks
@@ -40,7 +49,7 @@ class Generator(object):
         cmd += ["--benchmark_list_tests=true"]
         if self.benchmark_filter:
             cmd += ['--benchmark_filter=' + self.benchmark_filter]
-        print(cmd)
+
         out = subprocess.check_output(cmd)
         out = out.decode("utf-8")
 
@@ -54,7 +63,12 @@ class Generator(object):
             output_name = benchmark_output_names[benchmark]
             cmd = [self.scope_path]
             cmd += ["--benchmark_filter=" + benchmark]
-            cmd += ["--benchmark_out=" + str(output_name) + ".json"]
+
+            output_path = str(output_name) + ".json"
+            if self.output_prefix:
+                output_path = self.output_prefix + output_path
+
+            cmd += ["--benchmark_out=" + output_path ]
             if self.repetitions:
                 cmd += ["--benchmark_repetitions=" + self.repetitions]
             print(" ".join(cmd))
@@ -65,12 +79,24 @@ class Generator(object):
                             help='passed to SCOPE through --benchmark_filter=')
         parser.add_argument('--scope-path', type=str,
                             help='path to scope')
+        parser.add_argument('--no-use-hostname', action="store_true", help="don't prefix output with hostname")
         args = parser.parse_args()
 
-        g = Generator(args.scope_path, args.benchmark_filter)
+        if args.no_use_hostname:
+            g = Generator(args.scope_path, args.benchmark_filter)
+        else:
+            g = Generator(args.scope_path, args.benchmark_filter, output_prefix=socket.gethostname() + "_")
         g.find_scope()
         g.create()
 
 
 if __name__ == '__main__':
+
+    header = """#! /bin/bash
+set -xeuo pipefail
+"""
+    footer = """"""
+
+    print(header)
     Generator.run()
+    print(footer)
