@@ -13,10 +13,10 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 class Generator(object):
-    def __init__(self, scope_path, benchmark_filter, output_prefix=None, output_postfix=None):
+    def __init__(self, scope_path, benchmark_filter, output_prefix=None, output_postfix=None, repetitions=None):
         self.scope_path = scope_path
         self.benchmark_filter = benchmark_filter
-        self.repetitions = None
+        self.repetitions = repetitions
         self.output_prefix = output_prefix
         self.output_postfix = output_postfix
 
@@ -81,22 +81,24 @@ class Generator(object):
 
             cmd += ['--benchmark_out="' + output_path + '"']
             if self.repetitions:
-                cmd += ["--benchmark_repetitions=" + self.repetitions]
+                cmd += ["--benchmark_repetitions=" + str(self.repetitions)]
             print(" ".join(cmd))
 
     def run():
         parser = argparse.ArgumentParser(description='Generate script to run each benchmark in a new process.')
-        parser.add_argument('--benchmark_filter', type=str,
+        parser.add_argument('--benchmark-filter', type=str,
                             help='passed to SCOPE through --benchmark_filter=')
         parser.add_argument('--scope-path', type=str,
                             help='path to scope')
+        parser.add_argument('--benchmark-repetitions', type=int,
+                            help='passed to SCOPE through --benchmark_repetitions=')
         parser.add_argument('--no-use-hostname', action="store_true", help="don't prefix output with hostname")
         args = parser.parse_args()
 
         if args.no_use_hostname:
-            g = Generator(args.scope_path, args.benchmark_filter)
+            g = Generator(args.scope_path, args.benchmark_filter, repetitions=args.benchmark_repetitions)
         else:
-            g = Generator(args.scope_path, args.benchmark_filter, output_prefix=socket.gethostname() + "_")
+            g = Generator(args.scope_path, args.benchmark_filter, repetitions=args.benchmark_repetitions, output_prefix=socket.gethostname() + "_")
         g.find_scope()
         g.create()
 
