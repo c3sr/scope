@@ -103,3 +103,4 @@ CTestTestfile.cmake
 # End of https://www.gitignore.io/api/c,c++,cuda,cmake,visualstudiocode
 
 build
+tools/*.json
