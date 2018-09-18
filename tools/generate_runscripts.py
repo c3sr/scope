@@ -13,13 +13,13 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 class Generator(object):
-    def __init__(self, scope_path, benchmark_filter, output_prefix=None, output_postfix=None, repetitions=None):
+    def __init__(self, scope_path, benchmark_filter, passthrough_args=[], output_prefix=None, output_postfix=None, repetitions=None):
         self.scope_path = scope_path
         self.benchmark_filter = benchmark_filter
         self.repetitions = repetitions
         self.output_prefix = output_prefix
         self.output_postfix = output_postfix
-
+        self.passthrough_args = passthrough_args
 
     def find_scope(self):
         if self.scope_path:
@@ -82,9 +82,24 @@ class Generator(object):
             cmd += ['--benchmark_out="' + output_path + '"']
             if self.repetitions:
                 cmd += ["--benchmark_repetitions=" + str(self.repetitions)]
+
+            cmd += self.passthrough_args
+
             print(" ".join(cmd))
 
     def run():
+
+        # get all args before --
+        script_args = []
+        passthrough_args = []
+        if "--" in sys.argv:
+            sentinel = sys.argv.index("--")
+            script_args = sys.argv[1:sentinel]
+            passthrough_args = sys.argv[sentinel+1:]
+        else:
+            script_args = sys.argv[1:]
+            passthrough_args  = []
+
         parser = argparse.ArgumentParser(description='Generate script to run each benchmark in a new process.')
         parser.add_argument('--benchmark-filter', type=str,
                             help='passed to SCOPE through --benchmark_filter=')
@@ -93,12 +108,12 @@ class Generator(object):
         parser.add_argument('--benchmark-repetitions', type=int,
                             help='passed to SCOPE through --benchmark_repetitions=')
         parser.add_argument('--no-use-hostname', action="store_true", help="don't prefix output with hostname")
-        args = parser.parse_args()
+        args = parser.parse_args(script_args)
 
         if args.no_use_hostname:
-            g = Generator(args.scope_path, args.benchmark_filter, repetitions=args.benchmark_repetitions)
+            g = Generator(args.scope_path, args.benchmark_filter, passthrough_args=passthrough_args, repetitions=args.benchmark_repetitions)
         else:
-            g = Generator(args.scope_path, args.benchmark_filter, repetitions=args.benchmark_repetitions, output_prefix=socket.gethostname() + "_")
+            g = Generator(args.scope_path, args.benchmark_filter, passthrough_args=passthrough_args, repetitions=args.benchmark_repetitions, output_prefix=socket.gethostname() + "_")
         g.find_scope()
         g.create()
 
