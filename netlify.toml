@@ -6,7 +6,11 @@ cp -v ../README.md . ;
 cp -rv ../scopes/example_scope/docs example_scope ;
 cp -v ../scopes/example_scope/README.md example_scope ;
 cp -rv ../scopes/comm_scope/docs comm_scope ;
-cp -v ../scopes/comm_scope/README.md comm_scope"""
+cp -v ../scopes/comm_scope/README.md comm_scope ;
+cp -rv ../scopes/cudnn_scope/docs cudnn_scope ;
+cp -v ../scopes/cudnn_scope/README.md cudnn_scope ;
+cp -rv ../scopes/nccl_scope/docs nccl_scope ;
+cp -v ../scopes/nccl_scope/README.md nccl_scope"""
   publish = "docs"
 
 

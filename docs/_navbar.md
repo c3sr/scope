@@ -1,13 +1,15 @@
 - [Home](/README)
-- [Installation](/install)
+- Installation Help
   - [Docker](/docker)
   - [Building Without Hunter](/build_without_hunter)
   - [Hunter Issues](/hunter_problems)
   - [Travis Issues](/travis_problems)
-- [Benchmarks](/benchmark_descriptions)
+- Benchmarks
   - [Example|Scope](/example_scope/)
   - [Comm|Scope](/comm_scope/)
-  - [cudnn|Scope](/cudnn_scope/)
+  - [cuDNN|Scope](/cudnn_scope/)
+  - [NCCL|Scope](/nccl_scope/)
 - [Tools](/tools)
 - [References](/references)
 - [Publications](/publications)
+- [Releases](https://github.com/c3sr/scope/releases)
