@@ -2,11 +2,11 @@
 [build]
   base    = "docs"
   command = """
-cp ../README.md . ;
-cp -r ../scopes/example_scope/docs example_scope ;
-cp ../scopes/example_scope/README.md example_scope ;
-cp -r ../scopes/comm_scope/docs comm_scope ;
-cp ../scopes/comm_scope/README.md comm_scope"""
+cp -v ../README.md . ;
+cp -rv ../scopes/example_scope/docs example_scope ;
+cp -v ../scopes/example_scope/README.md example_scope ;
+cp -rv ../scopes/comm_scope/docs comm_scope ;
+cp -v ../scopes/comm_scope/README.md comm_scope"""
   publish = "docs"
 
 
