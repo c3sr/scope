@@ -104,3 +104,5 @@ CTestTestfile.cmake
 
 build
 tools/*.json
+.venv
+
