@@ -95,8 +95,8 @@ set -xeuo pipefail
                 output_path = '"' + output_path + '"'
                 benchmark_output_names[b] = output_path
 
-            for benchmark in sorted([k for k in benchmark_output_names]):
-                output_name = benchmark_output_names[benchmark]
+            for benchmark in sorted(benchmarks):
+                output_path = benchmark_output_names[benchmark]
                 cmd = [self.scope_path]
                 cmd += ['--benchmark_filter="' + Generator.escape(benchmark) + '"']
 
