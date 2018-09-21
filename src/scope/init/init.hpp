@@ -6,6 +6,7 @@
 void init_flags(int argc, char **argv);
 void init();
 void do_before_inits();
+void do_after_inits();
 
 // return non-zero if program should exit with that code
 typedef int (*InitFn)();
@@ -14,8 +15,13 @@ typedef int (*InitFn)();
 // It should register command line options and a version string
 typedef void (*BeforeInitFn)();
 
+// A function that will run after InitFns.
+// It could be used to programatically register benchmarks
+typedef void (*AfterInitFn)();
+
 void RegisterInit(InitFn fn);
 void RegisterBeforeInit(BeforeInitFn fn);
+AfterInitFn RegisterAfterInit(AfterInitFn fn);
 
 // a string that will be returned by later calls to VersionStrings()
 void RegisterVersionString(const std::string &s);
@@ -38,6 +44,12 @@ struct BeforeInitRegisterer {
   }
 };
 
+#define SCOPE_CONCAT(a, b) SCOPE_CONCAT2(a, b)
+#define SCOPE_CONCAT2(a, b) a##b
+#define AFTER_INIT_FN_NAME(x) SCOPE_CONCAT(_after_init_, __LINE__)
+
+#define SCOPE_REGISTER_AFTER_INIT(x) \
+  static AfterInitFn AFTER_INIT_FN_NAME(x) = RegisterAfterInit(x);
 
 void RegisterOpt(clara::Opt opt);
 

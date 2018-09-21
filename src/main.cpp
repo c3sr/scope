@@ -104,5 +104,8 @@ int main(int argc, char **argv) {
   // benchmark::JSONReporter JR;
   // benchmark::CSVReporter CSVR;
 
+  // run after inits
+  do_after_inits();
+
   benchmark::RunSpecifiedBenchmarks();
 }
