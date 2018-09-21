@@ -94,6 +94,7 @@ int main(int argc, char **argv) {
 
   //if (::benchmark::ReportUnrecognizedArguments(benchmark_argv.size(), benchmark_argv.data())) return 1;
 
+  LOG(debug, "running Google Benchmark init");
   int i = benchmark_argv.size();
   benchmark::Initialize(&i, benchmark_argv.data());
 
@@ -105,6 +106,7 @@ int main(int argc, char **argv) {
   // benchmark::CSVReporter CSVR;
 
   // run after inits
+  LOG(debug, "running do_after_inits.");
   do_after_inits();
 
   benchmark::RunSpecifiedBenchmarks();

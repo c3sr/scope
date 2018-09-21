@@ -34,6 +34,7 @@ void do_before_inits() {
 }
 
 void do_after_inits() {
+  LOG(debug, "running {} after init functions", AfterInits().size());
   for (auto fn : AfterInits()) {
     fn();
   }
