@@ -23,6 +23,8 @@ if [[ $DO_BUILD == 1 ]]; then
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} \
         -DENABLE_MISC=0 \
         -DENABLE_NCCL=0 \
+        -DENABLE_COMM=0 \
+        -DENABLE_CUDNN=0 \
         ..
     or_die make
 fi
