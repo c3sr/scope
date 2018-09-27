@@ -17,6 +17,8 @@ int num_gpus() {
   return device_count;
 }
 
+static std::vector<int> unique_device_ids_;
+
 static float device_giga_bandwidth{0};
 static size_t device_free_physmem{0};
 static size_t device_total_physmem{0};
@@ -49,7 +51,19 @@ bool init_cuda() {
     }
   }
 
+  // Make all passed devices unique
+  for (auto id : FLAG(cuda_device_ids)) {
+    if (std::find(unique_device_ids_.begin(), unique_device_ids_.end(), id) == unique_device_ids_.end()) {
+      unique_device_ids_.push_back(id);
+    }
+  }
+
+
   assert(!FLAG(cuda_device_ids).empty() && "expected at least one CUDA device");
+
+
+
+
   const int dev0 = FLAG(cuda_device_ids)[0];
   if (PRINT_IF_ERROR(cudaSetDevice(dev0))) {
     return false;
@@ -82,3 +96,8 @@ std::experimental::optional<std::tuple<size_t, size_t>> mem_info() {
   }
   return std::make_tuple(device_free_physmem, device_total_physmem);
 }
+
+const std::vector<int> &unique_cuda_device_ids() {
+  return unique_device_ids_;
+}
+

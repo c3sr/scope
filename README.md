@@ -150,11 +150,18 @@ If you see this error:
 ***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
 ```
 
-you might want to disable the CPU frequency scaling while running the benchmark:
+you might want to disable the CPU frequency scaling while running the benchmark.
+On ubuntu, install
+
+```bash
+apt install linux-tools-$(uname -r)
+```
+
+then
 
 ```bash
 sudo cpupower frequency-set --governor performance
-./mybench
+./scope
 sudo cpupower frequency-set --governor powersave
 ```
 

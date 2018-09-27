@@ -3,6 +3,12 @@
 #include "scope/init/flags.hpp"
 #include "scope/init/logger.hpp"
 
+static std::vector<AfterInitFn> &AfterInits() {
+  static std::vector<AfterInitFn> after_inits;
+  return after_inits;
+}
+
+
 static struct { InitFn fn; } inits[10000];
 static size_t ninits = 0;
 
@@ -24,6 +30,13 @@ void RegisterOpt(clara::Opt opt) {
 void do_before_inits() {
   for (size_t i = 0; i < n_before_inits; ++i) {
     before_inits[i]();
+  }
+}
+
+void do_after_inits() {
+  LOG(debug, "running {} after init functions", AfterInits().size());
+  for (auto fn : AfterInits()) {
+    fn();
   }
 }
 
@@ -77,6 +90,11 @@ void RegisterBeforeInit(BeforeInitFn fn) {
   }
   before_inits[n_before_inits] = fn;
   n_before_inits++;
+}
+
+AfterInitFn RegisterAfterInit(AfterInitFn fn) {
+  AfterInits().push_back(fn);
+  return fn;
 }
 
 void RegisterVersionString(const std::string &s) {

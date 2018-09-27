@@ -11,6 +11,6 @@
 #include "mpl.hpp"
 #include "nocopy.hpp"
 #include "nvptx.hpp"
-#include "page.hpp"
+#include "page_size.hpp"
 #include "timer.hpp"
 
