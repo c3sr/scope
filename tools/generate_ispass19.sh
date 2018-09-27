@@ -14,6 +14,10 @@ set -xeuo pipefail
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_PinnedToGPU_flush/0 > run_Comm_NUMAMemcpy_PinnedToGPU_flush_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_GPUToPinned_flush/0 > run_Comm_NUMAMemcpy_GPUToPinned_flush_0.sh
 
+#d2d nopeer
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_GPUToGPU/0 > run_Comm_NUMAMemcpy_GPUToGPU_0.sh
+
+
 # h2d duplex
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Host/0   > run_Comm_Duplex_NUMAMemcpy_Host_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Pinned/0 > run_Comm_Duplex_NUMAMemcpy_Pinned_0.sh
