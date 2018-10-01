@@ -17,6 +17,8 @@ set -xeuo pipefail
 #d2d nopeer
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_GPUToGPU/0 > run_Comm_NUMAMemcpy_GPUToGPU_0.sh
 
+#h2h
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_HostToPinned/0 > run_Comm_NUMAMemcpy_HostToPinned_0.sh
 
 # h2d duplex
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Host/0   > run_Comm_Duplex_NUMAMemcpy_Host_0.sh
@@ -25,6 +27,7 @@ set -xeuo pipefail
 # coherence
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_HostToGPU/0 > run_Comm_UM_Coherence_HostToGPU_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToHost/0 > run_Comm_UM_Coherence_GPUToHost_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToHostMt/0 > run_Comm_UM_Coherence_GPUToHostMt_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToGPU    > run_Comm_UM_Coherence_GPUToGPU.sh
 
 # unified
