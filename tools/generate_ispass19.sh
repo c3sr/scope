@@ -19,6 +19,7 @@ set -xeuo pipefail
 
 #h2h
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_HostToPinned/0 > run_Comm_NUMAMemcpy_HostToPinned_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_NUMAMemcpy_HostToPinned_flush/0 > run_Comm_NUMAMemcpy_HostToPinned_flush_0.sh
 
 # h2d duplex
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Host/0   > run_Comm_Duplex_NUMAMemcpy_Host_0.sh

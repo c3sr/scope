@@ -38,10 +38,11 @@ class Generator(object):
     def make_filename(s):
         disallowed = '<>:"/\\|?*%. '
         s = s.replace('/', '_')
-        s = s.replace(':','_')
+        s = s.replace(':','-')
         s = s.replace('<','-')
         s = s.replace('>','-')
         s = s.replace(' ','-')
+        s = s.replace('.','-')
         for c in disallowed:
             if c in s:
                 print(c, s)
