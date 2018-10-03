@@ -24,6 +24,8 @@ set -xeuo pipefail
 # h2d duplex
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Host/0   > run_Comm_Duplex_NUMAMemcpy_Host_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Pinned/0 > run_Comm_Duplex_NUMAMemcpy_Pinned_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Host_flush/0   > run_Comm_Duplex_NUMAMemcpy_Host_flush_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_NUMAMemcpy_Pinned_flush/0 > run_Comm_Duplex_NUMAMemcpy_Pinned_flush_0.sh
 
 # coherence
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_HostToGPU/0 > run_Comm_UM_Coherence_HostToGPU_0.sh
