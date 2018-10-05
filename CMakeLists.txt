@@ -208,6 +208,7 @@ target_link_libraries(scope benchmark::benchmark)
 target_link_libraries(scope fmt::fmt)
 target_link_libraries(scope spdlog::spdlog)
 target_link_libraries(scope ${CUDA_LIBRARIES})
+target_link_libraries(scope nvToolsExt)
 
 # Request that scope be built with -std=c++11
 # As this is a public compile feature anything that links to
