@@ -44,3 +44,11 @@ set -xeuo pipefail
 # d2d peer
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Memcpy_GPUToGPUPeer > run_Comm_Memcpy_GPUToGPUPeer.sh
 
+# zero-copy
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_HostGPU_Read/0  > run_Comm_ZeroCopy_HostGPU_Read_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_HostGPU_Write/0 > run_Comm_ZeroCopy_HostGPU_Write_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Read/0  > run_Comm_ZeroCopy_GPUGPU_Read_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Write/0 > run_Comm_ZeroCopy_GPUGPU_Write_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Duplex_Read/0  > run_Comm_ZeroCopy_GPUGPU_Duplex_Read_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Duplex_Write/0 > run_Comm_ZeroCopy_GPUGPU_Duplex_Write_0.sh
+
