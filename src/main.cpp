@@ -109,5 +109,6 @@ int main(int argc, char **argv) {
   LOG(debug, "running do_after_inits.");
   do_after_inits();
 
+  LOG(debug, "running specified benchmarks.");
   benchmark::RunSpecifiedBenchmarks();
 }
