@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
 
 set(CMAKE_BUILD_TYPE "Release")
 
@@ -13,6 +13,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(VERBOSE_BUILD ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
 
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(USE_CUDA_EVENTS "Turn on to use cuda events and manual timing, instead of cudaDeviceSynchronize" ON)
@@ -28,7 +30,7 @@ endif (CONFIG_USE_HUNTER)
 
 
 
-project(microbenchmark LANGUAGES CXX CUDA VERSION 0.1.0)
+project(microbenchmark LANGUAGES CXX VERSION 0.1.0)
 
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
@@ -85,8 +87,8 @@ endif (CONFIG_USE_HUNTER)
 
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
-find_package(OpenBLAS REQUIRED)
-find_package(OpenMP REQUIRED)
+#find_package(OpenBLAS REQUIRED)
+#find_package(OpenMP REQUIRED)
 #find_package(Protobuf REQUIRED)
 
 
@@ -163,30 +165,30 @@ endif(APPLE)
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
 
-if(CUDA_MULTI_ARCH)
-  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
-else()
-  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
-endif()
+#if(CUDA_MULTI_ARCH)
+#  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
+#else()
+#  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
+#endif()
 
-LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
-					         -Wno-deprecated-gpu-targets
-					         -lineinfo
-					         --expt-extended-lambda
-)
+#LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
+#					         -Wno-deprecated-gpu-targets
+#					         -lineinfo
+#					         --expt-extended-lambda
+#)
 
-MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+#MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
-string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
+#string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 
-MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+#MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 
-MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
-			   " archs: ${CUDA_ARCH_FLAGS_readable})")
+#MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
+#			   " archs: ${CUDA_ARCH_FLAGS_readable})")
 
-set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
-set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
-set(CUDA_VERBOSE_BUILD OFF)
+#set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
+#set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
+#set(CUDA_VERBOSE_BUILD OFF)
 
 
 
@@ -197,7 +199,7 @@ set(SRC_DIR "${TOP_DIR}/src")
 sugar_include("./src")
 
 
-add_executable(bench ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
+add_executable(bench ${BENCHMARK_SOURCES})
 
 
 include_directories(bench
@@ -211,23 +213,17 @@ include_directories(bench
   ${CUDNN_INCLUDE_DIR}
 )
 
-if (USE_CUDA_EVENTS)
-  add_definitions(-DUSE_CUDA_EVENTS=1)
-endif(USE_CUDA_EVENTS)
-
 add_definitions(-DPROJECT_NAME=microbench)
 add_definitions(-DGENERATED_BENCHMARK_LAYER=1)
 
-set_target_properties(bench PROPERTIES
-	# CUDA_SEPARABLE_COMPILATION ON
-	CUDA_RESOLVE_DEVICE_SYMBOLS ON
-)
+
+target_compile_options(bench PRIVATE "SHELL:--param ggc-min-expand=1")
+target_compile_options(bench PRIVATE "SHELL:--param ggc-min-heapsize=32768")
 
 target_link_libraries(bench benchmark::benchmark)
 # target_link_libraries(bench nlohmann_json)
 target_link_libraries(bench fmt::fmt)
 target_link_libraries(bench spdlog::spdlog)
-target_link_libraries(bench cub::cub)
 # target_link_libraries(bench rangev3)
 # target_link_libraries(bench type_safe)
 # target_link_libraries(bench yaml-cpp::yaml-cpp)
@@ -235,9 +231,6 @@ target_link_libraries(bench cub::cub)
 #target_link_libraries(bench debug_assert)
 target_link_libraries(bench ${CUDNN_LIBRARY})
 target_link_libraries(bench ${OpenBLAS_LIB})
-target_link_libraries(bench ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
-target_link_libraries(bench numa)
-target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
 
 
 # Request that bench be built with -std=c++11
@@ -246,13 +239,3 @@ target_link_libraries(bench ${OpenMP_CXX_LIBRARIES})
 target_compile_features(bench PUBLIC cxx_std_11)
 
 
-if(APPLE)
-  # We need to add the path to the driver (libcuda.dylib) as an rpath,
-  # so that the static cuda runtime can find it at runtime.
-  set_property(TARGET bench
-               PROPERTY
-               BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
-endif()
-
-# Add a special target to clean nvcc generated files.
-CUDA_BUILD_CLEAN_TARGET()
