@@ -40,8 +40,8 @@ include(CTest)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-#set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 if (CONFIG_USE_HUNTER)
@@ -52,42 +52,21 @@ include(${SUGAR_ROOT}/cmake/Sugar)
 hunter_add_package(benchmark)
 find_package(benchmark CONFIG REQUIRED)
 
-# hunter_add_package(nlohmann_json)
-# find_package(nlohmann_json CONFIG REQUIRED)
-
 hunter_add_package(fmt)
 find_package(fmt CONFIG REQUIRED)
 
 hunter_add_package(spdlog)
 find_package(spdlog CONFIG REQUIRED)
 
-# hunter_add_package(cxxopts)
-# find_package(cxxopts CONFIG REQUIRED)
-
 hunter_add_package(cub)
 find_package(cub CONFIG REQUIRED)
-
-#hunter_add_package(debug_assert)
-#find_package(debug_assert CONFIG REQUIRED)
-
-# hunter_add_package(range-v3)
-# find_package(range-v3 CONFIG REQUIRED)
-
-# hunter_add_package(type_safe)
-# find_package(type_safe CONFIG REQUIRED)
-
-# hunter_add_package(yaml-cpp)
-# find_package(yaml-cpp CONFIG REQUIRED)
-
-# hunter_add_package(Protobuf)
-# find_package(Protobuf CONFIG REQUIRED)
 
 endif (CONFIG_USE_HUNTER)
 
 
 find_package(CUDA REQUIRED)
 find_package(CuDNN REQUIRED)
-#find_package(OpenBLAS REQUIRED)
+find_package(OpenBLAS REQUIRED)
 #find_package(OpenMP REQUIRED)
 #find_package(Protobuf REQUIRED)
 
@@ -103,44 +82,9 @@ if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
     CACHE STRING "Toolchain C++ compiler flags." FORCE)
 
-  set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
+  set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi"
     CACHE STRING "Toolchain C++ linker flags." FORCE)
 endif()
-
-
-if (OpenMP_FOUND)
-  if (OpenMP_C_FLAGS)
-    string(REPLACE ";" " " OpenMP_C_FLAGS ${OpenMP_C_FLAGS})
-  endif()
-  if (OpenMP_CXX_FLAGS)
-    string(REPLACE ";" " " OpenMP_CXX_FLAGS ${OpenMP_CXX_FLAGS})
-  endif()
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-
-  foreach(flag IN ITEMS ${OpenMP_CXX_FLAGS})
-  LIST(APPEND CMAKE_CUDA_FLAGS
-    -Xcompiler
-    ${flag}
-  )
-  endforeach(flag)
-
-endif()
-
-
-if (UNIX AND NOT APPLE)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER}
-                  -fuse-ld=gold -Wl,--version
-                  ERROR_QUIET OUTPUT_VARIABLE ld_version)
-  if ("${ld_version}" MATCHES "GNU gold")
-    message(STATUS "Found Gold linker, use faster linker")
-    set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-    set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold ")
-  endif()
-endif()
-
 
 
 if(MSVC)
@@ -153,42 +97,13 @@ if(MSVC)
   add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
 else()
 	add_definitions(-DCONSTEXPR=constexpr)
-	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
+	#set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 ")
 endif()
 
 if (APPLE)
   list (APPEND CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
 endif(APPLE)
-
-
-# CUDA flags
-set(CMAKE_CUDA_STANDARD 11)
-
-#if(CUDA_MULTI_ARCH)
-#  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
-#else()
-#  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
-#endif()
-
-#LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
-#					         -Wno-deprecated-gpu-targets
-#					         -lineinfo
-#					         --expt-extended-lambda
-#)
-
-#MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-
-#string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
-
-#MESSAGE(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-
-#MESSAGE(STATUS "Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
-#			   " archs: ${CUDA_ARCH_FLAGS_readable})")
-
-#set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
-#set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
-#set(CUDA_VERBOSE_BUILD OFF)
 
 
 
@@ -217,20 +132,17 @@ add_definitions(-DPROJECT_NAME=microbench)
 add_definitions(-DGENERATED_BENCHMARK_LAYER=1)
 
 
-target_compile_options(bench PRIVATE "SHELL:--param ggc-min-expand=1")
-target_compile_options(bench PRIVATE "SHELL:--param ggc-min-heapsize=32768")
+#target_compile_options(bench PRIVATE "SHELL:--param ggc-min-expand=3")
+#target_compile_options(bench PRIVATE "SHELL:--param ggc-min-heapsize=32768")
 
-target_link_libraries(bench benchmark::benchmark)
-# target_link_libraries(bench nlohmann_json)
-target_link_libraries(bench fmt::fmt)
-target_link_libraries(bench spdlog::spdlog)
-# target_link_libraries(bench rangev3)
-# target_link_libraries(bench type_safe)
-# target_link_libraries(bench yaml-cpp::yaml-cpp)
-# target_link_libraries(bench ${PROTOBUF_LIBRARY} )
-#target_link_libraries(bench debug_assert)
-target_link_libraries(bench ${CUDNN_LIBRARY})
-target_link_libraries(bench ${OpenBLAS_LIB})
+target_link_libraries(bench PRIVATE benchmark::benchmark)
+target_link_libraries(bench PRIVATE fmt::fmt)
+target_link_libraries(bench PRIVATE spdlog::spdlog)
+target_link_libraries(bench PRIVATE ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
+target_link_libraries(bench PRIVATE ${CUDNN_LIBRARY})
+target_link_libraries(bench PRIVATE ${OpenBLAS_LIB})
+target_link_libraries(bench PRIVATE numa)
+
 
 
 # Request that bench be built with -std=c++11
