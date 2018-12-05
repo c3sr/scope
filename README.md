@@ -59,8 +59,10 @@ Then, follow the User install instructions above, but choose a system prefix for
 
 ## Compile
 
-To compile the project run the following commands
+To compile the project run the following commands (making sure **nvcc** is on your $PATH, which is typically at /usr/local/cuda/bin/nvcc)
 
+    git clone https://github.com/c3sr/scope.git
+    cd scope
     mkdir -p build
     cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
