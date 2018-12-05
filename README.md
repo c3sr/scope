@@ -4,12 +4,16 @@
 |--|
 | [![Build Status](https://travis-ci.com/c3sr/scope.svg?branch=master)](https://travis-ci.com/c3sr/scope)|
 
-A benchmark framework developed by the [IMPACT](https://impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
+A benchmark framework developed by the [IBM-ILLINOIS Center for Cognitive Computing Systems Research (C3SR)](www.c3sr.com) in collaboration with the [IMPACT](https://impact.crhc.illinois.edu) group at the University of Illinois.
 
 Primary maintainers:
 * Carl Pearson ([web](https://cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
 * Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
 * Cheng Li ([web](https://cli99.github.io)) ([email](mailto:cli99@illinois.edu))
+
+Project Advisors:
+* Prof. Wen-mei Hwu (UofI)
+* Dr. Jinjun Xiong (IBM Research)
 
 Various benchmark suites using Scope are under development:
 
