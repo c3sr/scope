@@ -4,7 +4,7 @@
 
 ```bash
 # Install build tools
-sudo apt install -y g++ make wget
+sudo apt install -y g++ make wget git
 
 # Install CUDA
 cm /tmp
