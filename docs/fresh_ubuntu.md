@@ -1,6 +1,4 @@
-# Ubuntu 18.04.1
-
-
+# Ubuntu 18.04.1 / CUDA 10
 
 ```bash
 # Install build tools
