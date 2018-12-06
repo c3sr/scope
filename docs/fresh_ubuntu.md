@@ -4,7 +4,7 @@
 
 ```bash
 # Install build tools
-sudo apt install g++ make wget
+sudo apt install -y g++ make wget
 
 # Install CUDA
 cm /tmp
@@ -20,7 +20,7 @@ cd /tmp
 wget https://cmake.org/files/v3.12/cmake-3.12.0-Linux-x86_64.sh
 mkdir -p $HOME/software/cmake-3.12.0
 sudo sh cmake-3.12.0-Linux-x86_64.sh --prefix=$HOME/software/cmake-3.12.0 --exclude-subdir
-echo 'export PATH="$HOME/software/cmake-3.12.0/bin:$PATH"'
+echo 'export PATH="$HOME/software/cmake-3.12.0/bin:$PATH"' >> ~/.bashrc
 . ~/.bashrc
 
 # Install SCOPE with only the Example|Scope Enabled
