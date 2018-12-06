@@ -13,6 +13,8 @@ sudo dpkg -i cuda-repo-ubuntu1804_10.0.130-1_amd64.deb
 sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
 sudo apt-get update
 sudo apt-get install -y cuda-toolkit-10-0
+echo 'export PATH="/usr/local/cuda/bin:$PATH' >> ~/.bashrc
+. ~/.bashrc
 
 
 # Install Cmake 3.12.0 in $HOME/software/cmake-3.12.0
