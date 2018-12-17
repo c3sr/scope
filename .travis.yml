@@ -73,6 +73,8 @@ matrix:
       addons: *buildaddons
   allow_failures:
     - env: DO_BUILD=1 USE_HUNTER=OFF
+    - env: DO_BUILD=0 DOCKER_CUDA=80 DOCKER_ARCH=ppc64le
+    - env: DO_BUILD=0 DOCKER_CUDA=92 DOCKER_ARCH=ppc64le
 
 before_install:
 - cd ${TRAVIS_BUILD_DIR}
