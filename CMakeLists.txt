@@ -14,11 +14,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
 
+# https://github.com/hunter-packages/gate#usage-custom-config
 if (CONFIG_USE_HUNTER)
   include("cmake/modules/HunterGate.cmake")
   HunterGate(
       URL "https://github.com/ruslo/hunter/archive/v0.23.1.tar.gz"
       SHA1 "51d2d6be411251c8de18c4ca20ef778880cf4cce"
+      LOCAL 
   )
 endif (CONFIG_USE_HUNTER)
 
