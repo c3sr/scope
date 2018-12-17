@@ -4,12 +4,16 @@
 |--|
 | [![Build Status](https://travis-ci.com/c3sr/scope.svg?branch=master)](https://travis-ci.com/c3sr/scope)|
 
-A benchmark framework developed by the [IMPACT](https://impact.crhc.illinois.edu) group at the University of Illinois in collaboration with IBM through the the Center for Cognitive Computing Systems Research (C3SR).
+A benchmark framework developed by the [IBM-ILLINOIS Center for Cognitive Computing Systems Research (C3SR)](www.c3sr.com) in collaboration with the [IMPACT](https://impact.crhc.illinois.edu) group at the University of Illinois.
 
 Primary maintainers:
 * Carl Pearson ([web](https://cwpearson.github.io)) ([email](mailto:pearson@illinois.edu))
 * Abdul Dakkak ([email](mailto:dakkak@illinois.edu))
 * Cheng Li ([web](https://cli99.github.io)) ([email](mailto:cli99@illinois.edu))
+
+Project Advisors:
+* Prof. Wen-mei Hwu (UofI)
+* Dr. Jinjun Xiong (IBM Research)
 
 Various benchmark suites using Scope are under development:
 
@@ -25,20 +29,40 @@ Various benchmark suites using Scope are under development:
 
 ## Install CMake >= 3.12
 
-On **x86-64**, the following may work.
+### User install of CMake 3.12 (preferred)
+
+If your system has CMake < 3.12, we suggest installing CMake 3.12+ in the user's `$HOME` directory.
+
+On **x86-64**, the following will download CMake 3.12.0 and install it in `$HOME`/software/cmake-3.12.0.
 
 ```
 cd /tmp
 wget https://cmake.org/files/v3.12/cmake-3.12.0-Linux-x86_64.sh
-sudo sh cmake-3.12.0-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
+mkdir -p $HOME/software/cmake-3.12.0
+sudo sh cmake-3.12.0-Linux-x86_64.sh --prefix=$HOME/software/cmake-3.12.0 --exclude-subdir
 ```
 
-On **ppc64le**, you will need to build from source.
+You will then need to add `$HOME/software/cmake-3.12.0/bin` to your path.
+For many linux users, you add this to your `$HOME/.bashrc`:
+
+```
+export PATH="$PATH:$HOME/software/cmake-3.12.0/bin"`
+````
+
+On **ppc64le**, you will need to download the CMake source from the CMake website and build it.
+
+### System install of CMake 3.12
+
+If you don't already know how to do this before reading, this is probably not the right option for you.
+First, uninstall any existing system install of CMake.
+Then, follow the User install instructions above, but choose a system prefix for the installation.
 
 ## Compile
 
-To compile the project run the following commands
+To compile the project run the following commands (making sure **nvcc** is on your $PATH, which is typically at /usr/local/cuda/bin/nvcc)
 
+    git clone https://github.com/c3sr/scope.git
+    cd scope
     mkdir -p build
     cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..

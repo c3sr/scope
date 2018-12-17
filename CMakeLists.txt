@@ -1,10 +1,10 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-set(CMAKE_C_COMPILER gcc)
-set(CMAKE_CXX_COMPILER g++)
-# set(CUDACXX /usr/local/cuda/bin/nvcc)
-set(CMAKE_CUDA_HOST_COMPILER gcc)
+#set(CMAKE_C_COMPILER gcc)
+#set(CMAKE_CXX_COMPILER g++)
+#set(CUDACXX /usr/local/cuda/bin/nvcc)
+#set(CMAKE_CUDA_HOST_COMPILER gcc)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)

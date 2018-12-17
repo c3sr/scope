@@ -18,10 +18,14 @@ typedef void (*BeforeInitFn)();
 // A function that will run after InitFns.
 // It could be used to programatically register benchmarks
 typedef void (*AfterInitFn)();
+typedef struct {
+  AfterInitFn fn;
+  const char *name;
+} AfterInitRecord;
 
 void RegisterInit(InitFn fn);
 void RegisterBeforeInit(BeforeInitFn fn);
-AfterInitFn RegisterAfterInit(AfterInitFn fn);
+AfterInitFn RegisterAfterInit(AfterInitFn fn, const char *name);
 
 // a string that will be returned by later calls to VersionStrings()
 void RegisterVersionString(const std::string &s);
@@ -48,8 +52,8 @@ struct BeforeInitRegisterer {
 #define SCOPE_CONCAT2(a, b) a##b
 #define AFTER_INIT_FN_NAME(x) SCOPE_CONCAT(_after_init_, __LINE__)
 
-#define SCOPE_REGISTER_AFTER_INIT(x) \
-  static AfterInitFn AFTER_INIT_FN_NAME(x) = RegisterAfterInit(x);
+#define SCOPE_REGISTER_AFTER_INIT(x, name) \
+  static AfterInitFn AFTER_INIT_FN_NAME(x) = RegisterAfterInit(x, name);
 
 void RegisterOpt(clara::Opt opt);
 

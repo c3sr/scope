@@ -31,12 +31,18 @@ set -xeuo pipefail
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_HostToGPU/0 > run_Comm_UM_Coherence_HostToGPU_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToHost/0 > run_Comm_UM_Coherence_GPUToHost_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToHostMt/0 > run_Comm_UM_Coherence_GPUToHostMt_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToGPU    > run_Comm_UM_Coherence_GPUToGPU.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Coherence_GPUToGPU/0    > run_Comm_UM_Coherence_GPUToGPU_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Coherence_Duplex_GPUGPU/0  > run_Comm_Coherence_Duplex_GPUGPU_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Coherence_Duplex_HostGPU/0 > run_Comm_Coherence_Duplex_HostGPU_0.sh
+
 
 # unified
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Prefetch_HostToGPU/0 > run_Comm_UM_Prefetch_HostToGPU_0.sh
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Prefetch_GPUToHost/0 > run_Comm_UM_Prefetch_GPUToHost_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Prefetch_GPUToGPU    > run_Comm_UM_Prefetch_GPUToGPU.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_UM_Prefetch_GPUToGPU/0    > run_Comm_UM_Prefetch_GPUToGPU_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Prefetch_Duplex_GPUGPU/0  > run_Comm_Prefetch_Duplex_GPUGPU_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Prefetch_Duplex_HostGPU/0 > run_Comm_Prefetch_Duplex_HostGPU_0.sh
+
 
 # d2d duplex peer
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Duplex_Memcpy_GPUGPUPeer > run_Comm_Duplex_Memcpy_GPUGPUPeer.sh
@@ -45,10 +51,10 @@ set -xeuo pipefail
 ./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_Memcpy_GPUToGPUPeer > run_Comm_Memcpy_GPUToGPUPeer.sh
 
 # zero-copy
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_HostGPU_Read/0  > run_Comm_ZeroCopy_HostGPU_Read_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_HostGPU_Write/0 > run_Comm_ZeroCopy_HostGPU_Write_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Read/0  > run_Comm_ZeroCopy_GPUGPU_Read_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Write/0 > run_Comm_ZeroCopy_GPUGPU_Write_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Duplex_Read/0  > run_Comm_ZeroCopy_GPUGPU_Duplex_Read_0.sh
-./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUGPU_Duplex_Write/0 > run_Comm_ZeroCopy_GPUGPU_Duplex_Write_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_HostToGPU_Read/0  > run_Comm_ZeroCopy_HostToGPU_Read_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_HostToGPU_Write/0 > run_Comm_ZeroCopy_HostToGPU_Write_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUToGPU_Read/0  > run_Comm_ZeroCopy_GPUToGPU_Read_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_GPUToGPU_Write/0 > run_Comm_ZeroCopy_GPUToGPU_Write_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_Duplex_GPUGPU_Read/0  > run_Comm_ZeroCopy_Duplex_GPUGPU_Read_0.sh
+./generate_runscripts.py --benchmark-repetitions=5 --benchmark-filter=Comm_ZeroCopy_Duplex_GPUGPU_Write/0 > run_Comm_ZeroCopy_Duplex_GPUGPU_Write_0.sh
 
