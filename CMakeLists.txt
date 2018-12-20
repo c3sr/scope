@@ -78,8 +78,6 @@ if (CONFIG_USE_HUNTER)
   hunter_add_package(benchmark)
   hunter_add_package(fmt)
   hunter_add_package(spdlog)
-
-  find_package(spdlog CONFIG REQUIRED)
 else()
   # Add Sugar
   scope_status("looking for Sugar in: ${SUGAR_ROOT}")
