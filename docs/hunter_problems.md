@@ -32,3 +32,11 @@ If you're using a system libcurl, it should probably have ssl support. If you bu
 again, described in [hunter issue 328](https://github.com/ruslo/hunter/issues/328).
 
 
+### Building dependencies with another compiler
+
+Make a cmake toolchain file
+```
+set(CMAKE_CXX_COMPILER g++-7)
+```
+
+Build `cmake .. -DCMAKE_TOOLCHAIN_FILE=<your file>`
