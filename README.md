@@ -1,5 +1,7 @@
 # Scope
 
+Scope may be downloaded from https://github.com/c3sr/scope/releases
+
 |master|
 |--|
 | [![Build Status](https://travis-ci.com/c3sr/scope.svg?branch=master)](https://travis-ci.com/c3sr/scope)|
