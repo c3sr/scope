@@ -50,7 +50,7 @@ set(SCOPE_SCOPES_DIR "${SCOPE_TOP_DIR}/scopes")
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 # Update submodules as needed
-    option(GIT_SUBMODULE_UPDATE "Update submodules during cmake" ON)
+    option(GIT_SUBMODULE_UPDATE "Update submodules during cmake" OFF)
     if(GIT_SUBMODULE_UPDATE)
         scope_status("Submodule update")
         execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
