@@ -1,5 +1,6 @@
 - [Home](/README)
 - Installation Help
+  - [Changing Compilers](/compiler.md)
   - [Docker](/docker)
   - [Building Without Hunter](/build_without_hunter)
   - [Hunter Issues](/hunter_problems)
