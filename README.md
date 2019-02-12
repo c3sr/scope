@@ -49,7 +49,7 @@ For many linux users, you add this to your `$HOME/.bashrc`:
 
 ```
 export PATH="$PATH:$HOME/software/cmake-3.12.0/bin"`
-````
+```
 
 On **ppc64le**, you will need to download the CMake source from the CMake website and build it.
 
@@ -61,7 +61,7 @@ Then, follow the User install instructions above, but choose a system prefix for
 
 ## Compile
 
-To compile the project run the following commands (making sure **nvcc** is on your $PATH, which is typically at /usr/local/cuda/bin/nvcc)
+To compile the project run the following commands (making sure **nvcc** is in your $PATH, which is typically at /usr/local/cuda/bin/nvcc)
 
     git clone https://github.com/c3sr/scope.git
     cd scope
@@ -73,6 +73,15 @@ To compile the project run the following commands (making sure **nvcc** is on yo
 The build system uses Hunter to download all dependencies.
 If you have trouble downloading dependencies, [check to make sure](docs/hunter_problems.md) Hunter/CMake can use SSL.
 Or you can forego Hunter entirely and [provide your own dependencies](docs/build_without_hunter.md).
+
+You will need to enable the particular scopes that provide the benchmarks you want to run
+
+| Scope | CMake Option |
+|--|--|
+| CuDNN | `-DENABLE_CUDNN=1` |
+| NCCL | `-DENABLE_NCCL=1` |
+| Comm | `-DENABLE_COMM=1` |
+| Example | `-DENABLE_EXAMPLE=1` (default) |
 
 if you get errors about nvcc not supporting your gcc compiler, then you may want to use
 
