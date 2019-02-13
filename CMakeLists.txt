@@ -93,19 +93,7 @@ include(sugar_include)
 
 
 
-if(MSVC)
-  # /wd4005  macro-redefinition
-  # /wd4068  unknown pragma
-  # /wd4244  conversion from 'type1' to 'type2'
-  # /wd4267  conversion from 'size_t' to 'type2'
-  # /wd4800  force value to bool 'true' or 'false' (performance warning)
-  add_compile_options(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
-  add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
-else()
-	add_definitions(-DCONSTEXPR=constexpr)
-	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
-endif()
+
 
 if (APPLE)
   list (APPEND CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
@@ -115,15 +103,6 @@ endif(APPLE)
 # CUDA flags
 set(CMAKE_CUDA_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
-					         -Wno-deprecated-gpu-targets
-					         -lineinfo
-					         --expt-extended-lambda
-)
-
-scope_status("Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
-			   " archs: ${CUDA_ARCH_FLAGS_readable})")
 
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
@@ -136,6 +115,35 @@ add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
 # use c++11 not g++11
 set_target_properties(scope PROPERTIES CMAKE_CXX_EXTENSIONS OFF)
+
+if(MSVC)
+  # /wd4005  macro-redefinition
+  # /wd4068  unknown pragma
+  # /wd4244  conversion from 'type1' to 'type2'
+  # /wd4267  conversion from 'size_t' to 'type2'
+  # /wd4800  force value to bool 'true' or 'false' (performance warning)
+  target_compile_options(scope PPRIVATE /wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
+  target_compile_definitions(scope PRIVATE /DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
+else()
+  target_compile_definitions(scope PRIVATE -DCONSTEXPR=constexpr)
+  target_compile_options(scope PRIVATE
+    -Wall 
+    -Wextra 
+    -Wcast-qual 
+    -Wcast-align 
+    -Wstrict-aliasing 
+    -Wpointer-arith 
+    -Winit-self 
+    -Wshadow 
+    -Wswitch-enum 
+    -Wredundant-decls 
+    -Wfloat-equal 
+    -Wundef 
+    -Wvla
+    -fmax-errors=1 
+    -Wfatal-errors
+  )
+endif()
 
 
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
@@ -161,7 +169,7 @@ target_compile_options(scope PRIVATE
 
 # CUDA flags
 target_compile_options( scope PRIVATE
-  $<$<COMPILE_LANGUAGE:CUDA>:--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
+  $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo;--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
 )
 
 # Treat everything in scope/scopes as a scope
@@ -184,8 +192,8 @@ target_include_scope_directories(scope)
 target_include_directories(scope PRIVATE
   ${PROJECT_BINARY_DIR}/src/
 )
-scope_status(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-target_include_directories(scope SYSTEM PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+
+target_include_directories(scope SYSTEM INTERFACE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 
 

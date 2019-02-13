@@ -12,6 +12,7 @@ function(target_include_scope_directories)
     )
     target_include_directories(${ARGV0} SYSTEM PRIVATE 
         ${SCOPE_TOP_DIR}/third_party
-        ${CUDA_INCLUDE_DIRS}
-    )    
+        ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+    )
+
 endfunction()
