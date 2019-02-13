@@ -99,20 +99,7 @@ find_library(CUDART_LIB cudart
              "${CUDA_TOOLKIT_ROOT_DIR}"
 )
 scope_status(${CUDART_LIB})
-find_library(CUDA_LIB cuda
-             HINTS
-             "${CUDA_TOOLKIT_ROOT_DIR}/lib64"
-             "${CUDA_TOOLKIT_ROOT_DIR}/lib"
-             "${CUDA_TOOLKIT_ROOT_DIR}"
-)
 
-# create imported library for libcuda
-add_library(CUDA::cuda IMPORTED INTERFACE)
-set_target_properties(CUDA::cuda PROPERTIES
-INTERFACE_INCLUDE_DIRECTORIES
-"${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
-INTERFACE_LINK_LIBRARIES
-"${CUDA_LIB}")
 
 # create imported library for libcudart
 add_library(CUDA::cudart IMPORTED INTERFACE)
@@ -269,7 +256,6 @@ set_target_properties(scope PROPERTIES
 target_link_libraries(scope PUBLIC benchmark::benchmark)
 target_link_libraries(scope PUBLIC fmt::fmt)
 target_link_libraries(scope PUBLIC spdlog::spdlog)
-target_link_libraries(scope PRIVATE CUDA::cuda)
 target_link_libraries(scope PRIVATE CUDA::cudart)
 
 
