@@ -1,11 +1,6 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-#set(CMAKE_C_COMPILER gcc)
-#set(CMAKE_CXX_COMPILER g++)
-#set(CUDACXX /usr/local/cuda/bin/nvcc)
-#set(CMAKE_CUDA_HOST_COMPILER gcc)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(VERBOSE_BUILD ON)
@@ -24,14 +19,12 @@ if (CONFIG_USE_HUNTER)
   )
 endif (CONFIG_USE_HUNTER)
 
-project(scope LANGUAGES C CXX CUDA VERSION 1.0.0)
+project(scope LANGUAGES C CXX CUDA VERSION 1.1.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
-include(cotire)
 include(CMakePackageConfigHelpers)
 include(CTest)
-include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 include(ScopeAddLibrary)
@@ -88,53 +81,40 @@ endif (CONFIG_USE_HUNTER)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
-find_package(CUDA REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
 
 
+# Find the  CUDA toolkit directory so we can link against CUDA libraries
+# https://gitlab.kitware.com/cmake/cmake/issues/17816
+set(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_CUDA_COMPILER}")
+get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}" DIRECTORY)
+get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}" DIRECTORY)
+scope_status(${CUDA_TOOLKIT_ROOT_DIR})
+find_library(CUDART_LIB cudart
+             HINTS
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib64"
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib"
+             "${CUDA_TOOLKIT_ROOT_DIR}"
+)
+scope_status(${CUDART_LIB})
+
+
+# create imported library for libcudart
+add_library(CUDA::cudart IMPORTED INTERFACE)
+set_target_properties(CUDA::cudart PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES
+    "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
+  INTERFACE_LINK_LIBRARIES
+    "${CUDART_LIB}")
+  
 
 
 
-# Disable extended variants of C++ dialects
-# i.e. don't choose gnu++17 over c++17
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-  set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
-    CACHE STRING "Toolchain C++ compiler flags." FORCE)
 
-  set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
-    CACHE STRING "Toolchain C++ linker flags." FORCE)
-endif()
 
-if (UNIX AND NOT APPLE)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER}
-                  -fuse-ld=gold -Wl,--version
-                  ERROR_QUIET OUTPUT_VARIABLE ld_version)
-  if ("${ld_version}" MATCHES "GNU gold")
-    scope_status("Found Gold linker, use faster linker")
-    set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-    set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold ")
-  endif()
-endif()
-
-if(MSVC)
-  # /wd4005  macro-redefinition
-  # /wd4068  unknown pragma
-  # /wd4244  conversion from 'type1' to 'type2'
-  # /wd4267  conversion from 'size_t' to 'type2'
-  # /wd4800  force value to bool 'true' or 'false' (performance warning)
-  add_compile_options(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
-  add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
-else()
-	add_definitions(-DCONSTEXPR=constexpr)
-	set(CXX_WARNINGS "-Wall -Wextra -Wno-unused-function -Wno-unknown-warning-option -Wpointer-arith -Wcast-align -fstrict-aliasing -Wno-unused-local-typedefs -Wno-misleading-indentation -Wno-maybe-uninitialized -Wno-int-in-bool-context -Wno-implicit-fallthrough -Wno-unused-variable -Wno-unused-command-line-argument")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmax-errors=1 -Wfatal-errors ${CXX_WARNINGS}")
-endif()
 
 if (APPLE)
   list (APPEND CMAKE_CXX_FLAGS_INIT "-fvisibility=hidden -fvisibility-inlines-hidden")
@@ -145,29 +125,6 @@ endif(APPLE)
 set(CMAKE_CUDA_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# CMake FindCUDA auto seems to add unsupported architectures somtimes, so we allow the user
-# to override with NVCC_ARCH_FLAGS
-if(CUDA_MULTI_ARCH)
-  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
-else()
-  if (DEFINED NVCC_ARCH_FLAGS)
-    scope_status("Manual cuda arch flags...")
-    CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS ${NVCC_ARCH_FLAGS})
-  else()
-    scope_status("Automatic cuda arch flags...")
-    CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
-  endif()
-endif()
-
-LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
-					         -Wno-deprecated-gpu-targets
-					         -lineinfo
-					         --expt-extended-lambda
-)
-
-scope_status("Enabling CUDA support (version: ${CUDA_VERSION_STRING},"
-			   " archs: ${CUDA_ARCH_FLAGS_readable})")
-
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 set(CUDA_VERBOSE_BUILD OFF)
@@ -176,6 +133,65 @@ sugar_include("./src")
 
 
 add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
+
+# use c++11 not g++11
+set_target_properties(scope PROPERTIES CMAKE_CXX_EXTENSIONS OFF)
+
+if(MSVC)
+  # /wd4005  macro-redefinition
+  # /wd4068  unknown pragma
+  # /wd4244  conversion from 'type1' to 'type2'
+  # /wd4267  conversion from 'size_t' to 'type2'
+  # /wd4800  force value to bool 'true' or 'false' (performance warning)
+  target_compile_options(scope PPRIVATE /wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
+  target_compile_definitions(scope PRIVATE /DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /DCONSTEXPR=const /D_CRT_SECURE_NO_WARNINGS)
+else()
+  target_compile_definitions(scope PRIVATE -DCONSTEXPR=constexpr)
+  target_compile_options(scope PRIVATE
+    -Wall 
+    -Wextra 
+    -Wcast-qual 
+    -Wcast-align 
+    -Wstrict-aliasing 
+    -Wpointer-arith 
+    -Winit-self 
+    -Wshadow 
+    -Wswitch-enum 
+    -Wredundant-decls 
+    -Wfloat-equal 
+    -Wundef 
+    -Wvla
+    -fmax-errors=1 
+    -Wfatal-errors
+  )
+endif()
+
+
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+  target_compile_options(scope PRIVATE
+    -Wall
+    -Wextra
+    -Wundef
+    -fcolor-diagnostics
+    -stdlib=libc++
+    -pthread
+  )
+  target_link_options(scope PRIVATE
+    -stdlib=libc++
+    -lc++abi
+    -fuse-ld=lld
+  )
+endif()
+
+# CXX flags
+target_compile_options(scope PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:-Wall;-Wextra;-Wpedantic>
+)
+
+# CUDA flags
+target_compile_options( scope PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo;--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
+)
 
 # Treat everything in scope/scopes as a scope
 # We expect that those scopes will set SCOPE_NEW_TARGET to the scope target if they are enabled
@@ -186,16 +202,49 @@ foreach( child ${children} )
     add_subdirectory(${child})
     if (DEFINED SCOPE_NEW_TARGET)
       scope_status("enabling ${child}")
-      target_link_libraries(scope ${SCOPE_NEW_TARGET})
+
+      target_compile_options(${SCOPE_NEW_TARGET} PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:
+        -Wall;
+        -Wextra;
+        -Wcast-qual;
+        -Wcast-align;
+        -Wstrict-aliasing;
+        -Wpointer-arith;
+        -Winit-self;
+        -Wshadow;
+        -Wswitch-enum;
+        -Wredundant-decls;
+        -Wfloat-equal;
+        -Wundef;
+        -Wvla;
+        -fmax-errors=1;
+        -Wfatal-errors;
+        >
+      )
+
+      # add CUDA options to target
+      target_compile_options(${SCOPE_NEW_TARGET} PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo;--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
+      )
+
+      # link scope against the target
+      target_link_libraries(scope PUBLIC ${SCOPE_NEW_TARGET})
     endif()
   endif()
 endforeach()
+
 
 # Add include directories
 target_include_scope_directories(scope)
 target_include_directories(scope PRIVATE
   ${PROJECT_BINARY_DIR}/src/
 )
+
+target_include_directories(scope SYSTEM INTERFACE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+target_include_directories(scope SYSTEM PUBLIC ${CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES})
+
+
 
 target_compile_definitions(scope PUBLIC -DPROJECT_NAME=scope)
 
@@ -204,11 +253,11 @@ set_target_properties(scope PROPERTIES
 	CUDA_RESOLVE_DEVICE_SYMBOLS ON
 )
 
-target_link_libraries(scope benchmark::benchmark)
-target_link_libraries(scope fmt::fmt)
-target_link_libraries(scope spdlog::spdlog)
-target_link_libraries(scope ${CUDA_LIBRARIES})
-# target_link_libraries(scope nvToolsExt)
+target_link_libraries(scope PUBLIC benchmark::benchmark)
+target_link_libraries(scope PUBLIC fmt::fmt)
+target_link_libraries(scope PUBLIC spdlog::spdlog)
+target_link_libraries(scope PRIVATE CUDA::cudart)
+
 
 # Request that scope be built with -std=c++11
 # As this is a public compile feature anything that links to
@@ -221,19 +270,12 @@ scope_status(GIT_REFSPEC=${GIT_REFSPEC})
 scope_status(GIT_HASH=${GIT_HASH})
 scope_status(GIT_LOCAL_CHANGES=${GIT_LOCAL_CHANGES})
 
-# Convert CUDA flags from list
-scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
-scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-
 # Generate version file
 scope_status("${PROJECT_SOURCE_DIR}/.../config.hpp.in -> ${PROJECT_BINARY_DIR}/.../config.hpp")
 configure_file (
     "${PROJECT_SOURCE_DIR}/src/config.hpp.in"
     "${PROJECT_BINARY_DIR}/src/config.hpp"
 )
-
-cotire(scope)
 
 if(APPLE)
   # We need to add the path to the driver (libcuda.dylib) as an rpath,
@@ -243,6 +285,4 @@ if(APPLE)
                BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 endif()
 
-# Add a special target to clean nvcc generated files.
-CUDA_BUILD_CLEAN_TARGET()
 
