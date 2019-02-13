@@ -86,8 +86,42 @@ include(sugar_doxygen_generate)
 include(sugar_include)
 
 
+# Find the  CUDA toolkit directory so we can link against CUDA libraries
+# https://gitlab.kitware.com/cmake/cmake/issues/17816
+set(CUDA_TOOLKIT_ROOT_DIR "${CMAKE_CUDA_COMPILER}")
+get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}" DIRECTORY)
+get_filename_component(CUDA_TOOLKIT_ROOT_DIR "${CUDA_TOOLKIT_ROOT_DIR}" DIRECTORY)
+scope_status(${CUDA_TOOLKIT_ROOT_DIR})
+find_library(CUDART_LIB cudart
+             HINTS
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib64"
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib"
+             "${CUDA_TOOLKIT_ROOT_DIR}"
+)
+scope_status(${CUDART_LIB})
+find_library(CUDA_LIB cuda
+             HINTS
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib64"
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib"
+             "${CUDA_TOOLKIT_ROOT_DIR}"
+)
 
+# create imported library for libcuda
+add_library(CUDA::cuda IMPORTED INTERFACE)
+set_target_properties(CUDA::cuda PROPERTIES
+INTERFACE_INCLUDE_DIRECTORIES
+"${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
+INTERFACE_LINK_LIBRARIES
+"${CUDA_LIB}")
 
+# create imported library for libcudart
+add_library(CUDA::cudart IMPORTED INTERFACE)
+set_target_properties(CUDA::cudart PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES
+    "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
+  INTERFACE_LINK_LIBRARIES
+    "${CUDART_LIB}")
+  
 
 
 
@@ -221,6 +255,7 @@ target_include_directories(scope PRIVATE
 )
 
 target_include_directories(scope SYSTEM INTERFACE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+target_include_directories(scope SYSTEM PUBLIC ${CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES})
 
 
 
@@ -234,8 +269,9 @@ set_target_properties(scope PROPERTIES
 target_link_libraries(scope PUBLIC benchmark::benchmark)
 target_link_libraries(scope PUBLIC fmt::fmt)
 target_link_libraries(scope PUBLIC spdlog::spdlog)
-target_link_libraries(scope PUBLIC ${CUDA_LIBRARIES})
-# target_link_libraries(scope nvToolsExt)
+target_link_libraries(scope PRIVATE CUDA::cuda)
+target_link_libraries(scope PRIVATE CUDA::cudart)
+
 
 # Request that scope be built with -std=c++11
 # As this is a public compile feature anything that links to
