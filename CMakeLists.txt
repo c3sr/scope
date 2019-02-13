@@ -1,11 +1,6 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-#set(CMAKE_C_COMPILER gcc)
-#set(CMAKE_CXX_COMPILER g++)
-#set(CUDACXX /usr/local/cuda/bin/nvcc)
-#set(CMAKE_CUDA_HOST_COMPILER gcc)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(VERBOSE_BUILD ON)
@@ -28,10 +23,8 @@ project(scope LANGUAGES C CXX CUDA VERSION 1.0.0)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 
-include(cotire)
 include(CMakePackageConfigHelpers)
 include(CTest)
-include(ExternalProject)
 include(GetGitRevisionDescription)
 include(GNUInstallDirs)
 include(ScopeAddLibrary)
@@ -88,7 +81,6 @@ endif (CONFIG_USE_HUNTER)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(benchmark CONFIG REQUIRED)
-find_package(CUDA REQUIRED)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
@@ -97,30 +89,9 @@ include(sugar_include)
 
 
 
-# Disable extended variants of C++ dialects
-# i.e. don't choose gnu++17 over c++17
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-  set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wundef -fcolor-diagnostics -stdlib=libc++ -pthread"
-    CACHE STRING "Toolchain C++ compiler flags." FORCE)
 
-  set(CMAKE_EXE_LINKER_FLAGS "-stdlib=libc++ -lc++abi -fuse-ld=lld"
-    CACHE STRING "Toolchain C++ linker flags." FORCE)
-endif()
 
-if (UNIX AND NOT APPLE)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER}
-                  -fuse-ld=gold -Wl,--version
-                  ERROR_QUIET OUTPUT_VARIABLE ld_version)
-  if ("${ld_version}" MATCHES "GNU gold")
-    scope_status("Found Gold linker, use faster linker")
-    set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-    set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold ")
-  endif()
-endif()
 
 if(MSVC)
   # /wd4005  macro-redefinition
@@ -145,20 +116,6 @@ endif(APPLE)
 set(CMAKE_CUDA_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# CMake FindCUDA auto seems to add unsupported architectures somtimes, so we allow the user
-# to override with NVCC_ARCH_FLAGS
-if(CUDA_MULTI_ARCH)
-  CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS All)
-else()
-  if (DEFINED NVCC_ARCH_FLAGS)
-    scope_status("Manual cuda arch flags...")
-    CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS ${NVCC_ARCH_FLAGS})
-  else()
-    scope_status("Automatic cuda arch flags...")
-    CUDA_SELECT_NVCC_ARCH_FLAGS(CUDA_ARCH_FLAGS Auto)
-  endif()
-endif()
-
 LIST(APPEND CMAKE_CUDA_FLAGS ${CUDA_ARCH_FLAGS}
 					         -Wno-deprecated-gpu-targets
 					         -lineinfo
@@ -177,6 +134,36 @@ sugar_include("./src")
 
 add_executable(scope ${BENCHMARK_SOURCES} ${BENCHMARK_CUDA_SOURCES})
 
+# use c++11 not g++11
+set_target_properties(scope PROPERTIES CMAKE_CXX_EXTENSIONS OFF)
+
+
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+  target_compile_options(scope PRIVATE
+    -Wall
+    -Wextra
+    -Wundef
+    -fcolor-diagnostics
+    -stdlib=libc++
+    -pthread
+  )
+  target_link_options(scope PRIVATE
+    -stdlib=libc++
+    -lc++abi
+    -fuse-ld=lld
+  )
+endif()
+
+# CXX flags
+target_compile_options(scope PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:-Wall;-Wextra;-Wpedantic>
+)
+
+# CUDA flags
+target_compile_options( scope PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
+)
+
 # Treat everything in scope/scopes as a scope
 # We expect that those scopes will set SCOPE_NEW_TARGET to the scope target if they are enabled
 file(GLOB children LIST_DIRECTORIES true "${SCOPE_SCOPES_DIR}/*" )
@@ -191,11 +178,16 @@ foreach( child ${children} )
   endif()
 endforeach()
 
+
 # Add include directories
 target_include_scope_directories(scope)
 target_include_directories(scope PRIVATE
   ${PROJECT_BINARY_DIR}/src/
 )
+scope_status(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+target_include_directories(scope SYSTEM PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+
+
 
 target_compile_definitions(scope PUBLIC -DPROJECT_NAME=scope)
 
@@ -221,19 +213,12 @@ scope_status(GIT_REFSPEC=${GIT_REFSPEC})
 scope_status(GIT_HASH=${GIT_HASH})
 scope_status(GIT_LOCAL_CHANGES=${GIT_LOCAL_CHANGES})
 
-# Convert CUDA flags from list
-scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
-scope_status("CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
-
 # Generate version file
 scope_status("${PROJECT_SOURCE_DIR}/.../config.hpp.in -> ${PROJECT_BINARY_DIR}/.../config.hpp")
 configure_file (
     "${PROJECT_SOURCE_DIR}/src/config.hpp.in"
     "${PROJECT_BINARY_DIR}/src/config.hpp"
 )
-
-cotire(scope)
 
 if(APPLE)
   # We need to add the path to the driver (libcuda.dylib) as an rpath,
@@ -243,6 +228,4 @@ if(APPLE)
                BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 endif()
 
-# Add a special target to clean nvcc generated files.
-CUDA_BUILD_CLEAN_TARGET()
 
