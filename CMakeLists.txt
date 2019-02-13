@@ -181,7 +181,34 @@ foreach( child ${children} )
     add_subdirectory(${child})
     if (DEFINED SCOPE_NEW_TARGET)
       scope_status("enabling ${child}")
-      target_link_libraries(scope ${SCOPE_NEW_TARGET})
+
+      target_compile_options(${SCOPE_NEW_TARGET} PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:
+        -Wall;
+        -Wextra;
+        -Wcast-qual;
+        -Wcast-align;
+        -Wstrict-aliasing;
+        -Wpointer-arith;
+        -Winit-self;
+        -Wshadow;
+        -Wswitch-enum;
+        -Wredundant-decls;
+        -Wfloat-equal;
+        -Wundef;
+        -Wvla;
+        -fmax-errors=1;
+        -Wfatal-errors;
+        >
+      )
+
+      # add CUDA options to target
+      target_compile_options(${SCOPE_NEW_TARGET} PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo;--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
+      )
+
+      # link scope against the target
+      target_link_libraries(scope PUBLIC ${SCOPE_NEW_TARGET})
     endif()
   endif()
 endforeach()
@@ -204,10 +231,10 @@ set_target_properties(scope PROPERTIES
 	CUDA_RESOLVE_DEVICE_SYMBOLS ON
 )
 
-target_link_libraries(scope benchmark::benchmark)
-target_link_libraries(scope fmt::fmt)
-target_link_libraries(scope spdlog::spdlog)
-target_link_libraries(scope ${CUDA_LIBRARIES})
+target_link_libraries(scope PUBLIC benchmark::benchmark)
+target_link_libraries(scope PUBLIC fmt::fmt)
+target_link_libraries(scope PUBLIC spdlog::spdlog)
+target_link_libraries(scope PUBLIC ${CUDA_LIBRARIES})
 # target_link_libraries(scope nvToolsExt)
 
 # Request that scope be built with -std=c++11
