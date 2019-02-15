@@ -169,17 +169,8 @@ endif()
 
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
   target_compile_options(scope PRIVATE
-    -Wall
-    -Wextra
-    -Wundef
     -fcolor-diagnostics
-    -stdlib=libc++
     -pthread
-  )
-  target_link_options(scope PRIVATE
-    -stdlib=libc++
-    -lc++abi
-    -fuse-ld=lld
   )
 endif()
 
