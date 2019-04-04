@@ -10,7 +10,6 @@ else()
 endif()
 
 include(sugar_files)
-include(sugar_include)
 
 sugar_files(
     BENCHMARK_HEADERS
@@ -25,7 +24,7 @@ sugar_files(
     mpl.hpp
     nocopy.hpp
     nvptx.hpp
-    page.hpp
+    page_size.hpp
     timer.hpp
     utils.hpp
     version.hpp
