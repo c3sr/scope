@@ -245,6 +245,7 @@ class Generator:
                 file_name, filelist, new_dirlist
             )
 
+    @staticmethod 
     def run():
         generator = Generator()
         generator.parse()
