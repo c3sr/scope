@@ -106,3 +106,4 @@ build
 tools/*.json
 .venv
 
+scopes/cudnn_scope

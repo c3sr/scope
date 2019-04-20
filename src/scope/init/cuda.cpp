@@ -10,7 +10,7 @@
 
 cudaDeviceProp cuda_device_prop;
 
-bool has_cuda = false;
+bool has_cuda    = false;
 int device_count = 0;
 
 int num_gpus() {
@@ -38,11 +38,11 @@ bool init_cuda() {
 
   // check that any cuda_device_ids are existing devices
   if (!FLAG(cuda_device_ids).empty()) {
-    for (const auto &dev: FLAG(cuda_device_ids)) {
+    for (const auto &dev : FLAG(cuda_device_ids)) {
       if (dev < 0 || dev >= device_count) {
         LOG(critical, "device = {} is not valid.", dev);
         exit(1);
-    }
+      }
     }
   } else { // populate with existing devices
     LOG(debug, "no cuda devices provided, auto-detecting...");
@@ -58,11 +58,7 @@ bool init_cuda() {
     }
   }
 
-
   assert(!FLAG(cuda_device_ids).empty() && "expected at least one CUDA device");
-
-
-
 
   const int dev0 = FLAG(cuda_device_ids)[0];
   if (PRINT_IF_ERROR(cudaSetDevice(dev0))) {
@@ -89,15 +85,14 @@ bool init_cuda() {
 }
 
 std::experimental::optional<std::tuple<size_t, size_t>> mem_info() {
-  size_t device_free_physmem, device_total_physmem;
+  size_t idevice_free_physmem, idevice_total_physmem;
 
-  if (PRINT_IF_ERROR(cudaMemGetInfo(&device_free_physmem, &device_total_physmem))) {
+  if (PRINT_IF_ERROR(cudaMemGetInfo(&idevice_free_physmem, &idevice_total_physmem))) {
     return std::experimental::nullopt;
   }
-  return std::make_tuple(device_free_physmem, device_total_physmem);
+  return std::make_tuple(idevice_free_physmem, idevice_total_physmem);
 }
 
 const std::vector<int> &unique_cuda_device_ids() {
   return unique_device_ids_;
 }
-
