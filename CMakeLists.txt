@@ -58,8 +58,7 @@ endif()
 if(   NOT EXISTS "${SCOPE_SCOPES_DIR}/nccl_scope/CMakeLists.txt" 
    OR NOT EXISTS "${SCOPE_SCOPES_DIR}/comm_scope/CMakeLists.txt"
    OR NOT EXISTS "${SCOPE_SCOPES_DIR}/example_scope/CMakeLists.txt"
-   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/misc_scope/CMakeLists.txt"
-   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/cudnn_scope/CMakeLists.txt")
+   OR NOT EXISTS "${SCOPE_SCOPES_DIR}/misc_scope/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE_UPDATE was turned off or failed. Please update submodules and try again.")
 endif()
 
