@@ -99,7 +99,6 @@ CTestTestfile.cmake
 !.vscode/launch.json
 !.vscode/extensions.json
 
-
 # End of https://www.gitignore.io/api/c,c++,cuda,cmake,visualstudiocode
 
 build
@@ -107,3 +106,4 @@ tools/*.json
 .venv
 
 scopes/cudnn_scope
+scopes/prim_scope
