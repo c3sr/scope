@@ -63,7 +63,7 @@ Then, follow the User install instructions above, but choose a system prefix for
 
 To compile the project run the following commands (making sure **nvcc** is in your $PATH, which is typically at /usr/local/cuda/bin/nvcc)
 
-    git clone https://github.com/c3sr/scope.git
+    git clone https://github.com/c3sr/scope.git --recursive
     cd scope
     mkdir -p build
     cd build
