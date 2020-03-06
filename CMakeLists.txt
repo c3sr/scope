@@ -79,7 +79,8 @@ endif (CONFIG_USE_HUNTER)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
-set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_TESTING OFF) # remove dep on gtest
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF) # remove dep on gtest
 add_subdirectory(third_party/benchmark)
 # google benchmark doesn't seem to export benchmark::benchmark target as promised
 add_library(benchmark::benchmark ALIAS benchmark)
