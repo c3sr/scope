@@ -10,3 +10,6 @@
 [submodule "nccl_scope"]
 	path = scopes/nccl_scope
 	url = https://github.com/rai-project/nccl_scope.git
+[submodule "third_party/benchmark"]
+	path = third_party/benchmark
+	url = https://github.com/google/benchmark.git

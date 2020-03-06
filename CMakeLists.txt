@@ -67,7 +67,6 @@ if (CONFIG_USE_HUNTER)
   find_package(sugar CONFIG REQUIRED)
   # include(${SUGAR_ROOT}/cmake/sugar)
 
-  hunter_add_package(benchmark)
   hunter_add_package(fmt)
   hunter_add_package(spdlog)
 else()
@@ -79,7 +78,11 @@ endif (CONFIG_USE_HUNTER)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-find_package(benchmark CONFIG REQUIRED)
+
+set(BENCHMARK_ENABLE_TESTING OFF)
+add_subdirectory(third_party/benchmark)
+# google benchmark doesn't seem to export benchmark::benchmark target as promised
+add_library(benchmark::benchmark ALIAS benchmark)
 
 include(sugar_doxygen_generate)
 include(sugar_include)
