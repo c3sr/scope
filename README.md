@@ -29,6 +29,21 @@ Various benchmark suites using Scope are under development:
 * [Misc|Scope](https://github.com/c3sr/misc_scope) - experimental or miscellaneous benchmarks
 
 
+## Quick Start
+
+* Install CMake 3.12+
+* clone, checkout the lastest release, update submodules to match, and build
+```bash
+git clone https://github.com/c3sr/scope.git --recursive
+cd scope
+git checkout v1.3.2                 # or the latest, `git tag --list`
+git submodule update                # match benchmark versions
+mkdir build && cd build
+cmake .. -DENABLE_COMM=ON           # or other scopes
+make -j`nproc`
+./scope --benchmark_list_tests=true # list all scopes
+```
+
 ## Install CMake >= 3.12
 
 ### User install of CMake 3.12 (preferred)
