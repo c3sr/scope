@@ -8,6 +8,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(CONFIG_USE_HUNTER "Turn on to enable using the hunteger package manager" ON)
 option(CUDA_MULTI_ARCH "Whether to generate CUDA code for multiple architectures" OFF)
+option(USE_NVTX "Link against Nvidia Tools Extensions" ON)
 
 # https://github.com/hunter-packages/gate#usage-custom-config
 if (CONFIG_USE_HUNTER)
@@ -102,7 +103,14 @@ find_library(CUDART_LIB cudart
              "${CUDA_TOOLKIT_ROOT_DIR}/lib"
              "${CUDA_TOOLKIT_ROOT_DIR}"
 )
-scope_status(${CUDART_LIB})
+scope_status("cudart: ${CUDART_LIB}")
+find_library(CUDANVTX_LIB nvToolsExt
+             HINTS
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib64"
+             "${CUDA_TOOLKIT_ROOT_DIR}/lib"
+             "${CUDA_TOOLKIT_ROOT_DIR}"
+)
+scope_status("nvtx: ${CUDANVTX_LIB}")
 
 
 # create imported library for libcudart
@@ -113,7 +121,13 @@ set_target_properties(CUDA::cudart PROPERTIES
   INTERFACE_LINK_LIBRARIES
     "${CUDART_LIB}")
   
-
+# create imported library for Nvidia Tools Extensions
+add_library(CUDA::nvtx IMPORTED INTERFACE)
+set_target_properties(CUDA::nvtx PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES
+    "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}"
+  INTERFACE_LINK_LIBRARIES
+    "${CUDANVTX_LIB}")
 
 
 
@@ -184,6 +198,8 @@ target_compile_options( scope PRIVATE
   $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo;--Wno-deprecated-gpu-targets;--expt-extended-lambda;-Xcompiler=-Wall;-Xcompiler=-Wextra>
 )
 
+
+
 # Treat everything in scope/scopes as a scope
 # We expect that those scopes will set SCOPE_NEW_TARGET to the scope target if they are enabled
 file(GLOB children LIST_DIRECTORIES true "${SCOPE_SCOPES_DIR}/*" )
@@ -193,6 +209,14 @@ foreach( child ${children} )
     add_subdirectory(${child})
     if (DEFINED SCOPE_NEW_TARGET)
       scope_status("enabling ${child}")
+
+      if (USE_NVTX)
+      target_compile_definitions(${SCOPE_NEW_TARGET} PRIVATE SCOPE_USE_NVTX=1)
+      scope_status("compiling with SCOPE_USE_NVTX=1")
+    else()
+      target_compile_definitions(${SCOPE_NEW_TARGET} PRIVATE SCOPE_USE_NVTX=0)
+      scope_status("compiling with SCOPE_USE_NVTX=0")
+    endif()
 
       target_compile_options(${SCOPE_NEW_TARGET} PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:
@@ -248,6 +272,10 @@ target_link_libraries(scope PUBLIC benchmark::benchmark)
 target_link_libraries(scope PUBLIC fmt::fmt)
 target_link_libraries(scope PUBLIC spdlog::spdlog)
 target_link_libraries(scope PRIVATE CUDA::cudart)
+if (USE_NVTX)
+  target_link_libraries(scope PUBLIC CUDA::nvtx)
+endif()
+
 
 
 # Request that scope be built with -std=c++11
