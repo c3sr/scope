@@ -31,7 +31,7 @@ namespace detail {
     printf("ERROR on %s::%d In %s:(%s) FAILED\n", file, line, func, stmt);
 #else  // defined(__CUDA_ARCH__)
     // in host code
-    LOG(critical, "ERROR[{}] on {}::{} In {}:({}) FAILED", error_string<T>(err), file, line, func, stmt);
+    LOG(critical, "ERROR[{}] on {}:{} In {}:({}) FAILED", error_string<T>(err), file, line, func, stmt);
 #endif // defined(__CUDA_ARCH__)
     return true;
   }
